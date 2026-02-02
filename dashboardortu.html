@@ -16,165 +16,170 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Style Grafik Lingkaran (Circular Progress) */
+        /* Style Grafik Lingkaran */
         .progress-ring {
-            width: 90px; height: 90px; border-radius: 50%;
+            width: 80px; height: 80px; border-radius: 50%;
             background: conic-gradient(#059669 var(--percent), #e2e8f0 0deg);
             display: flex; align-items: center; justify-content: center;
             position: relative;
         }
         .progress-inner {
-            width: 74px; height: 74px; background: white; border-radius: 50%;
+            width: 66px; height: 66px; background: white; border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         
-        /* Animasi masuk */
-        .fade-up { animation: fadeUp 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        /* Animasi halus */
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-24">
+<body class="bg-slate-50 text-slate-800 pb-24 select-none">
 
-    <header class="bg-emerald-700 pt-8 pb-16 px-6 rounded-b-[40px] shadow-lg relative overflow-hidden">
-        <div class="absolute top-[-20%] right-[-10%] w-40 h-40 bg-emerald-500 rounded-full opacity-20 blur-2xl"></div>
-        <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-xl"></div>
+    <header class="bg-gradient-to-br from-emerald-800 to-emerald-600 pt-8 pb-16 px-6 rounded-b-[40px] shadow-xl relative overflow-hidden">
+        <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
+        <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
 
         <div class="flex justify-between items-center mb-6 relative z-10">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center text-white">
-                    <i class="fa-solid fa-school text-xs"></i>
-                </div>
-                <span class="text-white font-semibold text-sm tracking-wide">SMP IT AL-KAUTSAR</span>
+            <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                <i class="fa-solid fa-school text-emerald-100 text-xs"></i>
+                <span class="text-white font-medium text-xs tracking-wide">SMP IT AL-KAUTSAR</span>
             </div>
-            <button class="relative w-8 h-8 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/30 transition">
+            <button class="relative w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90">
                 <i class="fa-regular fa-bell"></i>
-                <span class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full border border-emerald-700"></span>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-emerald-700 animate-pulse"></span>
             </button>
         </div>
 
-        <div class="flex items-center gap-4 relative z-10 fade-up">
-            <div class="relative">
-                <div class="w-16 h-16 rounded-full border-2 border-emerald-300 p-0.5 bg-emerald-800">
+        <div class="flex items-center gap-4 relative z-10 fade-in">
+            <div class="relative group">
+                <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
                     <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
                 </div>
-                <div id="kelas-siswa" class="absolute -bottom-1 -right-1 bg-yellow-400 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded-full border border-white">
+                <div id="kelas-siswa" class="absolute -bottom-1 -right-1 bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-emerald-700 shadow-sm">
                     --
                 </div>
             </div>
-            <div>
-                <h1 class="text-xl font-bold text-white leading-tight" id="nama-siswa">Memuat Data...</h1>
-                <p class="text-emerald-200 text-xs mt-1">NISN: <span id="nisn-siswa">...</span></p>
+            <div class="flex-1 min-w-0"> <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
+                <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
+                <p class="text-emerald-100/70 text-[10px] mt-1 font-mono tracking-wider">NISN: <span id="nisn-siswa">...</span></p>
             </div>
         </div>
     </header>
 
-    <main class="px-5 -mt-10 relative z-20 space-y-5">
+    <main class="px-5 -mt-10 relative z-20 space-y-4">
 
-        <div class="bg-white rounded-2xl p-5 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-up delay-100">
+        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
             <div class="progress-ring" style="--percent: 290deg;"> 
                 <div class="progress-inner">
-                    <span class="text-xl font-bold text-emerald-600">92%</span>
-                    <span class="text-[9px] text-slate-400 uppercase tracking-wider">Hadir</span>
+                    <span class="text-lg font-bold text-emerald-600">92%</span>
+                    <span class="text-[8px] text-slate-400 uppercase tracking-wider font-semibold">Hadir</span>
                 </div>
             </div>
-            <div class="flex-1 pl-5 border-l border-slate-100 ml-5">
-                <h3 class="font-bold text-slate-700">Kehadiran</h3>
-                <p class="text-xs text-slate-400 mb-3">Rekap Bulan Februari</p>
+            <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
+                <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
+                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2024</p>
                 <div class="flex gap-2">
-                    <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-medium rounded-lg">✅ 20 H</span>
-                    <span class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-medium rounded-lg">🤒 1 S</span>
+                    <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">20 H</span>
+                    <span class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">1 S</span>
+                    <span class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">0 A</span>
                 </div>
             </div>
         </div>
 
-        <div class="fade-up delay-200">
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-                <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                    <i class="fa-solid fa-check"></i>
+        <div class="fade-in delay-200">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
+                <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                    <i class="fa-solid fa-check text-xs"></i>
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
-                    <p class="text-xs text-blue-700 mt-0.5">Ananda <span class="font-semibold">Hadir Tepat Waktu</span> (06:55 WIB)</p>
+                    <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
+                        Ananda tercatat <span class="font-bold bg-blue-200/50 px-1 rounded">Hadir Tepat Waktu</span> pada pukul 06:55 WIB.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 fade-up delay-300">
+        <div class="grid grid-cols-2 gap-3 fade-in delay-300">
             
-            <div onclick="alert('Masuk ke Detail T2Q')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300">
-                <div class="flex justify-between items-start mb-2">
-                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-lg group-hover:bg-emerald-600 group-hover:text-white transition">
+            <div onclick="alert('Fitur Detail T2Q akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
                         <i class="fa-solid fa-book-quran"></i>
                     </div>
-                    <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Juz 29</span>
-                </div>
-                <h4 class="font-bold text-slate-700 text-sm">Laporan T2Q</h4>
-                <p class="text-[10px] text-slate-400 mb-2">Target: Al-Mulk Selesai</p>
-                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-emerald-500 h-full rounded-full" style="width: 75%"></div>
+                    <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Juz 29 - Al Mulk</p>
+                    <div class="w-full bg-slate-100 h-1 mt-2 rounded-full overflow-hidden">
+                        <div class="bg-emerald-500 h-full rounded-full" style="width: 75%"></div>
+                    </div>
                 </div>
             </div>
 
-            <div onclick="alert('Masuk ke Detail Akhlak')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300">
-                <div class="flex justify-between items-start mb-2">
-                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-lg group-hover:bg-purple-600 group-hover:text-white transition">
+            <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
                         <i class="fa-solid fa-hands-praying"></i>
                     </div>
-                    <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Pekan 2</span>
-                </div>
-                <h4 class="font-bold text-slate-700 text-sm">Bina Pribadi</h4>
-                <p class="text-[10px] text-slate-400 mb-2">Adab & Ibadah</p>
-                <div class="flex text-yellow-400 text-[10px] gap-0.5">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+                    <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
+                    <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
+                    </div>
                 </div>
             </div>
 
-            <div onclick="alert('Buka Catatan Wali')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
+            <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
                 <div class="flex justify-between items-start mb-3">
-                    <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-lg group-hover:bg-orange-600 group-hover:text-white transition">
+                    <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
                         <i class="fa-solid fa-comment-dots"></i>
                     </div>
                     <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                 </div>
-                <h4 class="font-bold text-slate-700 text-sm">Catatan Wali</h4>
-                <p class="text-[10px] text-slate-400">Ada pesan baru</p>
+                <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
+                <p class="text-[10px] text-slate-400">1 Pesan belum dibaca</p>
             </div>
 
-            <div onclick="alert('Buka Pengumuman')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
+            <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
                 <div class="flex justify-between items-start mb-3">
-                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-lg group-hover:bg-blue-600 group-hover:text-white transition">
+                    <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
                         <i class="fa-solid fa-bullhorn"></i>
                     </div>
                 </div>
-                <h4 class="font-bold text-slate-700 text-sm">Info Sekolah</h4>
-                <p class="text-[10px] text-slate-400">Update Terkini</p>
+                <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
+                <p class="text-[10px] text-slate-400">Update Kegiatan</p>
             </div>
 
         </div>
 
-        <div class="fade-up delay-300 pb-4">
-            <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm">Aktivitas Terakhir</h3>
-            <div class="bg-white rounded-xl border border-slate-100 p-1">
+        <div class="fade-in delay-300 pb-4">
+            <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
+                Aktivitas Terakhir
+                <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
+            </h3>
+            <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
                 <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
                         <i class="fa-solid fa-check"></i>
                     </div>
                     <div class="flex-1">
                         <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
-                        <p class="text-[10px] text-slate-400">Senin, 02 Feb - 06:55 WIB</p>
+                        <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                     <div class="flex-1">
                         <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
-                        <p class="text-[10px] text-slate-400">Jumat, 30 Jan - Surah Al-Mulk</p>
+                        <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
                     </div>
                 </div>
             </div>
@@ -182,65 +187,91 @@
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50 text-slate-400">
-        <button class="flex flex-col items-center gap-1 text-emerald-600">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-between items-center z-50 text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+        <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
             <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[10px] font-medium">Beranda</span>
+            <span class="text-[9px] font-medium">Beranda</span>
         </button>
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
+        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
             <i class="fa-solid fa-chart-pie text-lg"></i>
-            <span class="text-[10px] font-medium">Laporan</span>
-        </button>
-        <div class="relative -top-5">
-            <button class="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-300 ring-4 ring-slate-50">
-                <i class="fa-solid fa-qrcode text-lg"></i>
-            </button>
-        </div>
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[10px] font-medium">Profil</span>
+            <span class="text-[9px] font-medium">Laporan</span>
         </button>
         
-        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition" onclick="logout()">
+        <div class="relative -top-6">
+            <button class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 ring-4 ring-slate-50 active:scale-95 transition transform hover:-translate-y-1">
+                <i class="fa-solid fa-qrcode text-xl"></i>
+            </button>
+        </div>
+
+        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
+            <i class="fa-solid fa-user text-lg"></i>
+            <span class="text-[9px] font-medium">Profil</span>
+        </button>
+        
+        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
             <i class="fa-solid fa-right-from-bracket text-lg"></i>
-            <span class="text-[10px] font-medium">Keluar</span>
+            <span class="text-[9px] font-medium">Keluar</span>
         </button>
     </nav>
 
     <script>
-        // 1. CEK KEAMANAN (Apakah user sudah login?)
-        const savedData = localStorage.getItem('user_data');
-        
-        if (!savedData) {
-            // Jika belum login, tendang ke index.html
-            alert("Sesi habis atau belum login. Silakan login kembali.");
-            window.location.href = 'index.html';
-        } else {
-            // Jika sudah login, ambil datanya
-            const user = JSON.parse(savedData);
-            
-            // 2. ISI DATA KE TAMPILAN (Sesuai ID yang ada di HTML)
-            if(document.getElementById('nama-siswa')) 
-                document.getElementById('nama-siswa').innerText = user.nama || "Siswa";
-            
-            if(document.getElementById('nisn-siswa')) 
-                document.getElementById('nisn-siswa').innerText = user.nisn || "0000";
+        // === LOGIC UTAMA ===
 
-            if(document.getElementById('kelas-siswa')) 
-                document.getElementById('kelas-siswa').innerText = user.kelas || "-";
-            
-            // Generate Avatar sesuai Nama
-            if(document.getElementById('foto-siswa')) {
-                const safeName = encodeURIComponent(user.nama || "User");
-                document.getElementById('foto-siswa').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}`;
-            }
+        // 1. Cek Login
+        const savedData = localStorage.getItem('user_data');
+        if (!savedData) {
+            window.location.href = 'index.html';
         }
 
-        // 3. FUNGSI LOGOUT (Hapus Data & Keluar)
+        const user = JSON.parse(savedData);
+
+        // 2. Tampilkan Data User
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set Nama & NISN
+            setText('nama-siswa', user.nama);
+            setText('nisn-siswa', user.nisn);
+            setText('kelas-siswa', user.kelas);
+            
+            // Set Sapaan Waktu (Pagi/Siang/Sore)
+            setGreeting();
+
+            // Set Avatar
+            const imgEl = document.getElementById('foto-siswa');
+            if (imgEl) {
+                const safeName = encodeURIComponent(user.nama || "User");
+                imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
+            }
+        });
+
+        // Helper: Mengubah Text aman
+        function setText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text || "-";
+        }
+
+        // Helper: Sapaan Waktu
+        function setGreeting() {
+            const hour = new Date().getHours();
+            let greet = "Assalamualaikum,";
+            if (hour >= 3 && hour < 11) greet = "Selamat Pagi,";
+            else if (hour >= 11 && hour < 15) greet = "Selamat Siang,";
+            else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
+            else greet = "Selamat Malam,";
+            
+            document.getElementById('sapaan-waktu').innerText = greet;
+        }
+
+        // 3. Logout
         function logout() {
-            if(confirm("Apakah Anda yakin ingin keluar dari aplikasi?")) {
-                localStorage.removeItem('user_data'); // Hapus kunci rahasia
-                window.location.href = 'index.html';  // Balik ke gerbang depan
+            // Tambahkan efek getar/konfirmasi native
+            if(navigator.vibrate) navigator.vibrate(50);
+            
+            if(confirm("Apakah Anda yakin ingin keluar?")) {
+                localStorage.removeItem('user_data');
+                document.body.classList.add('opacity-50'); // Efek visual
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 300);
             }
         }
     </script>
