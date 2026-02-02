@@ -134,18 +134,25 @@
     </div>
 
     <div class="fade-in delay-200">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
-            <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                <i class="fa-solid fa-check text-xs"></i>
-            </div>
-            <div>
-                <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
-                <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
-                    Ananda tercatat <span class="font-bold bg-blue-200/50 px-1 rounded">Hadir Tepat Waktu</span> pada pukul 06:55 WIB.
-                </p>
-            </div>
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
+        
+        <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
+            <i class="fa-solid fa-check text-xs"></i>
+        </div>
+
+        <div>
+            <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
+            
+            <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
+                <span id="text-deskripsi">Sedang memuat data...</span>
+                
+                <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                    --
+                </span>
+            </p>
         </div>
     </div>
+</div>
 
     <div class="grid grid-cols-2 gap-3 fade-in delay-300">
         
@@ -500,6 +507,70 @@
             }, 200);
         }
     });
+
+        function updateStatusHarian(kodeAbsen) {
+    // 1. Ambil elemen berdasarkan ID
+    const descEl = document.getElementById('text-deskripsi');
+    const badgeEl = document.getElementById('badge-status');
+    const iconBgEl = document.getElementById('icon-status-bg');
+
+    // Variabel penampung
+    let statusLabel = "";
+    let deskripsi = "";
+    let warnaBadge = "";
+    let warnaIcon = "";
+
+    // 2. Logika IF / SWITCH (Sesuai Request)
+    // Pastikan kodeAbsen dibaca sebagai huruf besar (uppercase) untuk jaga-jaga
+    const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
+
+    switch (kode) {
+        case 'H':
+            statusLabel = "HADIR";
+            deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah.";
+            warnaBadge = "bg-emerald-100 text-emerald-700"; // Hijau Segar
+            warnaIcon = "bg-emerald-500";
+            break;
+
+        case 'I':
+            statusLabel = "IZIN";
+            deskripsi = "Ananda tercatat Izin hari ini. Semoga urusannya lancar dan bisa segera kembali sekolah.";
+            warnaBadge = "bg-amber-100 text-amber-700"; // Kuning/Oranye
+            warnaIcon = "bg-amber-500";
+            break;
+
+        case 'S':
+            statusLabel = "SAKIT";
+            deskripsi = "Ananda tercatat Sakit hari ini. Syafakallah/illah, semoga lekas sembuh dan ceria kembali.";
+            warnaBadge = "bg-yellow-100 text-yellow-700"; // Kuning
+            warnaIcon = "bg-yellow-500";
+            break;
+
+        case 'A':
+            statusLabel = "ALFA";
+            deskripsi = "Ananda tercatat Tidak Hadir Tanpa Keterangan. Mohon Ayah/Bunda konfirmasi ke Wali Kelas.";
+            warnaBadge = "bg-red-100 text-red-700"; // Merah Warning
+            warnaIcon = "bg-red-500";
+            break;
+
+        default: 
+            // Jika Kosong / Belum ada input
+            statusLabel = "BELUM ADA DATA";
+            deskripsi = "Data kehadiran hari ini belum masuk. Mohon tunggu update dari Wali Kelas.";
+            warnaBadge = "bg-slate-200 text-slate-600"; // Abu-abu netral
+            warnaIcon = "bg-slate-400";
+            break;
+    }
+
+    // 3. Terapkan ke Tampilan (Render)
+    badgeEl.textContent = statusLabel;
+    badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
+    
+    descEl.textContent = deskripsi;
+    
+    // Reset class icon lalu tambah warna baru
+    iconBgEl.className = `p-2 rounded-full shrink-0 text-white transition-colors duration-300 ${warnaIcon}`;
+}
     </script>
 
 </body>
