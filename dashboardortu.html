@@ -339,97 +339,100 @@
     </div>
 
     <script>
-        // === LOGIC UTAMA ===
+    // === LOGIC UTAMA ===
 
-        // 1. Cek Login
-        const savedData = localStorage.getItem('user_data');
-        if (!savedData) {
-            window.location.href = 'index.html';
-        }
+    // 1. Cek Login
+    const savedData = localStorage.getItem('user_data');
+    if (!savedData) {
+        window.location.href = 'index.html';
+    }
 
-        const user = JSON.parse(savedData);
+    const user = JSON.parse(savedData);
 
-        // 2. ISI DATA KE TAMPILAN
-        document.addEventListener("DOMContentLoaded", () => {
-            // Set Data Dasar
-            setText('nama-siswa', user.nama);
-            setText('nisn-siswa', user.nisn);
-            setText('kelas-siswa', user.kelas);
-            setGreeting();
+    // 2. ISI DATA KE TAMPILAN
+    document.addEventListener("DOMContentLoaded", () => {
+        // Set Data Dasar
+        setText('nama-siswa', user.nama);
+        setText('nisn-siswa', user.nisn);
+        setText('kelas-siswa', user.kelas);
+        setGreeting();
 
-            // --- BAGIAN BARU: UPDATE ABSENSI DARI DATABASE ---
-            if (user.absensi) {
-                // 1. Update Angka Persen Besar
-                const persenTeks = user.absensi.persen || "0%";
-                setText('absen-persen', persenTeks); // Pastikan ada ID ini di HTML nanti
+        // --- BAGIAN BARU: UPDATE ABSENSI DARI DATABASE ---
+        if (user.absensi) {
+            // 1. Update Angka Persen Besar
+            const persenTeks = user.absensi.persen || "0%";
+            setText('absen-persen', persenTeks);
 
-                // 2. Update Grafik Lingkaran
-                // Konversi "92%" jadi derajat (360 * 0.92)
-                let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
-                let derajat = (persenAngka / 100) * 360;
-                
-                const ring = document.getElementById('absen-ring');
-                if(ring) ring.style.setProperty('--percent', derajat + 'deg');
-
-                // 3. Update Detail H/S/I/A
-                setText('val-h', (user.absensi.h || 0) + " H");
-                setText('val-s', (user.absensi.s || 0) + " S");
-                setText('val-i', (user.absensi.i || 0) + " I");
-                setText('val-a', (user.absensi.a || 0) + " A"); // Tambahan untuk Alfa jika mau ditampilkan
-            }
+            // 2. Update Grafik Lingkaran
+            // Konversi "92%" jadi derajat (360 * 0.92)
+            let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
+            let derajat = (persenAngka / 100) * 360;
             
-            // Set Avatar
-            const imgEl = document.getElementById('foto-siswa');
-            if (imgEl) {
-                const safeName = encodeURIComponent(user.nama || "User");
-                imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
-            }
-        });
+            const ring = document.getElementById('absen-ring');
+            if(ring) ring.style.setProperty('--percent', derajat + 'deg');
 
-        // Helper Function
-        function setText(id, text) {
-            const el = document.getElementById(id);
-            if (el) el.innerText = text;
+            // 3. Update Detail H/S/I/A
+            setText('val-h', (user.absensi.h || 0) + " H");
+            setText('val-s', (user.absensi.s || 0) + " S");
+            setText('val-i', (user.absensi.i || 0) + " I");
+            setText('val-a', (user.absensi.a || 0) + " A");
+
+            // 4. Update Status Hari Ini (Hadir/Sakit/Izin/Alfa)
+            // INI BARIS YANG SAYA TAMBAHKAN AGAR TULISAN BERUBAH
+            updateStatusHarian(user.absensi.statusToday);
+        } else {
+            // Jika data absensi belum ada sama sekali
+            updateStatusHarian("");
         }
-
-        // Helper: Sapaan Waktu
-        function setGreeting() {
-            const hour = new Date().getHours();
-            let greet = "Assalamualaikum,";
-            if (hour >= 3 && hour < 11) greet = "Selamat Pagi,";
-            else if (hour >= 11 && hour < 15) greet = "Selamat Siang,";
-            else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
-            else greet = "Selamat Malam,";
-            
-            document.getElementById('sapaan-waktu').innerText = greet;
+        
+        // Set Avatar
+        const imgEl = document.getElementById('foto-siswa');
+        if (imgEl) {
+            const safeName = encodeURIComponent(user.nama || "User");
+            imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
         }
+    });
 
-        // 3. Logout
-        function logout() {
-            // Tambahkan efek getar/konfirmasi native
-            if(navigator.vibrate) navigator.vibrate(50);
-            
-            if(confirm("Apakah Anda yakin ingin keluar?")) {
-                localStorage.removeItem('user_data');
-                document.body.classList.add('opacity-50'); // Efek visual
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 300);
-            }
+    // Helper Function
+    function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+    }
+
+    // Helper: Sapaan Waktu
+    function setGreeting() {
+        const hour = new Date().getHours();
+        let greet = "Assalamualaikum,";
+        if (hour >= 3 && hour < 11) greet = "Selamat Pagi,";
+        else if (hour >= 11 && hour < 15) greet = "Selamat Siang,";
+        else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
+        else greet = "Selamat Malam,";
+        
+        document.getElementById('sapaan-waktu').innerText = greet;
+    }
+
+    // 3. Logout
+    function logout() {
+        if(navigator.vibrate) navigator.vibrate(50);
+        
+        if(confirm("Apakah Anda yakin ingin keluar?")) {
+            localStorage.removeItem('user_data');
+            document.body.classList.add('opacity-50'); 
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 300);
         }
+    }
 
-        // --- FITUR POPUP PROFIL ---
+    // --- FITUR POPUP PROFIL ---
     function bukaProfil() {
-        // Ambil data terbaru dari localStorage
         const user = JSON.parse(localStorage.getItem('user_data'));
-        const dasis = user.dasis || {}; // Data Dasis (jika ada)
+        const dasis = user.dasis || {}; 
 
-        // Isi Data ke Popup
         document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
         document.getElementById('pop-nama').innerText = user.nama;
         document.getElementById('pop-nisn').innerText = "NISN: " + user.nisn;
 
-        // Isi Detail (Pakai tanda tanya (?) untuk cegah error kalau data kosong)
         setText('pop-nis', dasis.nis || '-');
         setText('pop-jk', dasis.jk || '-');
         setText('pop-ttl', dasis.ttl || '-');
@@ -442,14 +445,12 @@
         setText('pop-ibu', dasis.ibu || '-');
         setText('pop-ker-ibu', dasis.ker_ibu ? 'Pekerjaan: ' + dasis.ker_ibu : '-');
 
-        // Tampilkan Modal dengan Animasi
         const modal = document.getElementById('modal-profil');
         const backdrop = document.getElementById('modal-backdrop');
         const content = document.getElementById('modal-content');
 
         modal.classList.remove('hidden');
         
-        // Sedikit delay biar transisi jalan
         setTimeout(() => {
             backdrop.classList.remove('opacity-0');
             content.classList.remove('translate-y-full');
@@ -461,44 +462,37 @@
         const backdrop = document.getElementById('modal-backdrop');
         const content = document.getElementById('modal-content');
 
-        // Animasi Keluar
         backdrop.classList.add('opacity-0');
         content.classList.add('translate-y-full');
 
-        // Sembunyikan div setelah animasi selesai (500ms)
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 500);
     }
 
-        // --- FITUR MENU DROPDOWN (GARIS 3) ---
+    // --- FITUR MENU DROPDOWN (GARIS 3) ---
     function toggleMenu() {
         const menu = document.getElementById('dropdown-menu');
         
         if (menu.classList.contains('hidden')) {
-            // Membuka Menu
             menu.classList.remove('hidden');
-            // Sedikit delay agar transisi opacity jalan
             setTimeout(() => {
                 menu.classList.remove('scale-95', 'opacity-0');
                 menu.classList.add('scale-100', 'opacity-100');
             }, 10);
         } else {
-            // Menutup Menu
             menu.classList.remove('scale-100', 'opacity-100');
             menu.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 menu.classList.add('hidden');
-            }, 200); // Sesuaikan dengan durasi animasi CSS
+            }, 200);
         }
     }
 
-    // Tutup menu otomatis jika klik di luar area menu
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
         const triggerBtn = e.target.closest('button');
         
-        // Jika yang diklik BUKAN tombol garis 3 dan BUKAN menu itu sendiri
         if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
             menu.classList.remove('scale-100', 'opacity-100');
             menu.classList.add('scale-95', 'opacity-0');
@@ -508,70 +502,73 @@
         }
     });
 
-        function updateStatusHarian(kodeAbsen) {
-    // 1. Ambil elemen berdasarkan ID
-    const descEl = document.getElementById('text-deskripsi');
-    const badgeEl = document.getElementById('badge-status');
-    const iconBgEl = document.getElementById('icon-status-bg');
+    // --- FUNGSI UPDATE STATUS HARIAN ---
+    function updateStatusHarian(kodeAbsen) {
+        const descEl = document.getElementById('text-deskripsi');
+        const badgeEl = document.getElementById('badge-status');
+        const iconBgEl = document.getElementById('icon-status-bg');
 
-    // Variabel penampung
-    let statusLabel = "";
-    let deskripsi = "";
-    let warnaBadge = "";
-    let warnaIcon = "";
+        // Pastikan elemen ada sebelum lanjut (untuk menghindari error)
+        if (!descEl || !badgeEl || !iconBgEl) return;
 
-    // 2. Logika IF / SWITCH (Sesuai Request)
-    // Pastikan kodeAbsen dibaca sebagai huruf besar (uppercase) untuk jaga-jaga
-    const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
+        let statusLabel = "";
+        let deskripsi = "";
+        let warnaBadge = "";
+        let warnaIcon = "";
 
-    switch (kode) {
-        case 'H':
-            statusLabel = "HADIR";
-            deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah.";
-            warnaBadge = "bg-emerald-100 text-emerald-700"; // Hijau Segar
-            warnaIcon = "bg-emerald-500";
-            break;
+        const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
 
-        case 'I':
-            statusLabel = "IZIN";
-            deskripsi = "Ananda tercatat Izin hari ini. Semoga urusannya lancar dan bisa segera kembali sekolah.";
-            warnaBadge = "bg-amber-100 text-amber-700"; // Kuning/Oranye
-            warnaIcon = "bg-amber-500";
-            break;
+        switch (kode) {
+            case 'H':
+                statusLabel = "HADIR";
+                deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah.";
+                warnaBadge = "bg-emerald-100 text-emerald-700";
+                warnaIcon = "bg-emerald-500";
+                break;
 
-        case 'S':
-            statusLabel = "SAKIT";
-            deskripsi = "Ananda tercatat Sakit hari ini. Syafakallah/illah, semoga lekas sembuh dan ceria kembali.";
-            warnaBadge = "bg-yellow-100 text-yellow-700"; // Kuning
-            warnaIcon = "bg-yellow-500";
-            break;
+            case 'I':
+                statusLabel = "IZIN";
+                deskripsi = "Ananda tercatat Izin hari ini. Semoga urusannya lancar dan bisa segera kembali sekolah.";
+                warnaBadge = "bg-amber-100 text-amber-700";
+                warnaIcon = "bg-amber-500";
+                break;
 
-        case 'A':
-            statusLabel = "ALFA";
-            deskripsi = "Ananda tercatat Tidak Hadir Tanpa Keterangan. Mohon Ayah/Bunda konfirmasi ke Wali Kelas.";
-            warnaBadge = "bg-red-100 text-red-700"; // Merah Warning
-            warnaIcon = "bg-red-500";
-            break;
+            case 'S':
+                statusLabel = "SAKIT";
+                deskripsi = "Ananda tercatat Sakit hari ini. Syafakallah/illah, semoga lekas sembuh dan ceria kembali.";
+                warnaBadge = "bg-yellow-100 text-yellow-700";
+                warnaIcon = "bg-yellow-500";
+                break;
 
-        default: 
-            // Jika Kosong / Belum ada input
-            statusLabel = "BELUM ADA DATA";
-            deskripsi = "Data kehadiran hari ini belum masuk. Mohon tunggu update dari Wali Kelas.";
-            warnaBadge = "bg-slate-200 text-slate-600"; // Abu-abu netral
-            warnaIcon = "bg-slate-400";
-            break;
+            case 'A':
+                statusLabel = "ALFA";
+                deskripsi = "Ananda tercatat Tidak Hadir Tanpa Keterangan. Mohon Ayah/Bunda konfirmasi ke Wali Kelas.";
+                warnaBadge = "bg-red-100 text-red-700";
+                warnaIcon = "bg-red-500";
+                break;
+
+            default: 
+                statusLabel = "BELUM ADA DATA";
+                deskripsi = "Data kehadiran hari ini belum masuk. Mohon tunggu update dari Wali Kelas.";
+                warnaBadge = "bg-slate-200 text-slate-600";
+                warnaIcon = "bg-slate-400";
+                break;
+        }
+
+        // Render Tampilan
+        badgeEl.textContent = statusLabel;
+        badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
+        
+        // Tampilkan badge (karena di HTML awal diset hidden)
+        badgeEl.classList.remove('hidden');
+
+        descEl.textContent = deskripsi;
+        
+        // Ubah warna ikon
+        // Hapus class warna lama (bg-*) lalu tambah yang baru
+        iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
-
-    // 3. Terapkan ke Tampilan (Render)
-    badgeEl.textContent = statusLabel;
-    badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
-    
-    descEl.textContent = deskripsi;
-    
-    // Reset class icon lalu tambah warna baru
-    iconBgEl.className = `p-2 rounded-full shrink-0 text-white transition-colors duration-300 ${warnaIcon}`;
-}
-    </script>
+</script>
 
 </body>
 </html>
