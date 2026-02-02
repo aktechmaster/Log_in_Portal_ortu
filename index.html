@@ -188,9 +188,8 @@
     </div>
 
     <script>
-
-    // === KONFIGURASI ===
-// PASTE URL DARI GOOGLE APPS SCRIPT DI SINI
+// === KONFIGURASI ===
+// Pastikan URL ini sesuai dengan hasil Deploy Anda (berakhiran /exec)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziT59UnsyKf0lonLiTKBHjI9j0xxEaY1adpxFR7y2bnKTkaaRTyuFlJUxW5ap0dje8/exec';
 
 // === DOM ELEMENTS ===
@@ -199,7 +198,7 @@ const mainApp = document.getElementById('main-app');
 const loginForm = document.getElementById('login-form');
 const btnLogin = loginForm.querySelector('button');
 
-// === CEK LOGIN STATUS (Agar tidak perlu login ulang saat refresh) ===
+// === CEK STATUS LOGIN SAAT LOAD ===
 window.onload = function() {
     const savedUser = localStorage.getItem('user_data');
     if (savedUser) {
@@ -208,56 +207,81 @@ window.onload = function() {
     }
 }
 
-// === LOGIC LOGIN ===
+// === LOGIKA LOGIN ===
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    const usernameInput = document.getElementById('username').value;
-    const passwordInput = document.getElementById('password').value;
+    // Ambil input dan HAPUS SPASI (trim) agar aman
+    const usernameInput = document.getElementById('username').value.trim();
+    const passwordInput = document.getElementById('password').value.trim();
 
-    // Ubah tombol jadi loading
-    const btnLogin = loginForm.querySelector('button');
+    // Validasi input kosong
+    if(!usernameInput || !passwordInput) {
+        alert("Mohon isi NISN dan Password.");
+        return;
+    }
+
+    // Ubah tombol loading
     const originalText = btnLogin.innerText;
     btnLogin.innerText = "Mengecek Data...";
     btnLogin.disabled = true;
     btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // === PERUBAHAN DI SINI: GUNAKAN METODE GET ===
-    // Kita susun URL dengan parameter
+    // Susun URL untuk method GET
     const targetUrl = `${SCRIPT_URL}?username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
+
+    console.log("Mengirim request ke:", targetUrl); // Untuk debug di Console
 
     fetch(targetUrl)
         .then(response => response.json())
         .then(response => {
+            console.log("Respon Server:", response); // Cek hasil di Console
+            
             if (response.result === 'success') {
                 // LOGIN BERHASIL
-                console.log("Login Sukses:", response);
                 localStorage.setItem('user_data', JSON.stringify(response));
                 showDashboard(response);
             } else {
                 // LOGIN GAGAL
-                alert("Login Gagal: NISN atau Password salah.");
-                resetButton(btnLogin, originalText);
+                alert("Gagal Masuk: " + (response.message || "NISN atau Password salah."));
+                resetButton(originalText);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert("Terjadi kesalahan koneksi. Pastikan internet lancar.");
-            resetButton(btnLogin, originalText);
+            console.error('Error Koneksi:', error);
+            alert("Terjadi kesalahan koneksi. Coba lagi nanti.");
+            resetButton(originalText);
         });
 });
 
-function resetButton(btn, text) {
-    btn.innerText = text;
-    btn.disabled = false;
-    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+// === FUNGSI TAMPILKAN DASHBOARD ===
+function showDashboard(userData) {
+    // Sembunyikan Login, Tampilkan App
+    loginPage.style.display = 'none';
+    mainApp.classList.remove('hidden');
+
+    // Isi Data ke Elemen HTML
+    // Gunakan '||' untuk jaga-jaga jika data kosong
+    document.getElementById('dash-name').innerText = userData.nama || "Siswa";
+    document.getElementById('dash-class').innerText = userData.kelas || "Kelas -";
+    document.getElementById('dash-nis').innerText = userData.nisn || "0000";
+
+    // Update Status Hari Ini (Simulasi)
+    document.getElementById('dash-status').innerText = "Ananda Hadir Tepat Waktu (07:00 WIB)";
+    
+    // Update Avatar
+    const imgElement = document.querySelector('header img');
+    if(imgElement) {
+        imgElement.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userData.nama)}`;
+    }
 }
 
-// Fungsi Logout (Tambahkan ini di tombol keluar HTML: onclick="doLogout()")
-function doLogout() {
-    localStorage.removeItem('user_data');
-    window.location.reload();
+// === FUNGSI RESET TOMBOL ===
+function resetButton(text) {
+    btnLogin.innerText = text;
+    btnLogin.disabled = false;
+    btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
 }
-    </script>
+</script>
 </body>
 </html>
