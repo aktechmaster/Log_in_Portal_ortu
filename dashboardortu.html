@@ -74,19 +74,20 @@
     <main class="px-5 -mt-10 relative z-20 space-y-4">
 
         <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
-            <div class="progress-ring" style="--percent: 290deg;"> 
+            <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
                 <div class="progress-inner">
-                    <span class="text-lg font-bold text-emerald-600">92%</span>
-                    <span class="text-[8px] text-slate-400 uppercase tracking-wider font-semibold">Hadir</span>
+                    <span id="absen-persen" class="text-lg font-bold text-emerald-600">--%</span>
+                    <span class="text-[8px] text-slate-400 uppercase tracking-wider font-semibold">Kehadiran</span>
                 </div>
             </div>
             <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
                 <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
-                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2024</p>
+                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
                 <div class="flex gap-2">
-                    <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">20 H</span>
-                    <span class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">1 S</span>
-                    <span class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">0 A</span>
+                    <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
+                    <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
+                    <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
+                    <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
                 </div>
             </div>
         </div>
@@ -225,16 +226,35 @@
 
         const user = JSON.parse(savedData);
 
-        // 2. Tampilkan Data User
+        // 2. ISI DATA KE TAMPILAN
         document.addEventListener("DOMContentLoaded", () => {
-            // Set Nama & NISN
+            // Set Data Dasar
             setText('nama-siswa', user.nama);
             setText('nisn-siswa', user.nisn);
             setText('kelas-siswa', user.kelas);
-            
-            // Set Sapaan Waktu (Pagi/Siang/Sore)
             setGreeting();
 
+            // --- BAGIAN BARU: UPDATE ABSENSI DARI DATABASE ---
+            if (user.absensi) {
+                // 1. Update Angka Persen Besar
+                const persenTeks = user.absensi.persen || "0%";
+                setText('absen-persen', persenTeks); // Pastikan ada ID ini di HTML nanti
+
+                // 2. Update Grafik Lingkaran
+                // Konversi "92%" jadi derajat (360 * 0.92)
+                let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
+                let derajat = (persenAngka / 100) * 360;
+                
+                const ring = document.getElementById('absen-ring');
+                if(ring) ring.style.setProperty('--percent', derajat + 'deg');
+
+                // 3. Update Detail H/S/I/A
+                setText('val-h', (user.absensi.h || 0) + " H");
+                setText('val-s', (user.absensi.s || 0) + " S");
+                setText('val-i', (user.absensi.i || 0) + " I");
+                setText('val-a', (user.absensi.a || 0) + " A"); // Tambahan untuk Alfa jika mau ditampilkan
+            }
+            
             // Set Avatar
             const imgEl = document.getElementById('foto-siswa');
             if (imgEl) {
@@ -243,10 +263,10 @@
             }
         });
 
-        // Helper: Mengubah Text aman
+        // Helper Function
         function setText(id, text) {
             const el = document.getElementById(id);
-            if (el) el.innerText = text || "-";
+            if (el) el.innerText = text;
         }
 
         // Helper: Sapaan Waktu
