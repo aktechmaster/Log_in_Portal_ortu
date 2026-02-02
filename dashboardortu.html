@@ -42,12 +42,14 @@
 </head>
 <body class="bg-slate-50 text-slate-800 pb-24 select-none">
 
-    <header class="bg-gradient-to-br from-emerald-800 to-emerald-600 pt-8 pb-16 px-6 rounded-b-[40px] shadow-xl relative overflow-hidden">
+    <header class="relative pt-8 pb-16 px-6 z-50">
         
-        <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
-        <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-800 to-emerald-600 rounded-b-[40px] shadow-xl overflow-hidden -z-10">
+            <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
+            <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
+        </div>
 
-        <div class="flex justify-between items-center mb-6 relative z-50">
+        <div class="flex justify-between items-center mb-6 relative">
             
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
@@ -57,11 +59,11 @@
             </div>
 
             <div class="relative">
-                <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg">
+                <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-bars"></i>
                 </button>
 
-                <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0">
+                <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0 z-[100]">
                     <div class="py-1">
                         <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
                             <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
