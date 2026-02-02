@@ -187,7 +187,7 @@
 
     </div>
 
-    <script>
+   <script>
 // === KONFIGURASI ===
 // Pastikan URL ini sesuai dengan hasil Deploy Anda (berakhiran /exec)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziT59UnsyKf0lonLiTKBHjI9j0xxEaY1adpxFR7y2bnKTkaaRTyuFlJUxW5ap0dje8/exec';
@@ -202,8 +202,12 @@ const btnLogin = loginForm.querySelector('button');
 window.onload = function() {
     const savedUser = localStorage.getItem('user_data');
     if (savedUser) {
-        const userData = JSON.parse(savedUser);
-        showDashboard(userData);
+        try {
+            const userData = JSON.parse(savedUser);
+            showDashboard(userData);
+        } catch (e) {
+            localStorage.removeItem('user_data');
+        }
     }
 }
 
@@ -211,7 +215,6 @@ window.onload = function() {
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    // Ambil input dan HAPUS SPASI (trim) agar aman
     const usernameInput = document.getElementById('username').value.trim();
     const passwordInput = document.getElementById('password').value.trim();
 
@@ -221,59 +224,59 @@ loginForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Ubah tombol loading
-    const originalText = btnLogin.innerText;
+    // 1. Simpan teks asli tombol
+    const originalText = "Masuk Portal";
+    
+    // 2. Ubah tombol jadi loading
     btnLogin.innerText = "Mengecek Data...";
     btnLogin.disabled = true;
     btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // Susun URL untuk method GET
+    // 3. Susun URL
     const targetUrl = `${SCRIPT_URL}?username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
 
-    console.log("Mengirim request ke:", targetUrl); // Untuk debug di Console
+    console.log("Mengirim request ke:", targetUrl);
 
     fetch(targetUrl)
         .then(response => response.json())
-        .then(response => {
-            console.log("Respon Server:", response); // Cek hasil di Console
-            
-            // Jika Login Sukses
-if (response.result === 'success') {
-    // Sembunyikan Login Page
-    document.getElementById('login-page').style.display = 'none'; 
-    
-    // Munculkan Main App (Dashboard)
-    document.getElementById('main-app').classList.remove('hidden'); 
-    
-    // Isi data...
-    showDashboard(response);
-}
+        .then(data => {
+            console.log("Respon Server:", data); // Cek Console browser jika masih gagal
+
+            if (data.result === 'success') {
+                // === JIKA SUKSES ===
+                localStorage.setItem('user_data', JSON.stringify(data));
+                showDashboard(data);
+            } else {
+                // === JIKA GAGAL (PASSWORD SALAH) ===
+                // Bagian ini yang sebelumnya hilang, makanya tombol stuck
+                alert("Gagal Masuk: " + (data.message || "NISN atau Password salah."));
+                resetButton(originalText);
+            }
         })
         .catch(error => {
+            // === JIKA ERROR KONEKSI ===
             console.error('Error Koneksi:', error);
-            alert("Terjadi kesalahan koneksi. Coba lagi nanti.");
+            alert("Terjadi kesalahan koneksi atau URL Script salah.");
             resetButton(originalText);
         });
 });
 
 // === FUNGSI TAMPILKAN DASHBOARD ===
 function showDashboard(userData) {
-    // Sembunyikan Login, Tampilkan App
     loginPage.style.display = 'none';
     mainApp.classList.remove('hidden');
 
-    // Isi Data ke Elemen HTML
-    // Gunakan '||' untuk jaga-jaga jika data kosong
+    // Update Data
     document.getElementById('dash-name').innerText = userData.nama || "Siswa";
     document.getElementById('dash-class').innerText = userData.kelas || "Kelas -";
     document.getElementById('dash-nis').innerText = userData.nisn || "0000";
-
-    // Update Status Hari Ini (Simulasi)
+    
+    // Simulasi Status
     document.getElementById('dash-status').innerText = "Ananda Hadir Tepat Waktu (07:00 WIB)";
     
-    // Update Avatar
+    // Update Foto
     const imgElement = document.querySelector('header img');
-    if(imgElement) {
+    if(imgElement && userData.nama) {
         imgElement.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userData.nama)}`;
     }
 }
