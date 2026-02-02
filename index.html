@@ -237,15 +237,17 @@ loginForm.addEventListener('submit', (e) => {
         .then(response => {
             console.log("Respon Server:", response); // Cek hasil di Console
             
-            if (response.result === 'success') {
-                // LOGIN BERHASIL
-                localStorage.setItem('user_data', JSON.stringify(response));
-                showDashboard(response);
-            } else {
-                // LOGIN GAGAL
-                alert("Gagal Masuk: " + (response.message || "NISN atau Password salah."));
-                resetButton(originalText);
-            }
+            // Jika Login Sukses
+if (response.result === 'success') {
+    // Sembunyikan Login Page
+    document.getElementById('login-page').style.display = 'none'; 
+    
+    // Munculkan Main App (Dashboard)
+    document.getElementById('main-app').classList.remove('hidden'); 
+    
+    // Isi data...
+    showDashboard(response);
+}
         })
         .catch(error => {
             console.error('Error Koneksi:', error);
