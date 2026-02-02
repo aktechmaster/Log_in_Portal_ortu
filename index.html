@@ -3,290 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al-Kautsar Connect - Portal Wali Murid</title>
+    <title>Login - Al-Kautsar Connect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
-        /* Animasi Transisi Halaman */
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Custom Scrollbar hide */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Style untuk Circle Progress di Dashboard */
-        .progress-ring { position: relative; width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#10b981 var(--p), #e5e7eb 0deg); display: flex; align-items: center; justify-content: center; }
-        .progress-inner { width: 85px; height: 85px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-    </style>
+    <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen relative overflow-hidden">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-    <section id="login-page" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-sm text-center">
-            <div class="mb-6 flex justify-center">
-                <div class="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                    <i class="fa-solid fa-graduation-cap text-3xl text-white -rotate-3"></i>
-                </div>
+    <div class="w-full max-w-sm text-center bg-white p-8 rounded-3xl shadow-xl">
+        <div class="mb-6 flex justify-center">
+            <div class="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                <i class="fa-solid fa-graduation-cap text-3xl text-white -rotate-3"></i>
             </div>
-            <h1 class="text-2xl font-bold text-gray-800 mb-1">Al-Kautsar Connect</h1>
-            <p class="text-sm text-gray-500 mb-8">Portal Akademik & Karakter Siswa</p>
-
-            <form id="login-form" class="space-y-4 text-left">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1 ml-1">USERNAME / NIS</label>
-                    <input type="text" id="username" placeholder="Masukkan NIS Siswa" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1 ml-1">PASSWORD</label>
-                    <input type="password" id="password" placeholder="Masukkan Password" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition" required>
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-emerald-200 transition active:scale-95 mt-4">
-                    Masuk Portal
-                </button>
-            </form>
-            <p class="mt-8 text-xs text-gray-400">© SMP IT Al-Kautsar</p>
         </div>
-    </section>
+        <h1 class="text-2xl font-bold text-gray-800 mb-1">Al-Kautsar Connect</h1>
+        <p class="text-sm text-gray-500 mb-8">Portal Akademik & Karakter</p>
 
-    <div id="main-app" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-2xl relative pb-20 fade-in">
-        
-        <header class="bg-emerald-600 text-white p-6 rounded-b-[2.5rem] shadow-md pb-12 relative z-10">
-            <div class="flex justify-between items-start mb-4">
-                <button class="bg-white/20 p-2 rounded-full backdrop-blur-sm"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm text-xs font-medium">
-                    <i class="fa-solid fa-school mr-1"></i> SMP IT Al-Kautsar
-                </div>
+        <form id="login-form" class="space-y-4 text-left">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1 ml-1">USERNAME / NIS</label>
+                <input type="text" id="username" placeholder="Masukkan NIS Siswa" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition" required>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full border-2 border-white/50 overflow-hidden bg-gray-200">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad" alt="Siswa" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold" id="dash-name">Nama Siswa</h2>
-                    <p class="text-emerald-100 text-sm" id="dash-class">Kelas -</p>
-                    <p class="text-xs text-emerald-200 mt-1"><i class="fa-solid fa-id-card mr-1"></i> NIS: <span id="dash-nis">0000</span></p>
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1 ml-1">PASSWORD</label>
+                <input type="password" id="password" placeholder="Masukkan Password" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition" required>
             </div>
-        </header>
-
-        <div class="px-5 -mt-8 relative z-20">
-            
-            <div class="bg-white rounded-2xl p-5 shadow-lg border border-gray-100 flex items-center justify-between mb-6">
-                <div class="progress-ring" id="attendance-ring" style="--p: 0deg;">
-                    <div class="progress-inner">
-                        <span class="text-xl font-bold text-emerald-600" id="attendance-percent">0%</span>
-                        <span class="text-[10px] text-gray-400">Kehadiran</span>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <h3 class="font-bold text-gray-800 text-lg">Laporan Absensi</h3>
-                    <p class="text-xs text-gray-500 mb-2">Bulan Ini</p>
-                    <button onclick="alert('Fitur Detail Kalender akan muncul di sini')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-medium hover:bg-emerald-100">
-                        Lihat Rincian <i class="fa-solid fa-arrow-right ml-1"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl p-4 mb-6 border border-orange-200 flex items-start gap-3">
-                <div class="bg-orange-500 text-white p-2 rounded-lg text-sm"><i class="fa-solid fa-bullhorn"></i></div>
-                <div>
-                    <h4 class="font-bold text-orange-800 text-sm">Status Hari Ini</h4>
-                    <p class="text-xs text-orange-700 mt-1" id="dash-status">Memuat status...</p>
-                </div>
-            </div>
-
-            <h3 class="font-bold text-gray-800 mb-4 ml-1">Menu Utama</h3>
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active:scale-95 transition cursor-pointer hover:border-emerald-200 group">
-                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-book-quran text-lg"></i>
-                    </div>
-                    <h4 class="font-bold text-gray-700">Laporan T2Q</h4>
-                    <p class="text-xs text-gray-400 mt-1">Hafalan & Tahsin</p>
-                    <div class="w-full bg-gray-100 h-1.5 rounded-full mt-3 overflow-hidden">
-                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 65%"></div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active:scale-95 transition cursor-pointer hover:border-emerald-200 group">
-                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-hands-praying text-lg"></i>
-                    </div>
-                    <h4 class="font-bold text-gray-700">Bina Pribadi</h4>
-                    <p class="text-xs text-gray-400 mt-1">Akhlak & Ibadah</p>
-                    <div class="flex text-yellow-400 text-[10px] mt-2 space-x-0.5">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star-half-stroke"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active:scale-95 transition cursor-pointer hover:border-emerald-200 group">
-                    <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center text-pink-600 mb-3 group-hover:bg-pink-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-comment-dots text-lg"></i>
-                    </div>
-                    <h4 class="font-bold text-gray-700">Catatan Guru</h4>
-                    <p class="text-xs text-gray-400 mt-1">Evaluasi Bulanan</p>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active:scale-95 transition cursor-pointer hover:border-emerald-200 group">
-                    <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-scroll text-lg"></i>
-                    </div>
-                    <h4 class="font-bold text-gray-700">Pengumuman</h4>
-                    <p class="text-xs text-gray-400 mt-1">Info Sekolah</p>
-                </div>
-
-            </div>
-
-            <h3 class="font-bold text-gray-800 mb-3 ml-1">Aktivitas Terakhir</h3>
-            <div class="space-y-3">
-                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                    <div class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></div>
-                    <div class="flex-1">
-                        <h5 class="text-sm font-bold text-gray-700">Hadir Tepat Waktu</h5>
-                        <p class="text-[10px] text-gray-400">Senin, 07:05 WIB</p>
-                    </div>
-                </div>
-                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                    <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-book-open"></i></div>
-                    <div class="flex-1">
-                        <h5 class="text-sm font-bold text-gray-700">Ziyadah: Surah Al-Alaq</h5>
-                        <p class="text-[10px] text-gray-400">Jumat, 08:30 WIB</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 py-3 px-6 flex justify-between items-center text-gray-400 z-30">
-            <button class="flex flex-col items-center text-emerald-600">
-                <i class="fa-solid fa-house text-xl mb-1"></i>
-                <span class="text-[10px] font-medium">Beranda</span>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-emerald-200 transition active:scale-95 mt-4">
+                Masuk Portal
             </button>
-            <button class="flex flex-col items-center hover:text-emerald-600 transition">
-                <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
-                <span class="text-[10px] font-medium">Laporan</span>
-            </button>
-            <button class="flex flex-col items-center hover:text-emerald-600 transition">
-                <i class="fa-solid fa-user text-xl mb-1"></i>
-                <span class="text-[10px] font-medium">Profil</span>
-            </button>
-            <button onclick="location.reload()" class="flex flex-col items-center hover:text-red-500 transition">
-                <i class="fa-solid fa-right-from-bracket text-xl mb-1"></i>
-                <span class="text-[10px] font-medium">Keluar</span>
-            </button>
-        </nav>
-
+        </form>
+        <p class="mt-8 text-xs text-gray-400">© SMP IT Al-Kautsar</p>
     </div>
 
-   <script>
-// === KONFIGURASI ===
-// Pastikan URL ini sesuai dengan hasil Deploy Anda (berakhiran /exec)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziT59UnsyKf0lonLiTKBHjI9j0xxEaY1adpxFR7y2bnKTkaaRTyuFlJUxW5ap0dje8/exec';
+    <script>
+    // URL GOOGLE SCRIPT ANDA
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziT59UnsyKf0lonLiTKBHjI9j0xxEaY1adpxFR7y2bnKTkaaRTyuFlJUxW5ap0dje8/exec';
 
-// === DOM ELEMENTS ===
-const loginPage = document.getElementById('login-page');
-const mainApp = document.getElementById('main-app');
-const loginForm = document.getElementById('login-form');
-const btnLogin = loginForm.querySelector('button');
-
-// === CEK STATUS LOGIN SAAT LOAD ===
-window.onload = function() {
-    const savedUser = localStorage.getItem('user_data');
-    if (savedUser) {
-        try {
-            const userData = JSON.parse(savedUser);
-            showDashboard(userData);
-        } catch (e) {
-            localStorage.removeItem('user_data');
-        }
-    }
-}
-
-// === LOGIKA LOGIN ===
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const usernameInput = document.getElementById('username').value.trim();
-    const passwordInput = document.getElementById('password').value.trim();
-
-    // Validasi input kosong
-    if(!usernameInput || !passwordInput) {
-        alert("Mohon isi NISN dan Password.");
-        return;
+    // CEK LOGIN: Kalau sudah login, langsung lempar ke dashboard
+    if (localStorage.getItem('user_data')) {
+        window.location.href = 'dashboardortu.html';
     }
 
-    // 1. Simpan teks asli tombol
-    const originalText = "Masuk Portal";
-    
-    // 2. Ubah tombol jadi loading
-    btnLogin.innerText = "Mengecek Data...";
-    btnLogin.disabled = true;
-    btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
+    const loginForm = document.getElementById('login-form');
+    const btnLogin = loginForm.querySelector('button');
 
-    // 3. Susun URL
-    const targetUrl = `${SCRIPT_URL}?username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        // UI Loading
+        const originalText = btnLogin.innerText;
+        btnLogin.innerText = "Mengecek Data...";
+        btnLogin.disabled = true;
+        btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
 
-    console.log("Mengirim request ke:", targetUrl);
-
-    fetch(targetUrl)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Respon Server:", data); // Cek Console browser jika masih gagal
-
-            if (data.result === 'success') {
-                // === JIKA SUKSES ===
-                localStorage.setItem('user_data', JSON.stringify(data));
-                showDashboard(data);
-            } else {
-                // === JIKA GAGAL (PASSWORD SALAH) ===
-                // Bagian ini yang sebelumnya hilang, makanya tombol stuck
-                alert("Gagal Masuk: " + (data.message || "NISN atau Password salah."));
+        fetch(`${SCRIPT_URL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    // 1. SIMPAN DATA KE PENYIMPANAN BROWSER
+                    localStorage.setItem('user_data', JSON.stringify(data));
+                    
+                    // 2. PINDAH KE HALAMAN DASHBOARD
+                    window.location.href = 'dashboardortu.html';
+                } else {
+                    alert("Gagal: " + (data.message || "NISN/Password Salah"));
+                    resetButton(originalText);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Gangguan koneksi internet.");
                 resetButton(originalText);
-            }
-        })
-        .catch(error => {
-            // === JIKA ERROR KONEKSI ===
-            console.error('Error Koneksi:', error);
-            alert("Terjadi kesalahan koneksi atau URL Script salah.");
-            resetButton(originalText);
-        });
-});
+            });
+    });
 
-// === FUNGSI TAMPILKAN DASHBOARD ===
-function showDashboard(userData) {
-    loginPage.style.display = 'none';
-    mainApp.classList.remove('hidden');
-
-    // Update Data
-    document.getElementById('dash-name').innerText = userData.nama || "Siswa";
-    document.getElementById('dash-class').innerText = userData.kelas || "Kelas -";
-    document.getElementById('dash-nis').innerText = userData.nisn || "0000";
-    
-    // Simulasi Status
-    document.getElementById('dash-status').innerText = "Ananda Hadir Tepat Waktu (07:00 WIB)";
-    
-    // Update Foto
-    const imgElement = document.querySelector('header img');
-    if(imgElement && userData.nama) {
-        imgElement.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userData.nama)}`;
+    function resetButton(text) {
+        btnLogin.innerText = text;
+        btnLogin.disabled = false;
+        btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
     }
-}
-
-// === FUNGSI RESET TOMBOL ===
-function resetButton(text) {
-    btnLogin.innerText = text;
-    btnLogin.disabled = false;
-    btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
-}
-</script>
+    </script>
 </body>
 </html>
