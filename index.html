@@ -212,68 +212,45 @@ window.onload = function() {
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    // Ambil inputan
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
 
     // Ubah tombol jadi loading
+    const btnLogin = loginForm.querySelector('button');
     const originalText = btnLogin.innerText;
-    btnLogin.innerText = "Memverifikasi...";
+    btnLogin.innerText = "Mengecek Data...";
     btnLogin.disabled = true;
     btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // Siapkan data untuk dikirim
-    const formData = new FormData();
-    formData.append('username', usernameInput);
-    formData.append('password', passwordInput);
+    // === PERUBAHAN DI SINI: GUNAKAN METODE GET ===
+    // Kita susun URL dengan parameter
+    const targetUrl = `${SCRIPT_URL}?username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`;
 
-    // KIRIM KE GOOGLE SHEET
-    fetch(SCRIPT_URL, { method: 'POST', body: formData })
+    fetch(targetUrl)
         .then(response => response.json())
         .then(response => {
             if (response.result === 'success') {
                 // LOGIN BERHASIL
-                console.log("Data Siswa Ditemukan:", response);
-                
-                // Simpan data ke memori browser (LocalStorage)
+                console.log("Login Sukses:", response);
                 localStorage.setItem('user_data', JSON.stringify(response));
-                
-                // Tampilkan Dashboard
                 showDashboard(response);
-                
             } else {
                 // LOGIN GAGAL
-                alert("Login Gagal: " + (response.message || "NISN atau Password salah."));
-                resetButton(originalText);
+                alert("Login Gagal: NISN atau Password salah.");
+                resetButton(btnLogin, originalText);
             }
         })
         .catch(error => {
-            console.error('Error!', error.message);
-            alert("Terjadi kesalahan koneksi. Coba lagi.");
-            resetButton(originalText);
+            console.error('Error:', error);
+            alert("Terjadi kesalahan koneksi. Pastikan internet lancar.");
+            resetButton(btnLogin, originalText);
         });
 });
 
-// === FUNGSI TAMPILKAN DASHBOARD ===
-function showDashboard(userData) {
-    // Sembunyikan Login, Munculkan Dashboard
-    loginPage.style.display = 'none';
-    mainApp.classList.remove('hidden');
-
-    // 1. Isi Header Profil dengan Data Nyata dari Sheet
-    document.getElementById('nama-siswa').innerText = userData.nama;   // Dari Kolom C
-    document.getElementById('dash-class').innerText = userData.kelas; // Dari Kolom B
-    document.getElementById('nisn-siswa').innerText = userData.nisn;  // Dari Kolom D
-
-    // Generate Avatar berdasarkan nama (Biar tidak kosong)
-    document.getElementById('foto-siswa').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.nama}`;
-}
-
-// Fungsi Reset Tombol
-function resetButton(text) {
-    btnLogin.innerText = text;
-    btnLogin.disabled = false;
-    btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
+function resetButton(btn, text) {
+    btn.innerText = text;
+    btn.disabled = false;
+    btn.classList.remove('opacity-75', 'cursor-not-allowed');
 }
 
 // Fungsi Logout (Tambahkan ini di tombol keluar HTML: onclick="doLogout()")
