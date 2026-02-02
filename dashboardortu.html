@@ -47,7 +47,7 @@
         <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
         <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
 
-        <div class="flex justify-between items-center mb-6 relative z-10">
+        <div class="flex justify-between items-center mb-6 relative z-50">
             
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
@@ -56,10 +56,33 @@
                 <span class="text-sm font-bold text-white tracking-wide shadow-sm">SMP IT AL-KAUTSAR</span>
             </div>
 
-            <button class="relative w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg">
-                <i class="fa-regular fa-bell"></i>
-                <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-emerald-700 animate-pulse"></span>
-            </button>
+            <div class="relative">
+                <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0">
+                    <div class="py-1">
+                        <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
+                            <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
+                        </button>
+                        
+                        <button onclick="alert('Aplikasi Dashboard Wali Murid\nVersi 1.0\n© 2026 SMP IT Al-Kautsar')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
+                            <i class="fa-solid fa-circle-info w-4 text-center"></i> Tentang App
+                        </button>
+
+                        <button onclick="alert('Fitur Ganti Password akan segera tersedia.')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
+                            <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
+                        </button>
+                        
+                        <div class="h-px bg-slate-100 my-1"></div>
+
+                        <button onclick="logout()" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors font-medium">
+                            <i class="fa-solid fa-power-off w-4 text-center"></i> Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
@@ -436,6 +459,43 @@
             modal.classList.add('hidden');
         }, 500);
     }
+
+        // --- FITUR MENU DROPDOWN (GARIS 3) ---
+    function toggleMenu() {
+        const menu = document.getElementById('dropdown-menu');
+        
+        if (menu.classList.contains('hidden')) {
+            // Membuka Menu
+            menu.classList.remove('hidden');
+            // Sedikit delay agar transisi opacity jalan
+            setTimeout(() => {
+                menu.classList.remove('scale-95', 'opacity-0');
+                menu.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        } else {
+            // Menutup Menu
+            menu.classList.remove('scale-100', 'opacity-100');
+            menu.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                menu.classList.add('hidden');
+            }, 200); // Sesuaikan dengan durasi animasi CSS
+        }
+    }
+
+    // Tutup menu otomatis jika klik di luar area menu
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('dropdown-menu');
+        const triggerBtn = e.target.closest('button');
+        
+        // Jika yang diklik BUKAN tombol garis 3 dan BUKAN menu itu sendiri
+        if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
+            menu.classList.remove('scale-100', 'opacity-100');
+            menu.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                menu.classList.add('hidden');
+            }, 200);
+        }
+    });
     </script>
 
 </body>
