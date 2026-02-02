@@ -62,7 +62,7 @@
             </button>
         </div>
 
-        <div class="flex items-center gap-4 relative z-10 fade-in">
+        <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
             <div class="relative group">
                 <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
                     <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
@@ -229,6 +229,81 @@
         </button>
     </nav>
 
+    <div id="modal-profil" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
+        
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-500 ease-out max-h-[85vh] overflow-y-auto no-scrollbar" id="modal-content">
+            
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+
+            <div class="text-center mb-6">
+                <div class="inline-block p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
+                    <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover">
+                </div>
+                <h2 class="text-xl font-bold text-slate-800" id="pop-nama">...</h2>
+                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full font-bold mt-1 inline-block" id="pop-nisn">...</span>
+            </div>
+
+            <div class="space-y-4 pb-10">
+                
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user text-emerald-500"></i> Data Pribadi
+                    </h3>
+                    <div class="grid grid-cols-2 gap-y-4 text-sm">
+                        <div>
+                            <p class="text-[10px] text-slate-400">NIS Lokal</p>
+                            <p class="font-semibold text-slate-700" id="pop-nis">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400">Jenis Kelamin</p>
+                            <p class="font-semibold text-slate-700" id="pop-jk">-</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-[10px] text-slate-400">Tempat, Tanggal Lahir</p>
+                            <p class="font-semibold text-slate-700" id="pop-ttl">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400">Agama</p>
+                            <p class="font-semibold text-slate-700" id="pop-agama">-</p>
+                        </div>
+                         <div class="col-span-2">
+                            <p class="text-[10px] text-slate-400">Alamat</p>
+                            <p class="font-semibold text-slate-700 leading-tight" id="pop-alamat">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-blue-500"></i> Data Orang Tua
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-user-tie text-xs"></i></div>
+                            <div>
+                                <p class="font-bold text-slate-700" id="pop-ayah">-</p>
+                                <p class="text-xs text-slate-500" id="pop-ker-ayah">Pekerjaan: -</p>
+                            </div>
+                        </div>
+                        <hr class="border-blue-100">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shrink-0"><i class="fa-solid fa-person-dress text-xs"></i></div>
+                            <div>
+                                <p class="font-bold text-slate-700" id="pop-ibu">-</p>
+                                <p class="text-xs text-slate-500" id="pop-ker-ibu">Pekerjaan: -</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                 <button onclick="tutupProfil()" class="w-full py-3 bg-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-300 transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // === LOGIC UTAMA ===
 
@@ -308,6 +383,59 @@
                 }, 300);
             }
         }
+
+        // --- FITUR POPUP PROFIL ---
+    function bukaProfil() {
+        // Ambil data terbaru dari localStorage
+        const user = JSON.parse(localStorage.getItem('user_data'));
+        const dasis = user.dasis || {}; // Data Dasis (jika ada)
+
+        // Isi Data ke Popup
+        document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
+        document.getElementById('pop-nama').innerText = user.nama;
+        document.getElementById('pop-nisn').innerText = "NISN: " + user.nisn;
+
+        // Isi Detail (Pakai tanda tanya (?) untuk cegah error kalau data kosong)
+        setText('pop-nis', dasis.nis || '-');
+        setText('pop-jk', dasis.jk || '-');
+        setText('pop-ttl', dasis.ttl || '-');
+        setText('pop-agama', dasis.agama || '-');
+        setText('pop-alamat', dasis.alamat || '-');
+        
+        setText('pop-ayah', dasis.ayah || '-');
+        setText('pop-ker-ayah', dasis.ker_ayah ? 'Pekerjaan: ' + dasis.ker_ayah : '-');
+        
+        setText('pop-ibu', dasis.ibu || '-');
+        setText('pop-ker-ibu', dasis.ker_ibu ? 'Pekerjaan: ' + dasis.ker_ibu : '-');
+
+        // Tampilkan Modal dengan Animasi
+        const modal = document.getElementById('modal-profil');
+        const backdrop = document.getElementById('modal-backdrop');
+        const content = document.getElementById('modal-content');
+
+        modal.classList.remove('hidden');
+        
+        // Sedikit delay biar transisi jalan
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            content.classList.remove('translate-y-full');
+        }, 10);
+    }
+
+    function tutupProfil() {
+        const modal = document.getElementById('modal-profil');
+        const backdrop = document.getElementById('modal-backdrop');
+        const content = document.getElementById('modal-content');
+
+        // Animasi Keluar
+        backdrop.classList.add('opacity-0');
+        content.classList.add('translate-y-full');
+
+        // Sembunyikan div setelah animasi selesai (500ms)
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 500);
+    }
     </script>
 
 </body>
