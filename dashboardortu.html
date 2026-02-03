@@ -38,6 +38,51 @@
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
+
+        /* Gaya untuk Modal/Popup */
+.modal-overlay {
+  display: none; /* Tersembunyi default */
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 350px;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {transform: translateY(20px); opacity: 0;}
+  to {transform: translateY(0); opacity: 1;}
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+}
+.modal-header h3 { margin: 0; color: #00b894; }
+.close-btn { font-size: 24px; cursor: pointer; color: #aaa; }
+
+.info-row {
+  display: flex; justify-content: space-between;
+  margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px;
+}
+.info-row .label { color: #888; font-size: 12px; }
+.info-row .value { color: #333; font-weight: 500; font-size: 13px; text-align: right; }
+.btn-tutup {
+  width: 100%; padding: 10px; background: #00b894; color: white;
+  border: none; border-radius: 8px; margin-top: 10px; cursor: pointer;
+}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 pb-24 select-none">
@@ -154,21 +199,21 @@
     </div>
 </div>
 
-    <div class="grid grid-cols-2 gap-3 fade-in delay-300">
-        
-        <div onclick="alert('Fitur Detail T2Q akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-            <div class="relative z-10">
-                <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-book-quran"></i>
-                </div>
-                <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
-                <p class="text-[10px] text-slate-400 mt-0.5">Juz 29 - Al Mulk</p>
-                <div class="w-full bg-slate-100 h-1 mt-2 rounded-full overflow-hidden">
-                    <div class="bg-emerald-500 h-full rounded-full" style="width: 75%"></div>
-                </div>
-            </div>
-        </div>
+    <div class="card" onclick="bukaModalT2Q()">
+  <div style="display: flex; align-items: center;">
+    <div class="icon-box" style="background-color: #e6fdf0; color: #00b894;">
+      <i class="fas fa-quran"></i> </div>
+    <div style="margin-left: 15px;">
+      <h4 style="margin: 0; font-size: 14px; color: #2d3436;">Laporan T2Q</h4>
+      <p id="t2q-batas" style="margin: 5px 0 0; font-size: 13px; font-weight: bold; color: #636e72;">
+        Memuat data...
+      </p>
+    </div>
+  </div>
+  <div style="margin-top: 10px; background: #eee; height: 4px; border-radius: 2px; width: 100%;">
+    <div style="background: #00b894; height: 100%; width: 60%; border-radius: 2px;"></div>
+  </div>
+</div>
 
         <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
@@ -337,6 +382,40 @@
             </div>
         </div>
     </div>
+
+    <div id="modalT2Q" class="modal-overlay" onclick="tutupModalT2Q(event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Detail T2Q</h3>
+      <span class="close-btn" onclick="tutupModalT2Q(null)">&times;</span>
+    </div>
+    
+    <div class="modal-body">
+      <div class="info-row">
+        <span class="label">Nama Siswa</span>
+        <span class="value" id="m-t2q-nama">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Kelas</span>
+        <span class="value" id="m-t2q-kelas">-</span>
+      </div>
+      <div class="info-row highlight">
+        <span class="label">Capaian / Batas</span>
+        <span class="value" id="m-t2q-batas" style="color: #00b894; font-weight:bold;">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Pengampu</span>
+        <span class="value" id="m-t2q-pengampu">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Tidak Setor</span>
+        <span class="value" id="m-t2q-alpa">-</span>
+      </div>
+    </div>
+    
+    <button class="btn-tutup" onclick="tutupModalT2Q(null)">Tutup</button>
+  </div>
+</div>
 
     <script>
     // === LOGIC UTAMA ===
@@ -568,6 +647,36 @@
         // Hapus class warna lama (bg-*) lalu tambah yang baru
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
+
+        // --- 1. TAMPILKAN DATA DI KARTU DEPAN ---
+var batasHafalan = data.t2q.batas || "Belum ada data"; // Fallback jika kosong
+document.getElementById('t2q-batas').innerText = batasHafalan;
+
+// --- 2. FUNGSI UNTUK MEMBUKA MODAL (Taro di luar fetch, tapi di dalam <script>) ---
+// Simpan data T2Q ke variabel global sementara agar bisa dibaca modal
+window.dataT2QUser = data.t2q; 
+
+window.bukaModalT2Q = function() {
+    var d = window.dataT2QUser;
+    if(!d) return;
+
+    // Isi data ke dalam Popup
+    document.getElementById('m-t2q-nama').innerText = d.nama;
+    document.getElementById('m-t2q-kelas').innerText = d.kelas;
+    document.getElementById('m-t2q-batas').innerText = d.batas || "-";
+    document.getElementById('m-t2q-pengampu').innerText = d.pengampu;
+    document.getElementById('m-t2q-alpa').innerText = d.tidak_setor + " kali";
+
+    // Munculkan Popup
+    document.getElementById('modalT2Q').style.display = 'flex';
+}
+
+window.tutupModalT2Q = function(e) {
+    // Jika diklik tombol X atau area gelap (overlay)
+    if (e === null || e.target.id === 'modalT2Q') {
+        document.getElementById('modalT2Q').style.display = 'none';
+    }
+}
 </script>
 
 </body>
