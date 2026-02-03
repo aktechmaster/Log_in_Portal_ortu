@@ -214,7 +214,7 @@
                 </div>
             </div>
 
-            <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+            <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
                 <div class="relative z-10">
                     <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
@@ -222,21 +222,24 @@
                     </div>
                     <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
                     <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
-                    <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
+                    <div id="container-bintang" class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
+                        <i class="fa-regular fa-star text-slate-300"></i>
+                        <i class="fa-regular fa-star text-slate-300"></i>
+                        <i class="fa-regular fa-star text-slate-300"></i>
+                        <i class="fa-regular fa-star text-slate-300"></i>
                     </div>
                 </div>
             </div>
 
-            <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
+            <div onclick="bukaCatatanWali()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
                 <div class="flex justify-between items-start mb-3">
                     <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
                         <i class="fa-solid fa-comment-dots"></i>
                     </div>
-                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    <span id="notif-dot" class="hidden w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-300"></span>
                 </div>
                 <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
-                <p class="text-[10px] text-slate-400">1 Pesan baru</p>
+                <p id="label-catatan" class="text-[10px] text-slate-400">Tidak ada pesan</p>
             </div>
 
             <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
@@ -415,6 +418,46 @@
   </div>
 </div>
 
+    <div id="modalBina" class="modal-overlay" onclick="tutupModalBina(event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="text-purple-600"><i class="fa-solid fa-star mr-2"></i>Detail Bina Pribadi</h3>
+      <span class="close-btn" onclick="tutupModalBina(null)">&times;</span>
+    </div>
+    
+    <div class="modal-body pt-2">
+      <p class="text-xs text-center text-slate-500 mb-4">Rekap penilaian karakter ananda periode ini.</p>
+      
+      <div class="info-row">
+        <span class="label flex items-center gap-2">
+            <i class="fa-solid fa-user-clock text-blue-400 w-4"></i> Kedisiplinan
+        </span>
+        <span class="value" id="val-disiplin">-</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="label flex items-center gap-2">
+            <i class="fa-solid fa-mosque text-emerald-400 w-4"></i> Ibadah
+        </span>
+        <span class="value" id="val-ibadah">-</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label flex items-center gap-2">
+            <i class="fa-solid fa-users text-orange-400 w-4"></i> Sosial
+        </span>
+        <span class="value" id="val-sosial">-</span>
+      </div>
+      
+      <div class="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-100 text-center">
+         <p class="text-[10px] text-purple-800">Skala Penilaian: 1 (Kurang) s/d 4 (Sangat Baik)</p>
+      </div>
+    </div>
+    
+    <button class="btn-tutup bg-purple-600 hover:bg-purple-700 transition" onclick="tutupModalBina(null)">Tutup</button>
+  </div>
+</div>
+
     <script>
     // === LOGIC UTAMA ===
 
@@ -492,6 +535,46 @@
                 tidak_setor: "0" 
             };
             document.getElementById('t2q-batas').innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+        }
+
+        // --- UPDATE BINA PRIBADI (LOGIC BARU DISINI) ---
+        if (user.bina_pribadi) {
+            // 1. Render Bintang (Max 4)
+            const rating = user.bina_pribadi.avg_bintang || 0;
+            let htmlBintang = '';
+            
+            // Loop 4 kali (asumsi skala 1-4)
+            for (let i = 1; i <= 4; i++) {
+                if (i <= rating) {
+                    htmlBintang += `<i class="fa-solid fa-star"></i>`; // Bintang Penuh
+                } else {
+                    htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`; // Bintang Kosong
+                }
+            }
+            const elBintang = document.getElementById('container-bintang');
+            if(elBintang) elBintang.innerHTML = htmlBintang;
+
+            // 2. Simpan Data Detail ke Window untuk Modal
+            window.dataBina = user.bina_pribadi.detail;
+
+            // 3. Logic Catatan Wali
+            const adaPesan = user.bina_pribadi.ada_pesan;
+            window.pesanWali = user.bina_pribadi.catatan_wali; // Simpan pesan
+
+            const elNotif = document.getElementById('notif-dot');
+            const elLabel = document.getElementById('label-catatan');
+
+            if (adaPesan) {
+                if(elNotif) elNotif.classList.remove('hidden');
+                if(elLabel) {
+                    elLabel.innerText = "1 Pesan Baru";
+                    elLabel.classList.add('text-orange-600', 'font-bold');
+                    elLabel.classList.remove('text-slate-400');
+                }
+            } else {
+                if(elNotif) elNotif.classList.add('hidden');
+                if(elLabel) elLabel.innerText = "Tidak ada pesan";
+            }
         }
 
         // Set Avatar Dicebear
@@ -681,6 +764,58 @@
         badgeEl.classList.remove('hidden');
         descEl.textContent = deskripsi;
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
+    }
+
+    // --- FUNCTION BARU: BINA PRIBADI & CATATAN WALI ---
+    
+    // 1. Logic Modal Bina Pribadi
+    function bukaModalBina() {
+        const d = window.dataBina;
+        if (!d) {
+            alert("Data Bina Pribadi belum tersedia.");
+            return;
+        }
+        
+        // Isi Data ke Modal
+        setText('val-disiplin', (d.d || 0) + " / 4");
+        setText('val-ibadah', (d.i || 0) + " / 4");
+        setText('val-sosial', (d.s || 0) + " / 4");
+        
+        // Buka Modal
+        const el = document.getElementById('modalBina');
+        if(el) el.style.display = 'flex';
+    }
+
+    function tutupModalBina(e) {
+        const el = document.getElementById('modalBina');
+        if (el && (e === null || e.target.id === 'modalBina')) {
+            el.style.display = 'none';
+        }
+    }
+
+    // 2. Logic Buka Catatan Wali
+    function bukaCatatanWali() {
+        const pesan = window.pesanWali;
+        const elLabel = document.getElementById('label-catatan');
+        const label = elLabel ? elLabel.innerText : "";
+
+        if (label === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "") {
+            // Alert jika kosong
+            alert("Tidak ada catatan baru dari Wali Kelas saat ini.");
+        } else {
+            // Tampilkan Pesan
+            alert("✉️ CATATAN WALI KELAS:\n\n" + pesan);
+            
+            // Hilangkan notif setelah dibaca
+            const elNotif = document.getElementById('notif-dot');
+            if(elNotif) elNotif.classList.add('hidden');
+            
+            if(elLabel) {
+                elLabel.innerText = "Sudah dibaca";
+                elLabel.classList.remove('text-orange-600', 'font-bold');
+                elLabel.classList.add('text-slate-400');
+            }
+        }
     }
 </script>
 
