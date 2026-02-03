@@ -420,7 +420,7 @@
     <script>
     // === LOGIC UTAMA ===
 
-    // 1. Cek Login
+    // 1. Cek Login & Ambil Data dari LocalStorage
     const savedData = localStorage.getItem('user_data');
     if (!savedData) {
         window.location.href = 'index.html';
@@ -428,7 +428,7 @@
 
     const user = JSON.parse(savedData);
 
-    // 2. ISI DATA KE TAMPILAN
+    // 2. ISI DATA KE TAMPILAN SAAT LOAD SELESAI
     document.addEventListener("DOMContentLoaded", () => {
         // Set Data Dasar
         setText('nama-siswa', user.nama);
@@ -436,35 +436,52 @@
         setText('kelas-siswa', user.kelas);
         setGreeting();
 
-        // --- BAGIAN BARU: UPDATE ABSENSI DARI DATABASE ---
+        // --- UPDATE ABSENSI ---
         if (user.absensi) {
-            // 1. Update Angka Persen Besar
             const persenTeks = user.absensi.persen || "0%";
             setText('absen-persen', persenTeks);
 
-            // 2. Update Grafik Lingkaran
-            // Konversi "92%" jadi derajat (360 * 0.92)
+            // Grafik Lingkaran
             let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
             let derajat = (persenAngka / 100) * 360;
-            
             const ring = document.getElementById('absen-ring');
             if(ring) ring.style.setProperty('--percent', derajat + 'deg');
 
-            // 3. Update Detail H/S/I/A
+            // Detail H/S/I/A
             setText('val-h', (user.absensi.h || 0) + " H");
             setText('val-s', (user.absensi.s || 0) + " S");
             setText('val-i', (user.absensi.i || 0) + " I");
             setText('val-a', (user.absensi.a || 0) + " A");
 
-            // 4. Update Status Hari Ini (Hadir/Sakit/Izin/Alfa)
-            // INI BARIS YANG SAYA TAMBAHKAN AGAR TULISAN BERUBAH
+            // Status Hari Ini
             updateStatusHarian(user.absensi.statusToday);
         } else {
-            // Jika data absensi belum ada sama sekali
             updateStatusHarian("");
         }
         
-        // Set Avatar
+        // --- UPDATE T2Q (PERBAIKAN DISINI) ---
+        // Kita pakai variabel 'user' bukan 'data'
+        if (user.t2q) {
+            // Update Kartu Depan
+            var batasHafalan = user.t2q.batas;
+            if(!batasHafalan || batasHafalan === "") batasHafalan = "Belum ada data";
+            document.getElementById('t2q-batas').innerText = batasHafalan;
+
+            // Simpan ke variabel global untuk Modal
+            window.dataT2QUser = user.t2q;
+        } else {
+            // Jika data t2q tidak ada di object user
+             window.dataT2QUser = { 
+                nama: user.nama, 
+                kelas: user.kelas, 
+                batas: "Belum ada data", 
+                pengampu: "-", 
+                tidak_setor: "0" 
+            };
+            document.getElementById('t2q-batas').innerText = "Belum ada data";
+        }
+
+        // Set Avatar Dicebear
         const imgEl = document.getElementById('foto-siswa');
         if (imgEl) {
             const safeName = encodeURIComponent(user.nama || "User");
@@ -472,13 +489,12 @@
         }
     });
 
-    // Helper Function
+    // --- Helper Function ---
     function setText(id, text) {
         const el = document.getElementById(id);
         if (el) el.innerText = text;
     }
 
-    // Helper: Sapaan Waktu
     function setGreeting() {
         const hour = new Date().getHours();
         let greet = "Assalamualaikum,";
@@ -490,10 +506,9 @@
         document.getElementById('sapaan-waktu').innerText = greet;
     }
 
-    // 3. Logout
+    // --- Logout ---
     function logout() {
         if(navigator.vibrate) navigator.vibrate(50);
-        
         if(confirm("Apakah Anda yakin ingin keluar?")) {
             localStorage.removeItem('user_data');
             document.body.classList.add('opacity-50'); 
@@ -503,14 +518,14 @@
         }
     }
 
-    // --- FITUR POPUP PROFIL ---
+    // --- MODAL PROFIL (Dasis) ---
     function bukaProfil() {
-        const user = JSON.parse(localStorage.getItem('user_data'));
-        const dasis = user.dasis || {}; 
+        const userData = JSON.parse(localStorage.getItem('user_data')); // Ambil fresh data
+        const dasis = userData.dasis || {}; 
 
         document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
-        document.getElementById('pop-nama').innerText = user.nama;
-        document.getElementById('pop-nisn').innerText = "NISN: " + user.nisn;
+        document.getElementById('pop-nama').innerText = userData.nama;
+        document.getElementById('pop-nisn').innerText = "NISN: " + userData.nisn;
 
         setText('pop-nis', dasis.nis || '-');
         setText('pop-jk', dasis.jk || '-');
@@ -529,7 +544,6 @@
         const content = document.getElementById('modal-content');
 
         modal.classList.remove('hidden');
-        
         setTimeout(() => {
             backdrop.classList.remove('opacity-0');
             content.classList.remove('translate-y-full');
@@ -543,16 +557,45 @@
 
         backdrop.classList.add('opacity-0');
         content.classList.add('translate-y-full');
-
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 500);
     }
 
-    // --- FITUR MENU DROPDOWN (GARIS 3) ---
+    // --- MODAL T2Q (Tahfidz) ---
+    window.bukaModalT2Q = function() {
+        var d = window.dataT2QUser;
+        if(!d) {
+            alert("Data T2Q belum dimuat. Silakan refresh.");
+            return;
+        }
+
+        // Isi data ke dalam Popup
+        document.getElementById('m-t2q-nama').innerText = d.nama || "-";
+        document.getElementById('m-t2q-kelas').innerText = d.kelas || "-";
+        
+        // Style warna hijau untuk batas
+        const elBatas = document.getElementById('m-t2q-batas');
+        elBatas.innerText = d.batas || "Belum ada data";
+        elBatas.style.color = "#00b894";
+        elBatas.style.fontWeight = "bold";
+
+        document.getElementById('m-t2q-pengampu').innerText = d.pengampu || "-";
+        document.getElementById('m-t2q-alpa').innerText = (d.tidak_setor || "0") + " kali";
+
+        // Munculkan Popup
+        document.getElementById('modalT2Q').style.display = 'flex';
+    }
+
+    window.tutupModalT2Q = function(e) {
+        if (e === null || e.target.id === 'modalT2Q') {
+            document.getElementById('modalT2Q').style.display = 'none';
+        }
+    }
+
+    // --- MENU DROPDOWN ---
     function toggleMenu() {
         const menu = document.getElementById('dropdown-menu');
-        
         if (menu.classList.contains('hidden')) {
             menu.classList.remove('hidden');
             setTimeout(() => {
@@ -571,30 +614,20 @@
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
         const triggerBtn = e.target.closest('button');
-        
         if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
-            menu.classList.remove('scale-100', 'opacity-100');
-            menu.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                menu.classList.add('hidden');
-            }, 200);
+            toggleMenu();
         }
     });
 
-    // --- FUNGSI UPDATE STATUS HARIAN ---
+    // --- STATUS HARIAN ---
     function updateStatusHarian(kodeAbsen) {
         const descEl = document.getElementById('text-deskripsi');
         const badgeEl = document.getElementById('badge-status');
         const iconBgEl = document.getElementById('icon-status-bg');
 
-        // Pastikan elemen ada sebelum lanjut (untuk menghindari error)
         if (!descEl || !badgeEl || !iconBgEl) return;
 
-        let statusLabel = "";
-        let deskripsi = "";
-        let warnaBadge = "";
-        let warnaIcon = "";
-
+        let statusLabel = "", deskripsi = "", warnaBadge = "", warnaIcon = "";
         const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
 
         switch (kode) {
@@ -604,79 +637,38 @@
                 warnaBadge = "bg-emerald-100 text-emerald-700";
                 warnaIcon = "bg-emerald-500";
                 break;
-
             case 'I':
                 statusLabel = "IZIN";
-                deskripsi = "Ananda tercatat Izin hari ini. Semoga urusannya lancar dan bisa segera kembali sekolah.";
+                deskripsi = "Ananda tercatat Izin. Semoga urusannya lancar.";
                 warnaBadge = "bg-amber-100 text-amber-700";
                 warnaIcon = "bg-amber-500";
                 break;
-
             case 'S':
                 statusLabel = "SAKIT";
-                deskripsi = "Ananda tercatat Sakit hari ini. Syafakallah/illah, semoga lekas sembuh dan ceria kembali.";
+                deskripsi = "Ananda tercatat Sakit. Syafakallah, semoga lekas sembuh.";
                 warnaBadge = "bg-yellow-100 text-yellow-700";
                 warnaIcon = "bg-yellow-500";
                 break;
-
             case 'A':
                 statusLabel = "ALFA";
-                deskripsi = "Ananda tercatat Tidak Hadir Tanpa Keterangan. Mohon Ayah/Bunda konfirmasi ke Wali Kelas.";
+                deskripsi = "Tidak Hadir Tanpa Keterangan. Mohon konfirmasi Wali Kelas.";
                 warnaBadge = "bg-red-100 text-red-700";
                 warnaIcon = "bg-red-500";
                 break;
-
             default: 
                 statusLabel = "BELUM ADA DATA";
-                deskripsi = "Data kehadiran hari ini belum masuk. Mohon tunggu update dari Wali Kelas.";
+                deskripsi = "Data kehadiran hari ini belum masuk.";
                 warnaBadge = "bg-slate-200 text-slate-600";
                 warnaIcon = "bg-slate-400";
                 break;
         }
 
-        // Render Tampilan
         badgeEl.textContent = statusLabel;
         badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
-        
-        // Tampilkan badge (karena di HTML awal diset hidden)
         badgeEl.classList.remove('hidden');
-
         descEl.textContent = deskripsi;
-        
-        // Ubah warna ikon
-        // Hapus class warna lama (bg-*) lalu tambah yang baru
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
-
-        // --- 1. TAMPILKAN DATA DI KARTU DEPAN ---
-var batasHafalan = data.t2q.batas || "Belum ada data"; // Fallback jika kosong
-document.getElementById('t2q-batas').innerText = batasHafalan;
-
-// --- 2. FUNGSI UNTUK MEMBUKA MODAL (Taro di luar fetch, tapi di dalam <script>) ---
-// Simpan data T2Q ke variabel global sementara agar bisa dibaca modal
-window.dataT2QUser = data.t2q; 
-
-window.bukaModalT2Q = function() {
-    var d = window.dataT2QUser;
-    if(!d) return;
-
-    // Isi data ke dalam Popup
-    document.getElementById('m-t2q-nama').innerText = d.nama;
-    document.getElementById('m-t2q-kelas').innerText = d.kelas;
-    document.getElementById('m-t2q-batas').innerText = d.batas || "-";
-    document.getElementById('m-t2q-pengampu').innerText = d.pengampu;
-    document.getElementById('m-t2q-alpa').innerText = d.tidak_setor + " kali";
-
-    // Munculkan Popup
-    document.getElementById('modalT2Q').style.display = 'flex';
-}
-
-window.tutupModalT2Q = function(e) {
-    // Jika diklik tombol X atau area gelap (overlay)
-    if (e === null || e.target.id === 'modalT2Q') {
-        document.getElementById('modalT2Q').style.display = 'none';
-    }
-}
 </script>
 
 </body>
