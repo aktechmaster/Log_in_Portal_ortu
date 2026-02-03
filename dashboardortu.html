@@ -114,9 +114,17 @@
                             <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
                         </button>
                         
-                        <button onclick="alert('Aplikasi Dashboard Wali Murid\nVersi 1.0\n© 2026 SMP IT Al-Kautsar')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                            <i class="fa-solid fa-circle-info w-4 text-center"></i> Tentang App
-                        </button>
+                        <div onclick="bukaInfo()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between active:scale-95 transition-transform duration-200 cursor-pointer">
+    <div class="flex justify-between items-start mb-2">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+             <i class="fa-solid fa-bullhorn text-lg"></i>
+        </div>
+    </div>
+    <div>
+        <h3 class="font-bold text-slate-700 text-sm">Info Sekolah</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Update Kegiatan</p>
+    </div>
+</div>
 
                         <button onclick="alert('Fitur Ganti Password akan segera tersedia.')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
                             <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
@@ -480,6 +488,35 @@
     <div class="mt-6">
        <button onclick="tutupCatatanWali(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 active:scale-95 transition transform">
          Oke, Siap
+       </button>
+    </div>
+  </div>
+</div>
+
+    <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)" style="display: none;">
+  <div class="modal-content">
+    <div class="text-center mb-2 pt-2">
+       <div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm">
+         <i class="fa-solid fa-circle-info"></i>
+       </div>
+       <h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3>
+    </div>
+    
+    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center space-y-2">
+       <h4 class="font-bold text-blue-800 text-lg">Dashboard Wali Murid</h4>
+       <div class="inline-block bg-white px-3 py-1 rounded-full text-xs font-bold text-blue-500 border border-blue-200 shadow-sm">
+         Versi 1.0 Beta
+       </div>
+       <div class="border-t border-blue-200 my-3"></div>
+       <p class="text-xs text-slate-500 font-medium">
+         &copy; 2026 SMP IT Al-Kautsar<br>
+         <span class="text-[10px] text-slate-400">Developed by Tim IT Sekolah</span>
+       </p>
+    </div>
+    
+    <div class="mt-6">
+       <button onclick="tutupInfo(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 transition transform active:scale-95">
+         Tutup
        </button>
     </div>
   </div>
@@ -873,6 +910,17 @@
     function tutupCatatanWali(e) {
         const el = document.getElementById('modalCatatan');
         if (el && (e === null || e.target.id === 'modalCatatan')) {
+            el.style.display = 'none';
+        }
+    }
+
+        function bukaInfo() {
+        document.getElementById('modalInfo').style.display = 'flex';
+    }
+
+    function tutupInfo(e) {
+        const el = document.getElementById('modalInfo');
+        if (el && (e === null || e.target.id === 'modalInfo')) {
             el.style.display = 'none';
         }
     }
