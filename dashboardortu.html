@@ -204,7 +204,9 @@
                         <i class="fa-solid fa-quran"></i>
                     </div>
                     <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
-                    <p id="t2q-batas" class="text-[10px] text-emerald-600 font-bold mt-0.5 truncate">Memuat...</p>
+                    <p id="t2q-batas" class="text-xs mt-0.5 truncate flex items-center gap-1">
+    Memuat...
+</p>
                     
                     <div class="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
                         <div class="h-full bg-emerald-500 w-2/3 rounded-full"></div>
@@ -455,26 +457,41 @@
             updateStatusHarian("");
         }
         
-        // --- UPDATE T2Q (PERBAIKAN DISINI) ---
-        // Kita pakai variabel 'user' bukan 'data'
+        // --- UPDATE T2Q (VERSI BARU DENGAN JUZ) ---
         if (user.t2q) {
-            // Update Kartu Depan
+            // Ambil data
             var batasHafalan = user.t2q.batas;
-            if(!batasHafalan || batasHafalan === "") batasHafalan = "Belum ada data";
-            document.getElementById('t2q-batas').innerText = batasHafalan;
+            var infoJuz = user.t2q.juz; // Ambil data juz
+
+            if(!batasHafalan || batasHafalan === "") {
+                batasHafalan = "Belum ada data";
+                infoJuz = "";
+            }
+
+            // REKOMPOSISI HTML (Hijau untuk Surah, Hitam Kecil untuk Juz)
+            // Jika juz ada isinya, kita tampilkan.
+            var htmlKonten = `<span class="font-bold text-emerald-600 text-[11px]">${batasHafalan}</span>`;
+            
+            if (infoJuz && infoJuz !== "-") {
+                htmlKonten += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${infoJuz}</span>`;
+            }
+
+            // Masukkan ke elemen (Gunakan innerHTML, bukan innerText)
+            document.getElementById('t2q-batas').innerHTML = htmlKonten;
 
             // Simpan ke variabel global untuk Modal
             window.dataT2QUser = user.t2q;
         } else {
-            // Jika data t2q tidak ada di object user
+            // Fallback
              window.dataT2QUser = { 
                 nama: user.nama, 
                 kelas: user.kelas, 
                 batas: "Belum ada data", 
+                juz: "",
                 pengampu: "-", 
                 tidak_setor: "0" 
             };
-            document.getElementById('t2q-batas').innerText = "Belum ada data";
+            document.getElementById('t2q-batas').innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
         }
 
         // Set Avatar Dicebear
