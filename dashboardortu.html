@@ -461,57 +461,25 @@
     <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)" style="display: none;">
   <div class="modal-content">
     <div class="text-center mb-2 pt-2">
-       <div id="mc-icon-bg" class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce">
-         <i id="mc-icon" class="fa-solid fa-comment-dots"></i>
+       <div class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce">
+         <i class="fa-solid fa-comment-dots"></i>
        </div>
-       <h3 id="mc-title" class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3>
+       <h3 class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3>
     </div>
     
-    <div id="mc-body-bg" class="bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2">
-       <i class="fa-solid fa-quote-left text-black/10 absolute top-2 left-3 text-xl"></i>
+    <div class="bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2">
+       <i class="fa-solid fa-quote-left text-orange-200 absolute top-2 left-3 text-xl"></i>
        
        <p id="isi-pesan-wali" class="text-slate-700 text-sm font-medium leading-relaxed italic relative z-10">
           - Memuat pesan -
        </p>
        
-       <i class="fa-solid fa-quote-right text-black/10 absolute bottom-2 right-3 text-xl"></i>
+       <i class="fa-solid fa-quote-right text-orange-200 absolute bottom-2 right-3 text-xl"></i>
     </div>
     
     <div class="mt-6">
-       <button onclick="tutupCatatanWali(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 active:scale-95 transition transform">
-         Oke, Siap
-       </button>
-    </div>
-  </div>
-</div>
-
-    <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)" style="display: none;">
-  <div class="modal-content">
-    <div class="text-center mb-2 pt-2">
-       <div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm">
-         <i class="fa-solid fa-circle-info"></i>
-       </div>
-       <h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3>
-    </div>
-    
-    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center space-y-2">
-       <h4 class="font-bold text-blue-800 text-lg">Dashboard Wali Murid</h4>
-       
-       <div class="inline-block bg-white px-3 py-1 rounded-full text-xs font-bold text-blue-500 border border-blue-200 shadow-sm">
-         Versi 1.0 Beta
-       </div>
-       
-       <div class="border-t border-blue-200 my-3"></div>
-       
-       <p class="text-xs text-slate-500 font-medium">
-         &copy; 2026 SMP IT Al-Kautsar<br>
-         <span class="text-[10px] text-slate-400">Developed by Tim IT Sekolah</span>
-       </p>
-    </div>
-    
-    <div class="mt-6">
-       <button onclick="tutupInfo(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 transition transform active:scale-95">
-         Tutup
+       <button onclick="tutupCatatanWali(null)" class="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-xl text-sm font-bold shadow-md shadow-orange-200 hover:shadow-lg active:scale-95 transition transform">
+         Siap, Saya Mengerti
        </button>
     </div>
   </div>
@@ -852,71 +820,41 @@
         }
     }
 
-    // --- LOGIC BUKA CATATAN WALI (Dinamis & Estetik) ---
+    // --- LOGIC BARU: MODAL CATATAN WALI (No More Alert) ---
     function bukaCatatanWali() {
         const pesan = window.pesanWali;
         const elLabel = document.getElementById('label-catatan');
         const labelText = elLabel ? elLabel.innerText : "";
 
-        // Elemen-elemen Modal yang akan kita manipulasi
-        const modal = document.getElementById('modalCatatan');
-        const elIconBg = document.getElementById('mc-icon-bg');
-        const elIcon = document.getElementById('mc-icon');
-        const elTitle = document.getElementById('mc-title');
-        const elBodyBg = document.getElementById('mc-body-bg');
-        const elText = document.getElementById('isi-pesan-wali');
-
-        // Cek apakah KOSONG atau ADA ISI
-        const isKosong = (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "");
-
-        if (isKosong) {
-            // == TAMPILAN JIKA KOSONG (Mode Biru/Info) ==
-            elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
-            elIcon.className = "fa-solid fa-clipboard-check"; // Ikon Centang
-            elTitle.innerText = "Belum Ada Catatan";
-            elBodyBg.className = "bg-slate-50 p-5 rounded-xl border border-slate-100 text-center relative mt-2";
-            elText.innerText = "Saat ini belum ada catatan baru dari Wali Kelas untuk Ananda. Tetap semangat!";
-            elText.classList.remove('italic'); // Hapus miring biar tegak
-        
-        } else {
-            // == TAMPILAN JIKA ADA PESAN (Mode Oranye/Alert) ==
-            elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
-            elIcon.className = "fa-solid fa-comment-dots"; // Ikon Pesan
-            elTitle.innerText = "Pesan Wali Kelas";
-            elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
-            elText.innerText = pesan;
-            elText.classList.add('italic'); // Pakai font miring biar estetik
-
-            // Update status 'Sudah Dibaca'
-            const elNotif = document.getElementById('notif-dot');
-            if(elNotif) elNotif.classList.add('hidden');
-            
-            if(elLabel) {
-                elLabel.innerText = "Sudah dibaca";
-                elLabel.classList.remove('text-orange-600', 'font-bold');
-                elLabel.classList.add('text-slate-400');
-            }
+        // Cek jika kosong
+        if (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "") {
+             // Opsional: Bisa buat modal khusus "Kosong", tapi alert simple oke untuk info kosong.
+             // Atau diamkan saja. Di sini saya pakai alert kecil atau console log saja.
+             alert("Tidak ada catatan baru saat ini."); 
+             return; 
         }
 
-        // Tampilkan Modal
-        modal.style.display = 'flex';
+        // 1. Masukkan Pesan ke Modal Cantik
+        document.getElementById('isi-pesan-wali').innerText = pesan;
+
+        // 2. Tampilkan Modal
+        document.getElementById('modalCatatan').style.display = 'flex';
+
+        // 3. Otomatis tandai "Sudah Dibaca" (Hilangkan Merah)
+        const elNotif = document.getElementById('notif-dot');
+        if(elNotif) elNotif.classList.add('hidden');
+        
+        if(elLabel) {
+            elLabel.innerText = "Sudah dibaca";
+            elLabel.classList.remove('text-orange-600', 'font-bold');
+            elLabel.classList.add('text-slate-400');
+        }
     }
 
     function tutupCatatanWali(e) {
         const el = document.getElementById('modalCatatan');
+        // Tutup jika tombol diklik (e=null) atau background diklik
         if (el && (e === null || e.target.id === 'modalCatatan')) {
-            el.style.display = 'none';
-        }
-    }
-
-        // --- LOGIC MODAL INFO APLIKASI ---
-    function bukaInfo() {
-        document.getElementById('modalInfo').style.display = 'flex';
-    }
-
-    function tutupInfo(e) {
-        const el = document.getElementById('modalInfo');
-        if (el && (e === null || e.target.id === 'modalInfo')) {
             el.style.display = 'none';
         }
     }
