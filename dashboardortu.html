@@ -214,7 +214,7 @@
                 </div>
             </div>
 
-            <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+            <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
                 <div class="relative z-10">
                     <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
@@ -222,21 +222,21 @@
                     </div>
                     <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
                     <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
-                    <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
+                    <div id="star-display" class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
+                        <span class="text-slate-300 text-[9px]">Memuat...</span>
                     </div>
                 </div>
             </div>
 
-            <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
+            <div onclick="bukaModalCatatan()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
                 <div class="flex justify-between items-start mb-3">
                     <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
                         <i class="fa-solid fa-comment-dots"></i>
                     </div>
-                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    <span id="notif-badge-wali" class="hidden w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                 </div>
                 <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
-                <p class="text-[10px] text-slate-400">1 Pesan baru</p>
+                <p id="label-catatan" class="text-[10px] text-slate-400">Tidak ada pesan</p>
             </div>
 
             <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
@@ -412,277 +412,249 @@
     </div>
     
     <button class="btn-tutup" onclick="tutupModalT2Q(null)">Tutup</button>
+
+      <div id="modal-bina" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="backdrop-bina" onclick="tutupModalBina()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-2xl transform translate-y-full transition-transform duration-500 ease-out" id="content-bina">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Rapor Bina Pribadi</h3>
+            <p class="text-xs text-slate-500 mb-6">Evaluasi karakter bulan ini</p>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-clock"></i></div>
+                        <div><p class="text-xs font-bold text-slate-700">Kedisiplinan</p></div>
+                    </div>
+                    <span id="val-disiplin" class="text-xs font-bold text-slate-600">-</span>
+                </div>
+                <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs"><i class="fa-solid fa-mosque"></i></div>
+                        <div><p class="text-xs font-bold text-slate-700">Ibadah</p></div>
+                    </div>
+                    <span id="val-ibadah" class="text-xs font-bold text-slate-600">-</span>
+                </div>
+                <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-users"></i></div>
+                        <div><p class="text-xs font-bold text-slate-700">Sosial</p></div>
+                    </div>
+                    <span id="val-sosial" class="text-xs font-bold text-slate-600">-</span>
+                </div>
+            </div>
+            <button onclick="tutupModalBina()" class="w-full mt-6 bg-slate-100 text-slate-700 py-3 rounded-xl text-sm font-bold hover:bg-slate-200">Tutup</button>
+        </div>
+    </div>
+
+    <div id="modal-catatan" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="backdrop-catatan" onclick="tutupModalCatatan()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-2xl transform translate-y-full transition-transform duration-500 ease-out" id="content-catatan">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Pesan Wali Kelas</h3>
+            <div class="bg-yellow-50 border border-yellow-100 p-4 rounded-xl min-h-[100px] flex items-center">
+                <p id="isi-catatan-wali" class="text-sm text-slate-700 italic w-full text-center">Memuat pesan...</p>
+            </div>
+            <button onclick="tutupModalCatatan()" class="w-full mt-6 bg-orange-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-orange-700 shadow-lg shadow-orange-200">Saya Mengerti</button>
+        </div>
+    </div>
+      
   </div>
 </div>
 
     <script>
-    // === LOGIC UTAMA ===
-
-    // 1. Cek Login & Ambil Data dari LocalStorage
+    // === 1. DATA UTAMA ===
     const savedData = localStorage.getItem('user_data');
-    if (!savedData) {
-        window.location.href = 'index.html';
-    }
-
+    if (!savedData) { window.location.href = 'index.html'; }
     const user = JSON.parse(savedData);
 
-    // 2. ISI DATA KE TAMPILAN SAAT LOAD SELESAI
+    // === 2. SAAT MEMUAT HALAMAN ===
     document.addEventListener("DOMContentLoaded", () => {
-        // Set Data Dasar
+        // Profil Dasar
         setText('nama-siswa', user.nama);
         setText('nisn-siswa', user.nisn);
         setText('kelas-siswa', user.kelas);
         setGreeting();
 
-        // --- UPDATE ABSENSI ---
+        // Foto Profil Dicebear
+        document.getElementById('foto-siswa').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.nama)}&backgroundColor=e6f4f1`;
+
+        // Absensi
         if (user.absensi) {
-            const persenTeks = user.absensi.persen || "0%";
-            setText('absen-persen', persenTeks);
-
-            // Grafik Lingkaran
-            let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
-            let derajat = (persenAngka / 100) * 360;
-            const ring = document.getElementById('absen-ring');
-            if(ring) ring.style.setProperty('--percent', derajat + 'deg');
-
-            // Detail H/S/I/A
-            setText('val-h', (user.absensi.h || 0) + " H");
-            setText('val-s', (user.absensi.s || 0) + " S");
-            setText('val-i', (user.absensi.i || 0) + " I");
-            setText('val-a', (user.absensi.a || 0) + " A");
-
-            // Status Hari Ini
-            updateStatusHarian(user.absensi.statusToday);
-        } else {
-            updateStatusHarian("");
-        }
-        
-        // --- UPDATE T2Q (VERSI BARU DENGAN JUZ) ---
-        if (user.t2q) {
-            // Ambil data
-            var batasHafalan = user.t2q.batas;
-            var infoJuz = user.t2q.juz; // Ambil data juz
-
-            if(!batasHafalan || batasHafalan === "") {
-                batasHafalan = "Belum ada data";
-                infoJuz = "";
-            }
-
-            // REKOMPOSISI HTML (Hijau untuk Surah, Hitam Kecil untuk Juz)
-            // Jika juz ada isinya, kita tampilkan.
-            var htmlKonten = `<span class="font-bold text-emerald-600 text-[11px]">${batasHafalan}</span>`;
+            setText('absen-persen', user.absensi.persen || "0%");
+            let ringVal = parseFloat((user.absensi.persen || "0").replace('%',''));
+            setTimeout(() => { document.getElementById('absen-ring').style.setProperty('--percent', ringVal + 'deg'); }, 500);
             
-            if (infoJuz && infoJuz !== "-") {
-                htmlKonten += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${infoJuz}</span>`;
-            }
-
-            // Masukkan ke elemen (Gunakan innerHTML, bukan innerText)
-            document.getElementById('t2q-batas').innerHTML = htmlKonten;
-
-            // Simpan ke variabel global untuk Modal
-            window.dataT2QUser = user.t2q;
-        } else {
-            // Fallback
-             window.dataT2QUser = { 
-                nama: user.nama, 
-                kelas: user.kelas, 
-                batas: "Belum ada data", 
-                juz: "",
-                pengampu: "-", 
-                tidak_setor: "0" 
-            };
-            document.getElementById('t2q-batas').innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+            setText('val-h', "- " + (user.absensi.h || 0));
+            setText('val-s', "- " + (user.absensi.s || 0));
+            setText('val-i', "- " + (user.absensi.i || 0));
+            setText('val-a', "- " + (user.absensi.a || 0));
+            updateStatusHarian(user.absensi.statusToday);
         }
 
-        // Set Avatar Dicebear
-        const imgEl = document.getElementById('foto-siswa');
-        if (imgEl) {
-            const safeName = encodeURIComponent(user.nama || "User");
-            imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
+        // T2Q (Tahfidz)
+        if (user.t2q) {
+            let htmlT2Q = `<span class="font-bold text-emerald-600">${user.t2q.batas}</span>`;
+            if(user.t2q.juz && user.t2q.juz !== "-") htmlT2Q += ` <span class="bg-slate-100 px-1 rounded text-[9px] border border-slate-200">${user.t2q.juz}</span>`;
+            document.getElementById('t2q-batas').innerHTML = htmlT2Q;
+        }
+
+        // === BINA PRIBADI (LOGIKA BINTANG) ===
+        const bina = user.bina_pribadi || { avg_bintang: 0, detail: {d:0, i:0, s:0}, catatan_wali: "", ada_pesan: false };
+        window.dataBina = bina; // Simpan ke global
+        
+        let stars = "";
+        for(let i=1; i<=4; i++) {
+            stars += (i <= bina.avg_bintang) ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star text-slate-300"></i>';
+        }
+        document.getElementById('star-display').innerHTML = stars;
+
+        // === CATATAN WALI (LOGIKA BADGE MERAH) ===
+        if(bina.ada_pesan) {
+            document.getElementById('notif-badge-wali').classList.remove('hidden');
+            let lbl = document.getElementById('label-catatan');
+            lbl.innerText = "1 Pesan Baru";
+            lbl.classList.add('text-orange-600', 'font-bold');
         }
     });
 
-    // --- Helper Function ---
-    function setText(id, text) {
-        const el = document.getElementById(id);
-        if (el) el.innerText = text;
+    // === FUNGSI BANTUAN ===
+    function setText(id, txt) { 
+        const el = document.getElementById(id); 
+        if(el) el.innerText = txt; 
     }
 
     function setGreeting() {
-        const hour = new Date().getHours();
-        let greet = "Assalamualaikum,";
-        if (hour >= 3 && hour < 11) greet = "Selamat Pagi,";
-        else if (hour >= 11 && hour < 15) greet = "Selamat Siang,";
-        else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
-        else greet = "Selamat Malam,";
-        
-        document.getElementById('sapaan-waktu').innerText = greet;
+        const h = new Date().getHours();
+        document.getElementById('sapaan-waktu').innerText = h < 11 ? "Selamat Pagi," : h < 15 ? "Selamat Siang," : h < 18 ? "Selamat Sore," : "Selamat Malam,";
     }
 
-    // --- Logout ---
-    function logout() {
-        if(navigator.vibrate) navigator.vibrate(50);
-        if(confirm("Apakah Anda yakin ingin keluar?")) {
-            localStorage.removeItem('user_data');
-            document.body.classList.add('opacity-50'); 
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 300);
-        }
+    function updateStatusHarian(kode) {
+        const badge = document.getElementById('badge-status');
+        const desc = document.getElementById('text-deskripsi');
+        const icon = document.getElementById('icon-status-bg');
+        
+        if(!kode) return;
+        
+        badge.classList.remove('hidden');
+        badge.innerText = kode === 'H' ? 'HADIR' : kode === 'S' ? 'SAKIT' : kode === 'I' ? 'IZIN' : 'ALFA';
+        badge.className = `ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ` + 
+            (kode === 'H' ? 'bg-emerald-100 text-emerald-700' : kode === 'S' ? 'bg-yellow-100 text-yellow-700' : kode === 'I' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700');
+        
+        desc.innerText = kode === 'H' ? "Alhamdulillah, Ananda hadir." : kode === 'S' ? "Semoga lekas sembuh." : kode === 'I' ? "Izin tercatat." : "Tanpa keterangan.";
+        
+        icon.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 text-white ` + 
+            (kode === 'H' ? 'bg-emerald-500' : kode === 'S' ? 'bg-yellow-500' : kode === 'I' ? 'bg-blue-500' : 'bg-red-500');
     }
 
-    // --- MODAL PROFIL (Dasis) ---
-    function bukaProfil() {
-        const userData = JSON.parse(localStorage.getItem('user_data')); // Ambil fresh data
-        const dasis = userData.dasis || {}; 
-
-        document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
-        document.getElementById('pop-nama').innerText = userData.nama;
-        document.getElementById('pop-nisn').innerText = "NISN: " + userData.nisn;
-
-        setText('pop-nis', dasis.nis || '-');
-        setText('pop-jk', dasis.jk || '-');
-        setText('pop-ttl', dasis.ttl || '-');
-        setText('pop-agama', dasis.agama || '-');
-        setText('pop-alamat', dasis.alamat || '-');
-        
-        setText('pop-ayah', dasis.ayah || '-');
-        setText('pop-ker-ayah', dasis.ker_ayah ? 'Pekerjaan: ' + dasis.ker_ayah : '-');
-        
-        setText('pop-ibu', dasis.ibu || '-');
-        setText('pop-ker-ibu', dasis.ker_ibu ? 'Pekerjaan: ' + dasis.ker_ibu : '-');
-
-        const modal = document.getElementById('modal-profil');
-        const backdrop = document.getElementById('modal-backdrop');
-        const content = document.getElementById('modal-content');
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            backdrop.classList.remove('opacity-0');
-            content.classList.remove('translate-y-full');
-        }, 10);
-    }
-
-    function tutupProfil() {
-        const modal = document.getElementById('modal-profil');
-        const backdrop = document.getElementById('modal-backdrop');
-        const content = document.getElementById('modal-content');
-
-        backdrop.classList.add('opacity-0');
-        content.classList.add('translate-y-full');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 500);
-    }
-
-    // --- MODAL T2Q (Tahfidz) ---
-    window.bukaModalT2Q = function() {
-        var d = window.dataT2QUser;
-        if(!d) {
-            alert("Data T2Q belum dimuat. Silakan refresh.");
-            return;
-        }
-
-        // Isi data ke dalam Popup
-        document.getElementById('m-t2q-nama').innerText = d.nama || "-";
-        document.getElementById('m-t2q-kelas').innerText = d.kelas || "-";
-        
-        // Style warna hijau untuk batas
-        const elBatas = document.getElementById('m-t2q-batas');
-        elBatas.innerText = d.batas || "Belum ada data";
-        elBatas.style.color = "#00b894";
-        elBatas.style.fontWeight = "bold";
-
-        document.getElementById('m-t2q-pengampu').innerText = d.pengampu || "-";
-        document.getElementById('m-t2q-alpa').innerText = (d.tidak_setor || "0") + " kali";
-
-        // Munculkan Popup
+    // === FUNGSI POPUP / MODAL ===
+    
+    // T2Q (Tahfidz)
+    function bukaModalT2Q() {
+        if(!user.t2q) return;
+        setText('m-t2q-nama', user.nama);
+        setText('m-t2q-kelas', user.kelas);
+        setText('m-t2q-batas', user.t2q.batas);
+        setText('m-t2q-pengampu', user.t2q.pengampu);
+        setText('m-t2q-alpa', user.t2q.tidak_setor + " kali");
         document.getElementById('modalT2Q').style.display = 'flex';
     }
-
-    window.tutupModalT2Q = function(e) {
-        if (e === null || e.target.id === 'modalT2Q') {
+    function tutupModalT2Q(e) {
+        if (!e || e.target.classList.contains('modal-overlay') || e.target.classList.contains('close-btn') || e.target.classList.contains('btn-tutup')) {
             document.getElementById('modalT2Q').style.display = 'none';
         }
     }
 
-    // --- MENU DROPDOWN ---
-    function toggleMenu() {
-        const menu = document.getElementById('dropdown-menu');
-        if (menu.classList.contains('hidden')) {
-            menu.classList.remove('hidden');
-            setTimeout(() => {
-                menu.classList.remove('scale-95', 'opacity-0');
-                menu.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        } else {
-            menu.classList.remove('scale-100', 'opacity-100');
-            menu.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                menu.classList.add('hidden');
-            }, 200);
-        }
+    // PROFIL (Dasis)
+    function bukaProfil() {
+        const d = user.dasis || {};
+        document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
+        setText('pop-nama', user.nama);
+        setText('pop-nisn', "NISN: " + user.nisn);
+        setText('pop-nis', d.nis || '-'); setText('pop-jk', d.jk || '-'); setText('pop-ttl', d.ttl || '-');
+        setText('pop-agama', d.agama || '-'); setText('pop-alamat', d.alamat || '-');
+        setText('pop-ayah', d.ayah || '-'); setText('pop-ker-ayah', d.ker_ayah || '-');
+        setText('pop-ibu', d.ibu || '-'); setText('pop-ker-ibu', d.ker_ibu || '-');
+
+        const m = document.getElementById('modal-profil');
+        const c = document.getElementById('modal-content');
+        const b = document.getElementById('modal-backdrop');
+        m.classList.remove('hidden');
+        setTimeout(() => { c.classList.remove('translate-y-full'); b.classList.remove('opacity-0'); }, 10);
+        document.getElementById('dropdown-menu').classList.add('hidden');
+    }
+    function tutupProfil() {
+        const m = document.getElementById('modal-profil');
+        const c = document.getElementById('modal-content');
+        const b = document.getElementById('modal-backdrop');
+        c.classList.add('translate-y-full'); b.classList.add('opacity-0');
+        setTimeout(() => { m.classList.add('hidden'); }, 500);
     }
 
-    document.addEventListener('click', function(e) {
-        const menu = document.getElementById('dropdown-menu');
-        const triggerBtn = e.target.closest('button');
-        if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
-            toggleMenu();
+    // BINA PRIBADI (BARU)
+    function getPredikat(skor) {
+        if(skor==4) return '<span class="text-emerald-600">Sangat Baik (A)</span>';
+        if(skor==3) return '<span class="text-blue-600">Baik (B)</span>';
+        if(skor==2) return '<span class="text-amber-600">Cukup (C)</span>';
+        return '<span class="text-red-500">Kurang (D)</span>';
+    }
+    function bukaModalBina() {
+        const d = window.dataBina.detail || {d:0, i:0, s:0};
+        document.getElementById('val-disiplin').innerHTML = getPredikat(d.d);
+        document.getElementById('val-ibadah').innerHTML = getPredikat(d.i);
+        document.getElementById('val-sosial').innerHTML = getPredikat(d.s);
+        
+        const m = document.getElementById('modal-bina');
+        const c = document.getElementById('content-bina');
+        const b = document.getElementById('backdrop-bina');
+        m.classList.remove('hidden');
+        setTimeout(() => { c.classList.remove('translate-y-full'); b.classList.remove('opacity-0'); }, 10);
+    }
+    function tutupModalBina() {
+        const m = document.getElementById('modal-bina');
+        const c = document.getElementById('content-bina');
+        const b = document.getElementById('backdrop-bina');
+        c.classList.add('translate-y-full'); b.classList.add('opacity-0');
+        setTimeout(() => { m.classList.add('hidden'); }, 500);
+    }
+
+    // CATATAN WALI (BARU)
+    function bukaModalCatatan() {
+        const msg = window.dataBina.catatan_wali;
+        const el = document.getElementById('isi-catatan-wali');
+        el.innerText = (msg && msg !== "-") ? `"${msg}"` : "Tidak ada catatan khusus dari Wali Kelas bulan ini.";
+        
+        const m = document.getElementById('modal-catatan');
+        const c = document.getElementById('content-catatan');
+        const b = document.getElementById('backdrop-catatan');
+        m.classList.remove('hidden');
+        setTimeout(() => { c.classList.remove('translate-y-full'); b.classList.remove('opacity-0'); }, 10);
+    }
+    function tutupModalCatatan() {
+        const m = document.getElementById('modal-catatan');
+        const c = document.getElementById('content-catatan');
+        const b = document.getElementById('backdrop-catatan');
+        c.classList.add('translate-y-full'); b.classList.add('opacity-0');
+        setTimeout(() => { m.classList.add('hidden'); }, 500);
+    }
+
+    // MENU & LOGOUT
+    function toggleMenu() {
+        const m = document.getElementById('dropdown-menu');
+        if(m.classList.contains('hidden')) {
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.remove('scale-95', 'opacity-0'); m.classList.add('scale-100', 'opacity-100'); }, 10);
+        } else {
+            m.classList.remove('scale-100', 'opacity-100'); m.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
         }
-    });
-
-    // --- STATUS HARIAN ---
-    function updateStatusHarian(kodeAbsen) {
-        const descEl = document.getElementById('text-deskripsi');
-        const badgeEl = document.getElementById('badge-status');
-        const iconBgEl = document.getElementById('icon-status-bg');
-
-        if (!descEl || !badgeEl || !iconBgEl) return;
-
-        let statusLabel = "", deskripsi = "", warnaBadge = "", warnaIcon = "";
-        const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
-
-        switch (kode) {
-            case 'H':
-                statusLabel = "HADIR";
-                deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah.";
-                warnaBadge = "bg-emerald-100 text-emerald-700";
-                warnaIcon = "bg-emerald-500";
-                break;
-            case 'I':
-                statusLabel = "IZIN";
-                deskripsi = "Ananda tercatat Izin. Semoga urusannya lancar.";
-                warnaBadge = "bg-amber-100 text-amber-700";
-                warnaIcon = "bg-amber-500";
-                break;
-            case 'S':
-                statusLabel = "SAKIT";
-                deskripsi = "Ananda tercatat Sakit. Syafakallah, semoga lekas sembuh.";
-                warnaBadge = "bg-yellow-100 text-yellow-700";
-                warnaIcon = "bg-yellow-500";
-                break;
-            case 'A':
-                statusLabel = "ALFA";
-                deskripsi = "Tidak Hadir Tanpa Keterangan. Mohon konfirmasi Wali Kelas.";
-                warnaBadge = "bg-red-100 text-red-700";
-                warnaIcon = "bg-red-500";
-                break;
-            default: 
-                statusLabel = "BELUM ADA DATA";
-                deskripsi = "Data kehadiran hari ini belum masuk.";
-                warnaBadge = "bg-slate-200 text-slate-600";
-                warnaIcon = "bg-slate-400";
-                break;
+    }
+    function logout() {
+        if(confirm("Keluar dari aplikasi?")) {
+            localStorage.removeItem('user_data');
+            window.location.href = 'index.html';
         }
-
-        badgeEl.textContent = statusLabel;
-        badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
-        badgeEl.classList.remove('hidden');
-        descEl.textContent = deskripsi;
-        iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
 </script>
-
 </body>
 </html>
