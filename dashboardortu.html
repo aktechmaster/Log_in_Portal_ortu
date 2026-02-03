@@ -157,129 +157,125 @@
 
     <main class="px-5 -mt-10 relative z-20 space-y-4">
 
-    <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
-        <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
-            <div class="progress-inner">
-                <span id="absen-persen" class="text-lg font-bold text-emerald-600">--%</span>
-                <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold transform scale-50 origin-top -mt-1">
-    Kehadiran
-</span>
-            </div>
-        </div>
-        <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
-            <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
-            <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
-            <div class="flex gap-2">
-                <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
-                <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
-                <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
-                <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="fade-in delay-200">
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
-        
-        <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
-            <i class="fa-solid fa-check text-xs"></i>
-        </div>
-
-        <div>
-            <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
-            
-            <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
-                <span id="text-deskripsi">Sedang memuat data...</span>
-                
-                <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                    --
-                </span>
-            </p>
-        </div>
-    </div>
-</div>
-
-    <div class="card" onclick="bukaModalT2Q()">
-  <div style="display: flex; align-items: center;">
-    <div class="icon-box" style="background-color: #e6fdf0; color: #00b894;">
-      <i class="fas fa-quran"></i> </div>
-    <div style="margin-left: 15px;">
-      <h4 style="margin: 0; font-size: 14px; color: #2d3436;">Laporan T2Q</h4>
-      <p id="t2q-batas" style="margin: 5px 0 0; font-size: 13px; font-weight: bold; color: #636e72;">
-        Memuat data...
-      </p>
-    </div>
-  </div>
-  <div style="margin-top: 10px; background: #eee; height: 4px; border-radius: 2px; width: 100%;">
-    <div style="background: #00b894; height: 100%; width: 60%; border-radius: 2px;"></div>
-  </div>
-</div>
-
-        <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-            <div class="relative z-10">
-                <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-hands-praying"></i>
+        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
+            <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
+                <div class="progress-inner">
+                    <span id="absen-persen" class="text-lg font-bold text-emerald-600">0%</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold transform scale-50 origin-top -mt-1">
+                        Kehadiran
+                    </span>
                 </div>
-                <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
-                <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
-                <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
+            </div>
+            <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
+                <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
+                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
+                <div class="flex gap-2">
+                    <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
+                    <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
+                    <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
+                    <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
                 </div>
             </div>
         </div>
 
-        <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
-            <div class="flex justify-between items-start mb-3">
-                <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-comment-dots"></i>
+        <div class="fade-in delay-200">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
+                <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
+                    <i class="fa-solid fa-check text-xs"></i>
                 </div>
-                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </div>
-            <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
-            <p class="text-[10px] text-slate-400">1 Pesan belum dibaca</p>
-        </div>
-
-        <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
-            <div class="flex justify-between items-start mb-3">
-                <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
-            </div>
-            <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
-            <p class="text-[10px] text-slate-400">Update Kegiatan</p>
-        </div>
-
-    </div>
-
-    <div class="fade-in delay-300 pb-4">
-        <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
-            Aktivitas Terakhir
-            <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
-        </h3>
-        <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
-            <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <div class="flex-1">
-                    <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
-                    <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
-                    <i class="fa-solid fa-book-open"></i>
-                </div>
-                <div class="flex-1">
-                    <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
-                    <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
+                <div>
+                    <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
+                    <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
+                        <span id="text-deskripsi">Sedang memuat data...</span>
+                        <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                            --
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
 
-</main>
+        <div class="grid grid-cols-2 gap-3 fade-in delay-200">
+
+            <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-quran"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
+                    <p id="t2q-batas" class="text-[10px] text-emerald-600 font-bold mt-0.5 truncate">Memuat...</p>
+                    
+                    <div class="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-emerald-500 w-2/3 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-hands-praying"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
+                    <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                </div>
+                <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
+                <p class="text-[10px] text-slate-400">1 Pesan baru</p>
+            </div>
+
+            <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                </div>
+                <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
+                <p class="text-[10px] text-slate-400">Update Kegiatan</p>
+            </div>
+
+        </div> 
+        <div class="fade-in delay-300 pb-4">
+            <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
+                Aktivitas Terakhir
+                <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
+            </h3>
+            <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
+                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
+                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
+                        <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
+                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
+                        <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-between items-center z-50 text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
         <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
