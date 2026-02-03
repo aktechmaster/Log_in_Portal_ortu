@@ -3,421 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard Wali Murid - SMP IT AL-KAUTSAR</title>
-    
-    <link rel="icon" type="image/png" href="logosmpit.png">
-
+    <title>Dashboard Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        
-        /* Custom Scrollbar Hide */
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
+        /* Animasi Ring Absensi */
+        .circle-chart { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 2.5; }
+        .circle { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke: #10b981; stroke-dasharray: 0, 100; transition: stroke-dasharray 1s ease-out; }
+        /* Scrollbar Hide */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Style Grafik Lingkaran */
-        .progress-ring {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: conic-gradient(#059669 var(--percent), #e2e8f0 0deg);
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
-        .progress-inner {
-            width: 66px; height: 66px; background: white; border-radius: 50%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        /* Animasi halus */
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-
-        /* Gaya untuk Modal/Popup */
-.modal-overlay {
-  display: none; /* Tersembunyi default */
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(2px);
-}
-
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 350px;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {transform: translateY(20px); opacity: 0;}
-  to {transform: translateY(0); opacity: 1;}
-}
-
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
-}
-.modal-header h3 { margin: 0; color: #00b894; }
-.close-btn { font-size: 24px; cursor: pointer; color: #aaa; }
-
-.info-row {
-  display: flex; justify-content: space-between;
-  margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px;
-}
-.info-row .label { color: #888; font-size: 12px; }
-.info-row .value { color: #333; font-weight: 500; font-size: 13px; text-align: right; }
-.btn-tutup {
-  width: 100%; padding: 10px; background: #00b894; color: white;
-  border: none; border-radius: 8px; margin-top: 10px; cursor: pointer;
-}
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-24 select-none">
+<body class="text-slate-800 pb-20 transition-opacity duration-300">
 
-    <header class="relative pt-8 pb-16 px-6">
-        
-        <div class="absolute inset-0 bg-gradient-to-br from-emerald-800 to-emerald-600 rounded-b-[40px] shadow-xl overflow-hidden">
-            <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
-            <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
-        </div>
-
-        <div class="flex justify-between items-center mb-6 relative">
-            
+    <div class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm px-5 py-4 transition-all duration-300" id="header-nav">
+        <div class="flex justify-between items-center max-w-md mx-auto">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
-                    <img src="logosmpit.png" alt="Logo" class="w-5 h-5 object-contain">
-                </div>
-                <span class="text-sm font-bold text-white tracking-wide shadow-sm">SMP IT AL-KAUTSAR</span>
-            </div>
-
-            <div class="relative z-50">
-                <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg cursor-pointer">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-
-                <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0">
-                    <div class="py-1">
-                        <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                            <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
-                        </button>
-                        
-                        <button onclick="alert('Aplikasi Dashboard Wali Murid\nVersi 1.0\n© 2026 SMP IT Al-Kautsar')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                            <i class="fa-solid fa-circle-info w-4 text-center"></i> Tentang App
-                        </button>
-
-                        <button onclick="alert('Fitur Ganti Password akan segera tersedia.')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                            <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
-                        </button>
-                        
-                        <div class="h-px bg-slate-100 my-1"></div>
-
-                        <button onclick="logout()" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors font-medium">
-                            <i class="fa-solid fa-power-off w-4 text-center"></i> Keluar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
-            <div class="relative group">
-                <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
-                    <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
-                </div>
-            </div>
-
-            <div class="flex-1 min-w-0">
-                <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
-                <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
-                
-                <div class="flex items-center gap-2 mt-1.5">
-                    <div id="kelas-siswa" class="bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
-                        --
-                    </div>
-                    <p class="text-emerald-100/70 text-[10px] font-mono tracking-wider truncate">
-                        NISN: <span id="nisn-siswa">...</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="px-5 -mt-10 relative z-20 space-y-4">
-
-        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
-            <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
-                <div class="progress-inner">
-                    <span id="absen-persen" class="text-lg font-bold text-emerald-600">0%</span>
-                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold transform scale-50 origin-top -mt-1">
-                        Kehadiran
-                    </span>
-                </div>
-            </div>
-            <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
-                <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
-                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
-                <div class="flex gap-2">
-                    <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
-                    <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
-                    <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
-                    <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="fade-in delay-200">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
-                <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
-                    <i class="fa-solid fa-check text-xs"></i>
+                <div class="relative">
+                    <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" alt="Profil" 
+                         class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 object-cover shadow-sm">
+                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
-                    <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
-                        <span id="text-deskripsi">Sedang memuat data...</span>
-                        <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                            --
-                        </span>
-                    </p>
+                    <h1 class="text-sm font-bold text-slate-800 leading-tight" id="nama-siswa">Memuat...</h1>
+                    <p class="text-[11px] text-slate-500 font-medium"><span id="kelas-siswa">-</span> • <span id="nisn-siswa">-</span></p>
                 </div>
             </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 fade-in delay-200">
-
-            <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-                <div class="relative z-10">
-                    <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-quran"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
-                    <p id="t2q-batas" class="text-xs mt-0.5 truncate flex items-center gap-1">
-    Memuat...
-</p>
-                    
-                    <div class="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                        <div class="h-full bg-emerald-500 w-2/3 rounded-full"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div onclick="alert('Fitur Bina Pribadi akan segera hadir!')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-                <div class="relative z-10">
-                    <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-hands-praying"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
-                    <div class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-slate-300"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div onclick="alert('Tidak ada pesan baru.')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
-                <div class="flex justify-between items-start mb-3">
-                    <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-comment-dots"></i>
-                    </div>
-                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                </div>
-                <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
-                <p class="text-[10px] text-slate-400">1 Pesan baru</p>
-            </div>
-
-            <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
-                <div class="flex justify-between items-start mb-3">
-                    <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-bullhorn"></i>
-                    </div>
-                </div>
-                <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
-                <p class="text-[10px] text-slate-400">Update Kegiatan</p>
-            </div>
-
-        </div> 
-        <div class="fade-in delay-300 pb-4">
-            <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
-                Aktivitas Terakhir
-                <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
-            </h3>
-            <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
-                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
-                        <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
-                        <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-between items-center z-50 text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
-        <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[9px] font-medium">Beranda</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
-            <span class="text-[9px] font-medium">Laporan</span>
-        </button>
-        
-        <div class="relative -top-6">
-            <button class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 ring-4 ring-slate-50 active:scale-95 transition transform hover:-translate-y-1">
-                <i class="fa-solid fa-qrcode text-xl"></i>
+            <button onclick="toggleMenu()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-bars text-sm"></i>
             </button>
         </div>
 
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[9px] font-medium">Profil</span>
-        </button>
-        
-        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
-            <i class="fa-solid fa-right-from-bracket text-lg"></i>
-            <span class="text-[9px] font-medium">Keluar</span>
-        </button>
-    </nav>
-
-    <div id="modal-profil" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
-        
-        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-500 ease-out max-h-[85vh] overflow-y-auto no-scrollbar" id="modal-content">
-            
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
-
-            <div class="text-center mb-6">
-                <div class="inline-block p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
-                    <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover">
-                </div>
-                <h2 class="text-xl font-bold text-slate-800" id="pop-nama">...</h2>
-                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full font-bold mt-1 inline-block" id="pop-nisn">...</span>
-            </div>
-
-            <div class="space-y-4 pb-10">
-                
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user text-emerald-500"></i> Data Pribadi
-                    </h3>
-                    <div class="grid grid-cols-2 gap-y-4 text-sm">
-                        <div>
-                            <p class="text-[10px] text-slate-400">NIS Lokal</p>
-                            <p class="font-semibold text-slate-700" id="pop-nis">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-400">Jenis Kelamin</p>
-                            <p class="font-semibold text-slate-700" id="pop-jk">-</p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-[10px] text-slate-400">Tempat, Tanggal Lahir</p>
-                            <p class="font-semibold text-slate-700" id="pop-ttl">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-400">Agama</p>
-                            <p class="font-semibold text-slate-700" id="pop-agama">-</p>
-                        </div>
-                         <div class="col-span-2">
-                            <p class="text-[10px] text-slate-400">Alamat</p>
-                            <p class="font-semibold text-slate-700 leading-tight" id="pop-alamat">-</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-users text-blue-500"></i> Data Orang Tua
-                    </h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-user-tie text-xs"></i></div>
-                            <div>
-                                <p class="font-bold text-slate-700" id="pop-ayah">-</p>
-                                <p class="text-xs text-slate-500" id="pop-ker-ayah">Pekerjaan: -</p>
-                            </div>
-                        </div>
-                        <hr class="border-blue-100">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shrink-0"><i class="fa-solid fa-person-dress text-xs"></i></div>
-                            <div>
-                                <p class="font-bold text-slate-700" id="pop-ibu">-</p>
-                                <p class="text-xs text-slate-500" id="pop-ker-ibu">Pekerjaan: -</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                 <button onclick="tutupProfil()" class="w-full py-3 bg-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-300 transition">
-                    Tutup
+        <div id="dropdown-menu" class="hidden absolute right-5 top-16 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-50 transform transition-all duration-200 origin-top-right scale-95 opacity-0">
+            <div class="py-1">
+                <button onclick="bukaProfil()" class="block w-full text-left px-4 py-3 text-sm text-slate-600 hover:bg-slate-50">
+                    <i class="fa-regular fa-user mr-2 text-emerald-500"></i> Profil Lengkap
+                </button>
+                <div class="border-t border-slate-100"></div>
+                <button onclick="logout()" class="block w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Keluar
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="modalT2Q" class="modal-overlay" onclick="tutupModalT2Q(event)">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Detail T2Q</h3>
-      <span class="close-btn" onclick="tutupModalT2Q(null)">&times;</span>
+    <div class="pt-24 px-5 max-w-md mx-auto space-y-6">
+
+        <div class="bg-white rounded-2xl p-5 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-3 opacity-10">
+                <i class="fa-solid fa-cloud-sun text-6xl text-emerald-500"></i>
+            </div>
+            <p class="text-xs font-semibold text-emerald-600 mb-1" id="sapaan-waktu">Assalamualaikum,</p>
+            <div class="flex items-start gap-3 mt-2">
+                <div id="icon-status-bg" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                    <i class="fa-solid fa-calendar-check text-white text-xs"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-bold text-slate-800">Status Hari Ini</h2>
+                        <span id="badge-status" class="hidden px-2 py-0.5 rounded text-[10px] font-bold"></span>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed mt-1" id="text-deskripsi">
+                        Memuat data absensi...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col items-center justify-center relative h-36">
+                <div class="relative w-24 h-24">
+                    <svg viewBox="0 0 36 36" class="circle-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" id="absen-ring" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                        <span class="text-xl font-bold text-slate-800" id="absen-persen">0%</span>
+                        <span class="text-[9px] text-slate-400 font-medium">Kehadiran</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 grid grid-cols-2 gap-3 h-36 content-center">
+                <div class="text-center p-2 rounded-xl bg-emerald-50">
+                    <p class="text-emerald-700 font-bold text-sm" id="val-h">0</p>
+                    <p class="text-[9px] text-emerald-600 mt-0.5">Hadir</p>
+                </div>
+                <div class="text-center p-2 rounded-xl bg-amber-50">
+                    <p class="text-amber-700 font-bold text-sm" id="val-s">0</p>
+                    <p class="text-[9px] text-amber-600 mt-0.5">Sakit</p>
+                </div>
+                <div class="text-center p-2 rounded-xl bg-indigo-50">
+                    <p class="text-indigo-700 font-bold text-sm" id="val-i">0</p>
+                    <p class="text-[9px] text-indigo-600 mt-0.5">Izin</p>
+                </div>
+                <div class="text-center p-2 rounded-xl bg-red-50">
+                    <p class="text-red-700 font-bold text-sm" id="val-a">0</p>
+                    <p class="text-[9px] text-red-600 mt-0.5">Alfa</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-bold text-slate-800 mb-3 ml-1">Menu Akademik</h3>
+            <div class="grid grid-cols-1 gap-3">
+                
+                <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-quran"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700">Tahfidz (T2Q)</h4>
+                            <p class="text-[10px] text-slate-500 mt-0.5 truncate max-w-[150px]" id="t2q-batas">
+                                Memuat...
+                            </p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                </div>
+
+                <div onclick="bukaModalBina()" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700">Bina Pribadi</h4>
+                            <div class="flex items-center gap-0.5 mt-1" id="star-display">
+                                <span class="text-slate-300 text-[10px]">Memuat...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                </div>
+
+                <div onclick="bukaModalCatatan()" class="relative bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer">
+                    <div id="notif-badge-wali" class="hidden absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border border-white animate-pulse"></div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700">Catatan Wali</h4>
+                            <p class="text-[10px] text-slate-500 mt-0.5" id="label-catatan">
+                                Tidak ada pesan baru
+                            </p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                </div>
+
+            </div>
+        </div>
+
     </div>
-    
-    <div class="modal-body">
-      <div class="info-row">
-        <span class="label">Nama Siswa</span>
-        <span class="value" id="m-t2q-nama">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Kelas</span>
-        <span class="value" id="m-t2q-kelas">-</span>
-      </div>
-      <div class="info-row highlight">
-        <span class="label">Capaian / Batas</span>
-        <span class="value" id="m-t2q-batas" style="color: #00b894; font-weight:bold;">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Pengampu</span>
-        <span class="value" id="m-t2q-pengampu">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Tidak Setor</span>
-        <span class="value" id="m-t2q-alpa">-</span>
-      </div>
+
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+
+    <div id="modalT2Q" class="fixed inset-0 z-[70] hidden items-center justify-center p-4" onclick="tutupModalT2Q(event)">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl relative animate-[fadeInUp_0.3s_ease-out]">
+            <button onclick="document.getElementById('modalT2Q').style.display='none'" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-book-quran text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Laporan T2Q</h3>
+                <p class="text-xs text-slate-500" id="m-t2q-nama">-</p>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
+                    <span class="text-xs text-slate-500">Kelas</span>
+                    <span class="text-xs font-bold text-slate-700" id="m-t2q-kelas">-</span>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-lg">
+                    <span class="text-xs text-emerald-600 block mb-1">Capaian / Batas Akhir</span>
+                    <span class="text-sm font-bold text-emerald-800" id="m-t2q-batas">Belum ada data</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
+                    <span class="text-xs text-slate-500">Pengampu</span>
+                    <span class="text-xs font-bold text-slate-700" id="m-t2q-pengampu">-</span>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg flex justify-between">
+                    <span class="text-xs text-red-500">Tidak Setor</span>
+                    <span class="text-xs font-bold text-red-700" id="m-t2q-alpa">0</span>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <button class="btn-tutup" onclick="tutupModalT2Q(null)">Tutup</button>
-  </div>
-</div>
+
+    <div id="modal-bina" class="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl p-6 transform translate-y-full transition-transform duration-300 hidden shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
+        <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
+        <h3 class="text-lg font-bold text-slate-800 mb-1">Rapor Bina Pribadi</h3>
+        <p class="text-xs text-slate-500 mb-6">Detail penilaian karakter bulan ini</p>
+        
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 border border-slate-100 rounded-xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Kedisiplinan</p>
+                        <p class="text-[10px] text-slate-400">Waktu & Seragam</p>
+                    </div>
+                </div>
+                <span id="val-disiplin" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-600">-</span>
+            </div>
+            <div class="flex items-center justify-between p-3 border border-slate-100 rounded-xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Ibadah</p>
+                        <p class="text-[10px] text-slate-400">Sholat & Dzikir</p>
+                    </div>
+                </div>
+                <span id="val-ibadah" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-600">-</span>
+            </div>
+            <div class="flex items-center justify-between p-3 border border-slate-100 rounded-xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-700">Sosial</p>
+                        <p class="text-[10px] text-slate-400">Adab Sesama Teman</p>
+                    </div>
+                </div>
+                <span id="val-sosial" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-600">-</span>
+            </div>
+        </div>
+
+        <button onclick="tutupModalBina()" class="w-full mt-6 bg-slate-100 text-slate-700 py-3 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">
+            Tutup
+        </button>
+    </div>
+
+    <div id="modal-catatan" class="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl p-6 transform translate-y-full transition-transform duration-300 hidden shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
+        <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                <i class="fa-solid fa-quote-left"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-800">Pesan Wali Kelas</h3>
+                <p class="text-xs text-slate-500">Catatan khusus untuk orang tua</p>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 border border-yellow-100 p-4 rounded-xl min-h-[100px]">
+            <p id="isi-catatan-wali" class="text-sm text-slate-700 leading-relaxed italic">
+                Memuat pesan...
+            </p>
+        </div>
+
+        <button onclick="tutupModalCatatan()" class="w-full mt-6 bg-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+            Saya Mengerti
+        </button>
+    </div>
+
+    <div id="modal-profil" class="fixed inset-0 z-[80] hidden">
+        <div id="modal-content" class="absolute inset-0 bg-white transform translate-y-full transition-transform duration-300 flex flex-col h-full">
+            <div class="bg-slate-800 p-6 pt-12 pb-16 relative">
+                <button onclick="tutupProfil()" class="absolute top-6 left-6 text-white/80 hover:text-white">
+                    <i class="fa-solid fa-arrow-left text-xl"></i>
+                </button>
+                <div class="text-center">
+                    <img id="pop-foto" src="" class="w-20 h-20 rounded-full mx-auto border-4 border-white/20 shadow-lg mb-3 bg-white">
+                    <h2 id="pop-nama" class="text-white text-lg font-bold">Nama Siswa</h2>
+                    <p id="pop-nisn" class="text-slate-300 text-xs">NISN</p>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-white -mt-8 rounded-t-3xl px-6 py-8 overflow-y-auto no-scrollbar space-y-6">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Data Pribadi</h3>
+                    <div class="space-y-3">
+                        <div class="border-b border-slate-50 pb-2">
+                            <span class="text-[10px] text-slate-400 block">Nomor Induk Siswa (NIS)</span>
+                            <span id="pop-nis" class="text-sm font-medium text-slate-700">-</span>
+                        </div>
+                        <div class="border-b border-slate-50 pb-2">
+                            <span class="text-[10px] text-slate-400 block">Jenis Kelamin</span>
+                            <span id="pop-jk" class="text-sm font-medium text-slate-700">-</span>
+                        </div>
+                        <div class="border-b border-slate-50 pb-2">
+                            <span class="text-[10px] text-slate-400 block">Tempat, Tanggal Lahir</span>
+                            <span id="pop-ttl" class="text-sm font-medium text-slate-700">-</span>
+                        </div>
+                         <div class="border-b border-slate-50 pb-2">
+                            <span class="text-[10px] text-slate-400 block">Alamat</span>
+                            <span id="pop-alamat" class="text-sm font-medium text-slate-700">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Data Orang Tua</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-3 rounded-lg">
+                            <span class="text-[10px] text-slate-400 block mb-1">Ayah</span>
+                            <span id="pop-ayah" class="text-xs font-bold text-slate-700 block">-</span>
+                            <span id="pop-ker-ayah" class="text-[10px] text-slate-500">-</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg">
+                            <span class="text-[10px] text-slate-400 block mb-1">Ibu</span>
+                            <span id="pop-ibu" class="text-xs font-bold text-slate-700 block">-</span>
+                            <span id="pop-ker-ibu" class="text-[10px] text-slate-500">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
-    // === LOGIC UTAMA ===
-
     // 1. Cek Login & Ambil Data dari LocalStorage
     const savedData = localStorage.getItem('user_data');
     if (!savedData) {
@@ -426,30 +335,32 @@
 
     const user = JSON.parse(savedData);
 
-    // 2. ISI DATA KE TAMPILAN SAAT LOAD SELESAI
+    // 2. ISI DATA SAAT LOAD SELESAI
     document.addEventListener("DOMContentLoaded", () => {
-        // Set Data Dasar
+        // --- DATA DASAR ---
         setText('nama-siswa', user.nama);
         setText('nisn-siswa', user.nisn);
         setText('kelas-siswa', user.kelas);
         setGreeting();
 
-        // --- UPDATE ABSENSI ---
+        // --- 3. LOGIKA ABSENSI ---
         if (user.absensi) {
             const persenTeks = user.absensi.persen || "0%";
             setText('absen-persen', persenTeks);
 
             // Grafik Lingkaran
             let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
-            let derajat = (persenAngka / 100) * 360;
+            let derajat = (persenAngka / 100) * 100; // Stroke-dasharray is 100 based
             const ring = document.getElementById('absen-ring');
-            if(ring) ring.style.setProperty('--percent', derajat + 'deg');
+            if(ring) {
+                setTimeout(() => { ring.setAttribute('stroke-dasharray', `${derajat}, 100`); }, 500);
+            }
 
-            // Detail H/S/I/A
-            setText('val-h', (user.absensi.h || 0) + " H");
-            setText('val-s', (user.absensi.s || 0) + " S");
-            setText('val-i', (user.absensi.i || 0) + " I");
-            setText('val-a', (user.absensi.a || 0) + " A");
+            // Detail Angka
+            setText('val-h', (user.absensi.h || 0));
+            setText('val-s', (user.absensi.s || 0));
+            setText('val-i', (user.absensi.i || 0));
+            setText('val-a', (user.absensi.a || 0));
 
             // Status Hari Ini
             updateStatusHarian(user.absensi.statusToday);
@@ -457,41 +368,64 @@
             updateStatusHarian("");
         }
         
-        // --- UPDATE T2Q (VERSI BARU DENGAN JUZ) ---
+        // --- 4. LOGIKA T2Q (HIJAU + JUZ) ---
         if (user.t2q) {
-            // Ambil data
             var batasHafalan = user.t2q.batas;
-            var infoJuz = user.t2q.juz; // Ambil data juz
+            var infoJuz = user.t2q.juz;
 
             if(!batasHafalan || batasHafalan === "") {
                 batasHafalan = "Belum ada data";
                 infoJuz = "";
             }
 
-            // REKOMPOSISI HTML (Hijau untuk Surah, Hitam Kecil untuk Juz)
-            // Jika juz ada isinya, kita tampilkan.
+            // Render HTML T2Q
             var htmlKonten = `<span class="font-bold text-emerald-600 text-[11px]">${batasHafalan}</span>`;
-            
             if (infoJuz && infoJuz !== "-") {
                 htmlKonten += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${infoJuz}</span>`;
             }
 
-            // Masukkan ke elemen (Gunakan innerHTML, bukan innerText)
             document.getElementById('t2q-batas').innerHTML = htmlKonten;
-
-            // Simpan ke variabel global untuk Modal
             window.dataT2QUser = user.t2q;
         } else {
-            // Fallback
-             window.dataT2QUser = { 
-                nama: user.nama, 
-                kelas: user.kelas, 
-                batas: "Belum ada data", 
-                juz: "",
-                pengampu: "-", 
-                tidak_setor: "0" 
-            };
+            window.dataT2QUser = { nama: user.nama, kelas: user.kelas, batas: "Belum ada data", juz: "", pengampu: "-", tidak_setor: "0" };
             document.getElementById('t2q-batas').innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+        }
+
+        // --- 5. LOGIKA BINA PRIBADI (BINTANG) ---
+        // Ambil data dari JSON (default kosong jika belum ada)
+        const bina = user.bina_pribadi || { avg_bintang: 0, detail: {d:0, i:0, s:0}, catatan_wali: "", ada_pesan: false };
+        window.dataBina = bina; // Simpan ke global untuk modal
+
+        // Render Bintang (Skala 4)
+        const starContainer = document.getElementById('star-display');
+        const jumlahBintang = bina.avg_bintang || 0;
+        
+        let htmlBintang = '';
+        if(jumlahBintang === 0) {
+            htmlBintang = '<span class="text-slate-300 text-[10px]">Belum dinilai</span>';
+        } else {
+            // Loop 4 kali (Maksimal 4 bintang)
+            for(let i=1; i<=4; i++) {
+                if(i <= jumlahBintang) {
+                    htmlBintang += '<i class="fa-solid fa-star text-yellow-400 text-[10px]"></i>';
+                } else {
+                    htmlBintang += '<i class="fa-solid fa-star text-slate-200 text-[10px]"></i>';
+                }
+            }
+        }
+        starContainer.innerHTML = htmlBintang;
+
+        // --- 6. LOGIKA CATATAN WALI (DOT MERAH) ---
+        const badgeWali = document.getElementById('notif-badge-wali');
+        const labelCatatan = document.getElementById('label-catatan');
+
+        if(bina.ada_pesan === true) {
+            badgeWali.classList.remove('hidden'); // Munculkan titik merah
+            labelCatatan.innerText = "1 Pesan Baru";
+            labelCatatan.classList.add('text-indigo-600', 'font-semibold');
+        } else {
+            badgeWali.classList.add('hidden');
+            labelCatatan.innerText = "Tidak ada pesan baru";
         }
 
         // Set Avatar Dicebear
@@ -502,10 +436,19 @@
         }
     });
 
-    // --- Helper Function ---
+    // --- HELPER FUNCTION ---
     function setText(id, text) {
         const el = document.getElementById(id);
         if (el) el.innerText = text;
+    }
+
+    // Fungsi Konversi Angka ke Kata (1-4)
+    function getPredikat(skor) {
+        if(skor == 4) return `<span class="text-emerald-600">Sangat Baik (A)</span>`;
+        if(skor == 3) return `<span class="text-blue-600">Baik (B)</span>`;
+        if(skor == 2) return `<span class="text-amber-600">Cukup (C)</span>`;
+        if(skor == 1) return `<span class="text-red-500">Kurang (D)</span>`;
+        return `<span class="text-slate-400">-</span>`;
     }
 
     function setGreeting() {
@@ -515,174 +458,170 @@
         else if (hour >= 11 && hour < 15) greet = "Selamat Siang,";
         else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
         else greet = "Selamat Malam,";
-        
         document.getElementById('sapaan-waktu').innerText = greet;
     }
 
-    // --- Logout ---
     function logout() {
         if(navigator.vibrate) navigator.vibrate(50);
         if(confirm("Apakah Anda yakin ingin keluar?")) {
             localStorage.removeItem('user_data');
             document.body.classList.add('opacity-50'); 
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 300);
+            setTimeout(() => { window.location.href = 'index.html'; }, 300);
         }
     }
 
-    // --- MODAL PROFIL (Dasis) ---
-    function bukaProfil() {
-        const userData = JSON.parse(localStorage.getItem('user_data')); // Ambil fresh data
-        const dasis = userData.dasis || {}; 
+    // --- MANAJEMEN MODAL (POPUP) ---
 
+    // 1. Profil
+    function bukaProfil() {
+        const userData = JSON.parse(localStorage.getItem('user_data'));
+        const dasis = userData.dasis || {}; 
         document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
         document.getElementById('pop-nama').innerText = userData.nama;
         document.getElementById('pop-nisn').innerText = "NISN: " + userData.nisn;
-
         setText('pop-nis', dasis.nis || '-');
         setText('pop-jk', dasis.jk || '-');
         setText('pop-ttl', dasis.ttl || '-');
-        setText('pop-agama', dasis.agama || '-');
         setText('pop-alamat', dasis.alamat || '-');
-        
         setText('pop-ayah', dasis.ayah || '-');
-        setText('pop-ker-ayah', dasis.ker_ayah ? 'Pekerjaan: ' + dasis.ker_ayah : '-');
-        
+        setText('pop-ker-ayah', dasis.ker_ayah ? dasis.ker_ayah : '-');
         setText('pop-ibu', dasis.ibu || '-');
-        setText('pop-ker-ibu', dasis.ker_ibu ? 'Pekerjaan: ' + dasis.ker_ibu : '-');
+        setText('pop-ker-ibu', dasis.ker_ibu ? dasis.ker_ibu : '-');
 
         const modal = document.getElementById('modal-profil');
-        const backdrop = document.getElementById('modal-backdrop');
         const content = document.getElementById('modal-content');
-
         modal.classList.remove('hidden');
-        setTimeout(() => {
-            backdrop.classList.remove('opacity-0');
-            content.classList.remove('translate-y-full');
-        }, 10);
+        setTimeout(() => { content.classList.remove('translate-y-full'); }, 10);
+        toggleMenu(); // Tutup menu dropdown jika terbuka
     }
-
     function tutupProfil() {
         const modal = document.getElementById('modal-profil');
-        const backdrop = document.getElementById('modal-backdrop');
         const content = document.getElementById('modal-content');
-
-        backdrop.classList.add('opacity-0');
         content.classList.add('translate-y-full');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 500);
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
     }
 
-    // --- MODAL T2Q (Tahfidz) ---
-    window.bukaModalT2Q = function() {
+    // 2. T2Q
+    function bukaModalT2Q() {
         var d = window.dataT2QUser;
-        if(!d) {
-            alert("Data T2Q belum dimuat. Silakan refresh.");
-            return;
-        }
-
-        // Isi data ke dalam Popup
+        if(!d) return;
         document.getElementById('m-t2q-nama').innerText = d.nama || "-";
         document.getElementById('m-t2q-kelas').innerText = d.kelas || "-";
-        
-        // Style warna hijau untuk batas
-        const elBatas = document.getElementById('m-t2q-batas');
-        elBatas.innerText = d.batas || "Belum ada data";
-        elBatas.style.color = "#00b894";
-        elBatas.style.fontWeight = "bold";
-
+        document.getElementById('m-t2q-batas').innerText = d.batas || "Belum ada data";
         document.getElementById('m-t2q-pengampu').innerText = d.pengampu || "-";
         document.getElementById('m-t2q-alpa').innerText = (d.tidak_setor || "0") + " kali";
-
-        // Munculkan Popup
         document.getElementById('modalT2Q').style.display = 'flex';
     }
-
-    window.tutupModalT2Q = function(e) {
-        if (e === null || e.target.id === 'modalT2Q') {
-            document.getElementById('modalT2Q').style.display = 'none';
-        }
+    function tutupModalT2Q(e) {
+        if (e === null || e.target.id === 'modalT2Q') document.getElementById('modalT2Q').style.display = 'none';
     }
 
-    // --- MENU DROPDOWN ---
+    // 3. BINA PRIBADI (BARU)
+    function bukaModalBina() {
+        const d = window.dataBina.detail || {d:0, i:0, s:0};
+        
+        // Isi nilai dengan predikat (Sangat Baik/Baik/dll)
+        document.getElementById('val-disiplin').innerHTML = getPredikat(d.d);
+        document.getElementById('val-ibadah').innerHTML = getPredikat(d.i);
+        document.getElementById('val-sosial').innerHTML = getPredikat(d.s);
+
+        // Animasi Buka Bottom Sheet
+        const backdrop = document.getElementById('modal-backdrop');
+        const modal = document.getElementById('modal-bina');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => { backdrop.classList.remove('opacity-0'); }, 10);
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => { modal.classList.remove('translate-y-full'); }, 10);
+    }
+    function tutupModalBina() {
+        const backdrop = document.getElementById('modal-backdrop');
+        const modal = document.getElementById('modal-bina');
+        
+        modal.classList.add('translate-y-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => { 
+            modal.classList.add('hidden'); 
+            backdrop.classList.add('hidden');
+        }, 300);
+    }
+
+    // 4. CATATAN WALI (BARU)
+    function bukaModalCatatan() {
+        const pesan = window.dataBina.catatan_wali;
+        const elPesan = document.getElementById('isi-catatan-wali');
+        
+        if(!pesan || pesan === "" || pesan === "-") {
+            elPesan.innerText = "Tidak ada catatan khusus dari Wali Kelas bulan ini. Ananda beraktivitas dengan baik.";
+            elPesan.classList.add('text-slate-400', 'italic');
+            elPesan.classList.remove('text-slate-700', 'not-italic');
+        } else {
+            elPesan.innerText = `"${pesan}"`;
+            elPesan.classList.remove('text-slate-400', 'italic');
+            elPesan.classList.add('text-slate-700', 'not-italic');
+        }
+
+        // Animasi Buka Bottom Sheet
+        const backdrop = document.getElementById('modal-backdrop');
+        const modal = document.getElementById('modal-catatan');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => { backdrop.classList.remove('opacity-0'); }, 10);
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => { modal.classList.remove('translate-y-full'); }, 10);
+    }
+    function tutupModalCatatan() {
+        const backdrop = document.getElementById('modal-backdrop');
+        const modal = document.getElementById('modal-catatan');
+        
+        modal.classList.add('translate-y-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => { 
+            modal.classList.add('hidden'); 
+            backdrop.classList.add('hidden');
+        }, 300);
+    }
+
+    // Dropdown Menu Toggle
     function toggleMenu() {
         const menu = document.getElementById('dropdown-menu');
         if (menu.classList.contains('hidden')) {
             menu.classList.remove('hidden');
-            setTimeout(() => {
-                menu.classList.remove('scale-95', 'opacity-0');
-                menu.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            setTimeout(() => { menu.classList.remove('scale-95', 'opacity-0'); menu.classList.add('scale-100', 'opacity-100'); }, 10);
         } else {
-            menu.classList.remove('scale-100', 'opacity-100');
-            menu.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                menu.classList.add('hidden');
-            }, 200);
+            menu.classList.remove('scale-100', 'opacity-100'); menu.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { menu.classList.add('hidden'); }, 200);
         }
     }
-
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
         const triggerBtn = e.target.closest('button');
-        if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
-            toggleMenu();
-        }
+        if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) toggleMenu();
     });
 
-    // --- STATUS HARIAN ---
+    // Helper Status Harian
     function updateStatusHarian(kodeAbsen) {
         const descEl = document.getElementById('text-deskripsi');
         const badgeEl = document.getElementById('badge-status');
         const iconBgEl = document.getElementById('icon-status-bg');
-
         if (!descEl || !badgeEl || !iconBgEl) return;
 
         let statusLabel = "", deskripsi = "", warnaBadge = "", warnaIcon = "";
         const kode = kodeAbsen ? kodeAbsen.toString().toUpperCase().trim() : "";
 
         switch (kode) {
-            case 'H':
-                statusLabel = "HADIR";
-                deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah.";
-                warnaBadge = "bg-emerald-100 text-emerald-700";
-                warnaIcon = "bg-emerald-500";
-                break;
-            case 'I':
-                statusLabel = "IZIN";
-                deskripsi = "Ananda tercatat Izin. Semoga urusannya lancar.";
-                warnaBadge = "bg-amber-100 text-amber-700";
-                warnaIcon = "bg-amber-500";
-                break;
-            case 'S':
-                statusLabel = "SAKIT";
-                deskripsi = "Ananda tercatat Sakit. Syafakallah, semoga lekas sembuh.";
-                warnaBadge = "bg-yellow-100 text-yellow-700";
-                warnaIcon = "bg-yellow-500";
-                break;
-            case 'A':
-                statusLabel = "ALFA";
-                deskripsi = "Tidak Hadir Tanpa Keterangan. Mohon konfirmasi Wali Kelas.";
-                warnaBadge = "bg-red-100 text-red-700";
-                warnaIcon = "bg-red-500";
-                break;
-            default: 
-                statusLabel = "BELUM ADA DATA";
-                deskripsi = "Data kehadiran hari ini belum masuk.";
-                warnaBadge = "bg-slate-200 text-slate-600";
-                warnaIcon = "bg-slate-400";
-                break;
+            case 'H': statusLabel = "HADIR"; deskripsi = "Alhamdulillah, Ananda tercatat hadir di sekolah."; warnaBadge = "bg-emerald-100 text-emerald-700"; warnaIcon = "bg-emerald-500"; break;
+            case 'I': statusLabel = "IZIN"; deskripsi = "Ananda tercatat Izin. Semoga urusannya lancar."; warnaBadge = "bg-amber-100 text-amber-700"; warnaIcon = "bg-amber-500"; break;
+            case 'S': statusLabel = "SAKIT"; deskripsi = "Ananda tercatat Sakit. Syafakallah, semoga lekas sembuh."; warnaBadge = "bg-yellow-100 text-yellow-700"; warnaIcon = "bg-yellow-500"; break;
+            case 'A': statusLabel = "ALFA"; deskripsi = "Tidak Hadir Tanpa Keterangan. Mohon konfirmasi Wali Kelas."; warnaBadge = "bg-red-100 text-red-700"; warnaIcon = "bg-red-500"; break;
+            default:  statusLabel = "BELUM ADA DATA"; deskripsi = "Data kehadiran hari ini belum masuk."; warnaBadge = "bg-slate-200 text-slate-600"; warnaIcon = "bg-slate-400"; break;
         }
-
         badgeEl.textContent = statusLabel;
         badgeEl.className = `inline-block px-2 py-0.5 rounded text-[10px] font-bold ml-1 ${warnaBadge}`;
         badgeEl.classList.remove('hidden');
         descEl.textContent = deskripsi;
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
-</script>
-
+    </script>
 </body>
 </html>
