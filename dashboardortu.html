@@ -458,6 +458,33 @@
   </div>
 </div>
 
+    <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)" style="display: none;">
+  <div class="modal-content">
+    <div class="text-center mb-2 pt-2">
+       <div class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce">
+         <i class="fa-solid fa-comment-dots"></i>
+       </div>
+       <h3 class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3>
+    </div>
+    
+    <div class="bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2">
+       <i class="fa-solid fa-quote-left text-orange-200 absolute top-2 left-3 text-xl"></i>
+       
+       <p id="isi-pesan-wali" class="text-slate-700 text-sm font-medium leading-relaxed italic relative z-10">
+          - Memuat pesan -
+       </p>
+       
+       <i class="fa-solid fa-quote-right text-orange-200 absolute bottom-2 right-3 text-xl"></i>
+    </div>
+    
+    <div class="mt-6">
+       <button onclick="tutupCatatanWali(null)" class="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-xl text-sm font-bold shadow-md shadow-orange-200 hover:shadow-lg active:scale-95 transition transform">
+         Siap, Saya Mengerti
+       </button>
+    </div>
+  </div>
+</div>
+
     <script>
     // === LOGIC UTAMA ===
 
@@ -793,28 +820,42 @@
         }
     }
 
-    // 2. Logic Buka Catatan Wali
+    // --- LOGIC BARU: MODAL CATATAN WALI (No More Alert) ---
     function bukaCatatanWali() {
         const pesan = window.pesanWali;
         const elLabel = document.getElementById('label-catatan');
-        const label = elLabel ? elLabel.innerText : "";
+        const labelText = elLabel ? elLabel.innerText : "";
 
-        if (label === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "") {
-            // Alert jika kosong
-            alert("Tidak ada catatan baru dari Wali Kelas saat ini.");
-        } else {
-            // Tampilkan Pesan
-            alert("✉️ CATATAN WALI KELAS:\n\n" + pesan);
-            
-            // Hilangkan notif setelah dibaca
-            const elNotif = document.getElementById('notif-dot');
-            if(elNotif) elNotif.classList.add('hidden');
-            
-            if(elLabel) {
-                elLabel.innerText = "Sudah dibaca";
-                elLabel.classList.remove('text-orange-600', 'font-bold');
-                elLabel.classList.add('text-slate-400');
-            }
+        // Cek jika kosong
+        if (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "") {
+             // Opsional: Bisa buat modal khusus "Kosong", tapi alert simple oke untuk info kosong.
+             // Atau diamkan saja. Di sini saya pakai alert kecil atau console log saja.
+             alert("Tidak ada catatan baru saat ini."); 
+             return; 
+        }
+
+        // 1. Masukkan Pesan ke Modal Cantik
+        document.getElementById('isi-pesan-wali').innerText = pesan;
+
+        // 2. Tampilkan Modal
+        document.getElementById('modalCatatan').style.display = 'flex';
+
+        // 3. Otomatis tandai "Sudah Dibaca" (Hilangkan Merah)
+        const elNotif = document.getElementById('notif-dot');
+        if(elNotif) elNotif.classList.add('hidden');
+        
+        if(elLabel) {
+            elLabel.innerText = "Sudah dibaca";
+            elLabel.classList.remove('text-orange-600', 'font-bold');
+            elLabel.classList.add('text-slate-400');
+        }
+    }
+
+    function tutupCatatanWali(e) {
+        const el = document.getElementById('modalCatatan');
+        // Tutup jika tombol diklik (e=null) atau background diklik
+        if (el && (e === null || e.target.id === 'modalCatatan')) {
+            el.style.display = 'none';
         }
     }
 </script>
