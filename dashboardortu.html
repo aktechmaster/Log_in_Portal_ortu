@@ -115,15 +115,15 @@
                         </button>
                         
                         <div onclick="bukaInfo()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between active:scale-95 transition-transform duration-200 cursor-pointer">
-    <div class="flex justify-between items-start mb-2">
-        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-             <i class="fa-solid fa-circle-info text-lg"></i>
-        </div>
-    </div>
-    <div>
-        <h3 class="font-bold text-slate-700 text-sm">Tentang Aplikasi</h3>
-        </div>
-</div>
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                     <i class="fa-solid fa-circle-info text-lg"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-700 text-sm">Tentang Aplikasi</h3>
+                            </div>
+                        </div>
 
                         <button onclick="alert('Fitur Ganti Password akan segera tersedia.')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
                             <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
@@ -132,11 +132,16 @@
                         <div class="h-px bg-slate-100 my-1"></div>
 
                         <div onclick="bukaModalLogout()" class="bg-red-50 p-4 rounded-2xl border border-red-100 flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
-    <div class="text-red-500 text-xl mb-1">
-        <i class="fa-solid fa-power-off"></i>
-    </div>
-    <span class="text-red-500 font-bold text-xs">Keluar</span>
-</div>
+                            <div class="text-red-500 text-xl mb-1">
+                                <i class="fa-solid fa-power-off"></i>
+                            </div>
+                            <span class="text-red-500 font-bold text-xs">Keluar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
             <div class="relative group">
                 <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
@@ -308,7 +313,7 @@
             <span class="text-[9px] font-medium">Profil</span>
         </button>
         
-        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
+        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="bukaModalLogout()">
             <i class="fa-solid fa-right-from-bracket text-lg"></i>
             <span class="text-[9px] font-medium">Keluar</span>
         </button>
