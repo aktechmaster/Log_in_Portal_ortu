@@ -114,9 +114,16 @@
                             <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
                         </button>
                         
-                        <button onclick="bukaInfo()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-    <i class="fa-solid fa-circle-info w-4 text-center"></i> Tentang Aplikasi
-</button>
+                        <div onclick="bukaInfo()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between active:scale-95 transition-transform duration-200 cursor-pointer">
+    <div class="flex justify-between items-start mb-2">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+             <i class="fa-solid fa-circle-info text-lg"></i>
+        </div>
+    </div>
+    <div>
+        <h3 class="font-bold text-slate-700 text-sm">Tentang Aplikasi</h3>
+        </div>
+</div>
 
                         <button onclick="alert('Fitur Ganti Password akan segera tersedia.')" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
                             <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
@@ -458,7 +465,7 @@
   </div>
 </div>
 
-    <div id="modalCatatan" class="modal-overlay hidden" onclick="tutupCatatanWali(event)>
+    <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)" style="display: none;">
   <div class="modal-content">
     <div class="text-center mb-2 pt-2">
        <div id="mc-icon-bg" class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce">
@@ -485,30 +492,26 @@
   </div>
 </div>
 
-    <div id="modalInfo" class="modal-overlay hidden" onclick="tutupInfo(event)" style="display:none; align-items:center; justify-content:center;">
-  <div class="modal-content text-center">
-    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
-      <i class="fa-solid fa-circle-info"></i>
+    <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)" style="display: none;">
+  <div class="modal-content">
+    <div class="text-center mb-2 pt-2">
+       <div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm">
+         <i class="fa-solid fa-circle-info"></i>
+       </div>
+       <h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3>
     </div>
     
-    <h3 class="font-bold text-slate-800 text-xl mb-2">Dashboard Wali Murid</h3>
-    
-    <div class="inline-block bg-blue-100 px-4 py-1 rounded-full text-xs font-bold text-blue-600 border border-blue-200 mb-4">
-      Versi 1.0 Beta
+    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center space-y-2">
+       <h4 class="font-bold text-blue-800 text-lg">Dashboard Wali Murid</h4>
+       <div class="inline-block bg-white px-3 py-1 rounded-full text-xs font-bold text-blue-500 border border-blue-200 shadow-sm">
+         Versi 1.0 Beta
+       </div>
+       <div class="border-t border-blue-200 my-3"></div>
+       <p class="text-xs text-slate-500 font-medium">
+         &copy; 2026 SMP IT Al-Kautsar<br>
+         <span class="text-[10px] text-slate-400">Developed by Tim IT Sekolah</span>
+       </p>
     </div>
-
-    <div class="border-t border-slate-100 my-4"></div>
-    
-    <p class="text-[11px] text-slate-500 leading-relaxed">
-      &copy; 2026 SMP IT Al-Kautsar<br>
-      <span class="font-medium text-slate-400">Developed by Tim IT Sekolah</span>
-    </p>
-    
-    <button onclick="tutupInfo(null)" class="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl text-sm font-bold shadow-lg active:scale-95 transition-transform">
-      Tutup
-    </button>
-  </div>
-</div>
     
     <div class="mt-6">
        <button onclick="tutupInfo(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 transition transform active:scale-95">
@@ -676,7 +679,8 @@
 
     // --- MODAL PROFIL (Dasis) ---
     function bukaProfil() {
-        const dasis = user.dasis || {}; 
+        const userData = JSON.parse(localStorage.getItem('user_data')); // Ambil fresh data
+        const dasis = userData.dasis || {}; 
 
         document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
         document.getElementById('pop-nama').innerText = userData.nama;
