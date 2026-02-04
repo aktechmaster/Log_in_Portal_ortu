@@ -974,70 +974,62 @@ function tutupModalPassword() {
     document.getElementById('formGantiPass').reset(); // Reset form saat ditutup
 }
 
-// --- Fungsi Logika Ganti Password (PERBAIKAN) ---
 function prosesGantiPass(e) {
     e.preventDefault();
     
+    // --- TEMPEL URL ANDA DI SINI (WAJIB) ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/...../exec"; 
+    // ---------------------------------------
+
     const passBaru = document.getElementById('passBaru').value;
     const konfirmasi = document.getElementById('konfirmasiPass').value;
     const btnSimpan = document.getElementById('btnSimpanPass');
 
-    // 1. Validasi Input Password
-    if (!passBaru || !konfirmasi) {
-        alert("Password tidak boleh kosong!");
-        return;
-    }
+    // 1. Validasi Password
+    if (!passBaru || !konfirmasi) { alert("Password kosong!"); return; }
+    if (passBaru !== konfirmasi) { alert("Password tidak sama!"); return; }
 
-    if (passBaru !== konfirmasi) {
-        alert("Password dan Konfirmasi tidak cocok!");
-        return;
-    }
-
-    // 2. AMBIL NISN YANG BENAR (Perbaikan disini)
-    // Kita ambil dari 'user_data' yang sudah tersimpan saat login
+    // 2. Ambil NISN dari LocalStorage
     const savedData = localStorage.getItem('user_data');
     let userNISN = "";
-
-    if (savedData) {
-        const parsedUser = JSON.parse(savedData);
-        userNISN = parsedUser.nisn; // Ambil properti 'nisn' dari dalam objek
-    }
+    if (savedData) userNISN = JSON.parse(savedData).nisn;
     
-    // Cek jika NISN masih kosong atau sesi habis
-    if (!userNISN) {
-        alert("Sesi login tidak valid atau NISN tidak ditemukan. Silakan logout dan login ulang.");
-        return;
-    }
+    if (!userNISN) { alert("Error: NISN tidak ditemukan, silakan login ulang."); return; }
 
-    // 3. Ubah tombol jadi Loading
+    // 3. Ubah Tombol Loading
     const textAsli = btnSimpan.innerText;
     btnSimpan.innerText = "Menyimpan...";
     btnSimpan.disabled = true;
 
-    // 4. Kirim ke Google Apps Script
-    // Pastikan nama fungsi di bawah (gantiPasswordSiswa) SAMA PERSIS dengan di file .gs
-    google.script.run
-        .withSuccessHandler(function(response) {
-            // Kembalikan tombol ke semula
-            btnSimpan.innerText = textAsli;
-            btnSimpan.disabled = false;
-            
-            // Cek respon dari GS
-            if (response && response.status === 'sukses') {
-                alert("Berhasil! Password Anda telah diganti.");
-                tutupModalPassword();
-            } else {
-                // Tampilkan pesan error dari server
-                alert("Gagal: " + (response ? response.pesan : "Kesalahan tidak diketahui"));
-            }
-        })
-        .withFailureHandler(function(error) {
-            // Jika koneksi internet putus atau script error
-            btnSimpan.innerText = textAsli;
-            btnSimpan.disabled = false;
-            alert("Terjadi kesalahan koneksi: " + error.message);
-        })
-        .gantiPasswordSiswa(userNISN, passBaru);
+    // 4. Siapkan Data
+    const formData = new FormData();
+    formData.append('action', 'gantiPass');
+    formData.append('nisn', userNISN);
+    formData.append('password', passBaru);
+
+    // 5. Kirim pakai FETCH (Pengganti google.script.run)
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(result => {
+        btnSimpan.innerText = textAsli;
+        btnSimpan.disabled = false;
+        
+        if (result.status === 'sukses') {
+            alert("Berhasil ganti password!");
+            tutupModalPassword();
+        } else {
+            alert("Gagal: " + result.pesan);
+        }
+    })
+    .catch(err => {
+        btnSimpan.innerText = textAsli;
+        btnSimpan.disabled = false;
+        alert("Gagal koneksi. Cek internet atau URL Script.");
+        console.error(err);
+    });
 }
 </script>
 
