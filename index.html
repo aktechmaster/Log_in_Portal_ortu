@@ -37,13 +37,31 @@
     </div>
 
     <script>
-    // URL GOOGLE SCRIPT ANDA (Pastikan ini Deployment ID terbaru / exec)
+    // URL GOOGLE SCRIPT ANDA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydMwMk-q0_MU2i2SFf4tpKqu9iTqQLuS94rnPa--8gaaDIoT_ElhadEzvwG1CLC6G7/exec';
 
-    // CEK LOGIN: Kalau sudah login, langsung lempar ke dashboard
-    if (localStorage.getItem('nisn')) {
-        window.location.href = 'dashboardortu.html';
+    // --- LOGIKA ANTI-LOOP (REM DARURAT) ---
+    // Kita cek apakah user baru saja logout?
+    const urlParams = new URLSearchParams(window.location.search);
+    const isLogout = urlParams.get('status') === 'logout';
+
+    if (isLogout) {
+        // Jika user baru logout, PAKSA hapus semua data
+        localStorage.clear();
+        localStorage.removeItem('nisn');
+        localStorage.removeItem('user_data');
+        
+        // Bersihkan URL agar terlihat rapi (menghapus ?status=logout)
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } 
+    else {
+        // Jika BUKAN logout, baru kita cek apakah sudah login?
+        // Ini mencegah redirect otomatis jika user sebenarnya ingin keluar
+        if (localStorage.getItem('nisn')) {
+            window.location.href = 'dashboardortu.html';
+        }
     }
+    // ---------------------------------------
 
     const loginForm = document.getElementById('login-form');
     const btnLogin = loginForm.querySelector('button');
@@ -54,7 +72,6 @@
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
         
-        // UI Loading
         const originalText = btnLogin.innerText;
         btnLogin.innerText = "Mengecek Data...";
         btnLogin.disabled = true;
@@ -65,15 +82,11 @@
             .then(data => {
                 if (data.result === 'success') {
                     
-                    // --- PERBAIKAN DI SINI ---
-                    // 1. Simpan Data Lengkap (Opsional/Cadangan)
+                    // Simpan Data
                     localStorage.setItem('user_data', JSON.stringify(data));
-                    
-                    // 2. Simpan NISN secara KHUSUS (Wajib untuk fitur Ganti Pass)
                     localStorage.setItem('nisn', username); 
-                    // -------------------------
-
-                    // 3. Pindah ke Dashboard
+                    
+                    // Pindah ke Dashboard
                     window.location.href = 'dashboardortu.html';
 
                 } else {
@@ -93,6 +106,6 @@
         btnLogin.disabled = false;
         btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
     }
-    </script>
+</script>
 </body>
 </html>
