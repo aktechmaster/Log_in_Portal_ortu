@@ -37,11 +37,11 @@
     </div>
 
     <script>
-    // URL GOOGLE SCRIPT ANDA
+    // URL GOOGLE SCRIPT ANDA (Pastikan ini Deployment ID terbaru / exec)
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwG2qI6JYRA009M3qcWv0nIgLw2XAmk8p0Vc2qH9KLl1hXroPDIpntbTxesp6XQWspb/exec';
 
     // CEK LOGIN: Kalau sudah login, langsung lempar ke dashboard
-    if (localStorage.getItem('user_data')) {
+    if (localStorage.getItem('nisn')) {
         window.location.href = 'dashboardortu.html';
     }
 
@@ -64,11 +64,18 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // 1. SIMPAN DATA KE PENYIMPANAN BROWSER
+                    
+                    // --- PERBAIKAN DI SINI ---
+                    // 1. Simpan Data Lengkap (Opsional/Cadangan)
                     localStorage.setItem('user_data', JSON.stringify(data));
                     
-                    // 2. PINDAH KE HALAMAN DASHBOARD
+                    // 2. Simpan NISN secara KHUSUS (Wajib untuk fitur Ganti Pass)
+                    localStorage.setItem('nisn', username); 
+                    // -------------------------
+
+                    // 3. Pindah ke Dashboard
                     window.location.href = 'dashboardortu.html';
+
                 } else {
                     alert("Gagal: " + (data.message || "NISN/Password Salah"));
                     resetButton(originalText);
@@ -76,7 +83,7 @@
             })
             .catch(error => {
                 console.error(error);
-                alert("Gangguan koneksi internet.");
+                alert("Gangguan koneksi internet atau Script URL salah.");
                 resetButton(originalText);
             });
     });
