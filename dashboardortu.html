@@ -564,21 +564,32 @@
     <script>
     // === LOGIC UTAMA ===
 
-    // 1. Cek Login & Ambil Data dari LocalStorage
-    const savedData = localStorage.getItem('user_data');
-    if (!savedData) {
-        window.location.href = 'index.html';
-    }
+    // 1. Cek Login & Ambil Data
+const savedData = localStorage.getItem('user_data');
 
-    const user = JSON.parse(savedData);
+// JANGAN gunakan alert di sini, langsung redirect saja jika data kosong
+if (!savedData) {
+    window.location.replace('index.html');
+} else {
+    // Hanya jalankan JSON.parse jika savedData memang ada
+    var user = JSON.parse(savedData);
+}
 
-    // 2. ISI DATA KE TAMPILAN SAAT LOAD SELESAI
-    document.addEventListener("DOMContentLoaded", () => {
-        // Set Data Dasar
+// 2. ISI DATA KE TAMPILAN
+document.addEventListener("DOMContentLoaded", () => {
+    // Pastikan variabel 'user' tersedia
+    if (!user) return; 
+
+    try {
         setText('nama-siswa', user.nama);
         setText('nisn-siswa', user.nisn);
         setText('kelas-siswa', user.kelas);
         setGreeting();
+        // ... sisa kode lainnya ...
+    } catch (err) {
+        console.error("Gagal memuat data ke UI:", err);
+    }
+});
 
         // --- UPDATE ABSENSI ---
         if (user.absensi) {
@@ -706,16 +717,17 @@
     }
 
     function logout() {
+    function logout() {
     if (confirm("Yakin ingin keluar?")) {
-        // Hapus data
-        localStorage.clear();
+        // 1. Hapus data secara spesifik
+        localStorage.removeItem('user_data');
+        localStorage.removeItem('nisn');
         
-        // PENTING: Redirect ke halaman login DENGAN SINYAL status=logout
-        // Ganti 'index.html' sesuai nama file login Anda jika berbeda
-        window.location.replace("index.html?status=logout"); 
+        // 2. Gunakan replace agar user tidak bisa tekan tombol 'Back' kembali ke dashboard
+        // Kita beri parameter ?status=logout agar index.html tahu ini proses keluar
+        window.location.replace("index.html?status=logout");
     }
 }
-
     // 2. HAPUS DATA TERLEBIH DAHULU (Sangat Penting)
     localStorage.removeItem('user_data');
     localStorage.removeItem('nisn'); // Jaga-jaga jika ada sisa
