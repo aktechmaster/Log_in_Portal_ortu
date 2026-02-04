@@ -565,137 +565,149 @@
     // === LOGIC UTAMA ===
 
     // 1. Cek Login & Ambil Data
-const savedData = localStorage.getItem('user_data');
+    const savedData = localStorage.getItem('user_data');
+    var user = null; // Inisialisasi variabel user agar tidak undefined
 
-// JANGAN gunakan alert di sini, langsung redirect saja jika data kosong
-if (!savedData) {
-    window.location.replace('index.html');
-} else {
-    // Hanya jalankan JSON.parse jika savedData memang ada
-    var user = JSON.parse(savedData);
-}
-
-// 2. ISI DATA KE TAMPILAN
-document.addEventListener("DOMContentLoaded", () => {
-    // Pastikan variabel 'user' tersedia
-    if (!user) return; 
-
-    try {
-        setText('nama-siswa', user.nama);
-        setText('nisn-siswa', user.nisn);
-        setText('kelas-siswa', user.kelas);
-        setGreeting();
-        // ... sisa kode lainnya ...
-    } catch (err) {
-        console.error("Gagal memuat data ke UI:", err);
+    // JANGAN gunakan alert di sini, langsung redirect saja jika data kosong
+    if (!savedData) {
+        window.location.replace('index.html');
+    } else {
+        try {
+            // Hanya jalankan JSON.parse jika savedData memang ada
+            user = JSON.parse(savedData);
+        } catch (error) {
+            console.error("Data User Rusak:", error);
+            localStorage.removeItem('user_data');
+            window.location.replace('index.html');
+        }
     }
-});
 
-        // --- UPDATE ABSENSI ---
-        if (user.absensi) {
-            const persenTeks = user.absensi.persen || "0%";
-            setText('absen-persen', persenTeks);
+    // 2. ISI DATA KE TAMPILAN
+    document.addEventListener("DOMContentLoaded", () => {
+        // Pastikan variabel 'user' tersedia
+        if (!user) return; 
 
-            // Grafik Lingkaran
-            let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
-            let derajat = (persenAngka / 100) * 360;
-            const ring = document.getElementById('absen-ring');
-            if(ring) ring.style.setProperty('--percent', derajat + 'deg');
-
-            // Detail H/S/I/A
-            setText('val-h', (user.absensi.h || 0) + " H");
-            setText('val-s', (user.absensi.s || 0) + " S");
-            setText('val-i', (user.absensi.i || 0) + " I");
-            setText('val-a', (user.absensi.a || 0) + " A");
-
-            // Status Hari Ini
-            updateStatusHarian(user.absensi.statusToday);
-        } else {
-            updateStatusHarian("");
-        }
-        
-        // --- UPDATE T2Q (VERSI BARU DENGAN JUZ) ---
-        if (user.t2q) {
-            // Ambil data
-            var batasHafalan = user.t2q.batas;
-            var infoJuz = user.t2q.juz; // Ambil data juz
-
-            if(!batasHafalan || batasHafalan === "") {
-                batasHafalan = "Belum ada data";
-                infoJuz = "";
-            }
-
-            // REKOMPOSISI HTML (Hijau untuk Surah, Hitam Kecil untuk Juz)
-            // Jika juz ada isinya, kita tampilkan.
-            var htmlKonten = `<span class="font-bold text-emerald-600 text-[11px]">${batasHafalan}</span>`;
+        try {
+            // Isi data identitas dasar
+            setText('nama-siswa', user.nama);
+            setText('nisn-siswa', user.nisn);
+            setText('kelas-siswa', user.kelas);
+            setGreeting();
             
-            if (infoJuz && infoJuz !== "-") {
-                htmlKonten += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${infoJuz}</span>`;
+            // Set Avatar Dicebear (Pindahkan ke sini agar rapi)
+            const imgEl = document.getElementById('foto-siswa');
+            if (imgEl) {
+                const safeName = encodeURIComponent(user.nama || "User");
+                imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
             }
 
-            // Masukkan ke elemen (Gunakan innerHTML, bukan innerText)
-            document.getElementById('t2q-batas').innerHTML = htmlKonten;
+            // --- UPDATE ABSENSI ---
+            if (user.absensi) {
+                const persenTeks = user.absensi.persen || "0%";
+                setText('absen-persen', persenTeks);
 
-            // Simpan ke variabel global untuk Modal
-            window.dataT2QUser = user.t2q;
-        } else {
-            // Fallback
-             window.dataT2QUser = { 
-                nama: user.nama, 
-                kelas: user.kelas, 
-                batas: "Belum ada data", 
-                juz: "",
-                pengampu: "-", 
-                tidak_setor: "0" 
-            };
-            document.getElementById('t2q-batas').innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
-        }
+                // Grafik Lingkaran
+                let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
+                let derajat = (persenAngka / 100) * 360;
+                const ring = document.getElementById('absen-ring');
+                if(ring) ring.style.setProperty('--percent', derajat + 'deg');
 
-        // --- UPDATE BINA PRIBADI (LOGIC BARU DISINI) ---
-        if (user.bina_pribadi) {
-            // 1. Render Bintang (Max 4)
-            const rating = user.bina_pribadi.avg_bintang || 0;
-            let htmlBintang = '';
-            
-            // Loop 4 kali (asumsi skala 1-4)
-            for (let i = 1; i <= 4; i++) {
-                if (i <= rating) {
-                    htmlBintang += `<i class="fa-solid fa-star"></i>`; // Bintang Penuh
-                } else {
-                    htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`; // Bintang Kosong
-                }
-            }
-            const elBintang = document.getElementById('container-bintang');
-            if(elBintang) elBintang.innerHTML = htmlBintang;
+                // Detail H/S/I/A
+                setText('val-h', (user.absensi.h || 0) + " H");
+                setText('val-s', (user.absensi.s || 0) + " S");
+                setText('val-i', (user.absensi.i || 0) + " I");
+                setText('val-a', (user.absensi.a || 0) + " A");
 
-            // 2. Simpan Data Detail ke Window untuk Modal
-            window.dataBina = user.bina_pribadi.detail;
-
-            // 3. Logic Catatan Wali
-            const adaPesan = user.bina_pribadi.ada_pesan;
-            window.pesanWali = user.bina_pribadi.catatan_wali; // Simpan pesan
-
-            const elNotif = document.getElementById('notif-dot');
-            const elLabel = document.getElementById('label-catatan');
-
-            if (adaPesan) {
-                if(elNotif) elNotif.classList.remove('hidden');
-                if(elLabel) {
-                    elLabel.innerText = "1 Pesan Baru";
-                    elLabel.classList.add('text-orange-600', 'font-bold');
-                    elLabel.classList.remove('text-slate-400');
-                }
+                // Status Hari Ini
+                updateStatusHarian(user.absensi.statusToday);
             } else {
-                if(elNotif) elNotif.classList.add('hidden');
-                if(elLabel) elLabel.innerText = "Tidak ada pesan";
+                updateStatusHarian("");
             }
-        }
+        
+            // --- UPDATE T2Q (VERSI BARU DENGAN JUZ) ---
+            if (user.t2q) {
+                // Ambil data
+                var batasHafalan = user.t2q.batas;
+                var infoJuz = user.t2q.juz; // Ambil data juz
 
-        // Set Avatar Dicebear
-        const imgEl = document.getElementById('foto-siswa');
-        if (imgEl) {
-            const safeName = encodeURIComponent(user.nama || "User");
-            imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
+                if(!batasHafalan || batasHafalan === "") {
+                    batasHafalan = "Belum ada data";
+                    infoJuz = "";
+                }
+
+                // REKOMPOSISI HTML (Hijau untuk Surah, Hitam Kecil untuk Juz)
+                var htmlKonten = `<span class="font-bold text-emerald-600 text-[11px]">${batasHafalan}</span>`;
+            
+                if (infoJuz && infoJuz !== "-") {
+                    htmlKonten += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${infoJuz}</span>`;
+                }
+
+                // Masukkan ke elemen (Gunakan innerHTML, bukan innerText)
+                const elT2Q = document.getElementById('t2q-batas');
+                if (elT2Q) elT2Q.innerHTML = htmlKonten;
+
+                // Simpan ke variabel global untuk Modal
+                window.dataT2QUser = user.t2q;
+            } else {
+                // Fallback
+                window.dataT2QUser = { 
+                    nama: user.nama, 
+                    kelas: user.kelas, 
+                    batas: "Belum ada data", 
+                    juz: "",
+                    pengampu: "-", 
+                    tidak_setor: "0" 
+                };
+                const elT2Q = document.getElementById('t2q-batas');
+                if (elT2Q) elT2Q.innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+            }
+
+            // --- UPDATE BINA PRIBADI (LOGIC BARU DISINI) ---
+            if (user.bina_pribadi) {
+                // 1. Render Bintang (Max 4)
+                const rating = user.bina_pribadi.avg_bintang || 0;
+                let htmlBintang = '';
+            
+                // Loop 4 kali (asumsi skala 1-4)
+                for (let i = 1; i <= 4; i++) {
+                    if (i <= rating) {
+                        htmlBintang += `<i class="fa-solid fa-star"></i>`; // Bintang Penuh
+                    } else {
+                        htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`; // Bintang Kosong
+                    }
+                }
+                const elBintang = document.getElementById('container-bintang');
+                if(elBintang) elBintang.innerHTML = htmlBintang;
+
+                // 2. Simpan Data Detail ke Window untuk Modal
+                window.dataBina = user.bina_pribadi.detail;
+
+                // 3. Logic Catatan Wali
+                const adaPesan = user.bina_pribadi.ada_pesan;
+                window.pesanWali = user.bina_pribadi.catatan_wali; // Simpan pesan
+
+                const elNotif = document.getElementById('notif-dot');
+                const elLabel = document.getElementById('label-catatan');
+
+                if (adaPesan) {
+                    if(elNotif) elNotif.classList.remove('hidden');
+                    if(elLabel) {
+                        elLabel.innerText = "1 Pesan Baru";
+                        elLabel.classList.add('text-orange-600', 'font-bold');
+                        elLabel.classList.remove('text-slate-400');
+                    }
+                } else {
+                    if(elNotif) elNotif.classList.add('hidden');
+                    if(elLabel) {
+                        elLabel.innerText = "Tidak ada pesan";
+                        elLabel.classList.remove('text-orange-600', 'font-bold');
+                        elLabel.classList.add('text-slate-400');
+                    }
+                }
+            }
+
+        } catch (err) {
+            console.error("Gagal memuat data ke UI:", err);
         }
     });
 
@@ -713,40 +725,35 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
         else greet = "Selamat Malam,";
         
-        document.getElementById('sapaan-waktu').innerText = greet;
+        const elSapa = document.getElementById('sapaan-waktu');
+        if(elSapa) elSapa.innerText = greet;
     }
 
+    // --- PERBAIKAN FUNGSI LOGOUT (INI YANG MENYEBABKAN ERROR SEBELUMNYA) ---
     function logout() {
-    function logout() {
-    if (confirm("Yakin ingin keluar?")) {
-        // 1. Hapus data secara spesifik
-        localStorage.removeItem('user_data');
-        localStorage.removeItem('nisn');
-        
-        // 2. Gunakan replace agar user tidak bisa tekan tombol 'Back' kembali ke dashboard
-        // Kita beri parameter ?status=logout agar index.html tahu ini proses keluar
-        window.location.replace("index.html?status=logout");
+        if (confirm("Yakin ingin keluar?")) {
+            // 1. Hapus semua data session
+            localStorage.removeItem('user_data');
+            localStorage.removeItem('nisn');
+            localStorage.clear(); 
+            
+            // 2. Force Redirect dengan Cache Busting (?v=waktu)
+            window.location.replace("index.html?status=logout&v=" + new Date().getTime());
+        }
     }
-}
-    // 2. HAPUS DATA TERLEBIH DAHULU (Sangat Penting)
-    localStorage.removeItem('user_data');
-    localStorage.removeItem('nisn'); // Jaga-jaga jika ada sisa
-    localStorage.clear(); // Langkah Sapu Jagat: Hapus semua sisa memori sesi ini
-    
-    // 3. FORCE REDIRECT DENGAN CACHE BUSTING
-    // Kita tambahkan "?t=" + waktu sekarang di belakang URL
-    // Ini menipu browser agar menganggap ini halaman baru & tidak mengambil dari Cache lama
-    
-    // GANTI 'index.html' sesuai nama file halaman login Anda (misal: login.html atau index.html)
-    window.location.replace("index.html?v=" + new Date().getTime());
-}
 
     // --- MODAL PROFIL (Dasis) ---
     function bukaProfil() {
-        const userData = JSON.parse(localStorage.getItem('user_data')); // Ambil fresh data
+        const saved = localStorage.getItem('user_data');
+        if(!saved) return;
+        
+        const userData = JSON.parse(saved); 
         const dasis = userData.dasis || {}; 
 
-        document.getElementById('pop-foto').src = document.getElementById('foto-siswa').src;
+        // Update UI Popup
+        const imgMain = document.getElementById('foto-siswa');
+        if(imgMain) document.getElementById('pop-foto').src = imgMain.src;
+        
         document.getElementById('pop-nama').innerText = userData.nama;
         document.getElementById('pop-nisn').innerText = "NISN: " + userData.nisn;
 
@@ -762,6 +769,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setText('pop-ibu', dasis.ibu || '-');
         setText('pop-ker-ibu', dasis.ker_ibu ? 'Pekerjaan: ' + dasis.ker_ibu : '-');
 
+        // Animasi Buka
         const modal = document.getElementById('modal-profil');
         const backdrop = document.getElementById('modal-backdrop');
         const content = document.getElementById('modal-content');
@@ -789,22 +797,28 @@ document.addEventListener("DOMContentLoaded", () => {
     window.bukaModalT2Q = function() {
         var d = window.dataT2QUser;
         if(!d) {
-            alert("Data T2Q belum dimuat. Silakan refresh.");
-            return;
+            // Coba ambil ulang dari user jika window data kosong
+            if(user && user.t2q) d = user.t2q;
+            else {
+                alert("Data T2Q belum dimuat. Silakan refresh.");
+                return;
+            }
         }
 
         // Isi data ke dalam Popup
-        document.getElementById('m-t2q-nama').innerText = d.nama || "-";
-        document.getElementById('m-t2q-kelas').innerText = d.kelas || "-";
+        setText('m-t2q-nama', d.nama || user.nama || "-");
+        setText('m-t2q-kelas', d.kelas || user.kelas || "-");
         
         // Style warna hijau untuk batas
         const elBatas = document.getElementById('m-t2q-batas');
-        elBatas.innerText = d.batas || "Belum ada data";
-        elBatas.style.color = "#00b894";
-        elBatas.style.fontWeight = "bold";
+        if(elBatas) {
+            elBatas.innerText = d.batas || "Belum ada data";
+            elBatas.style.color = "#00b894";
+            elBatas.style.fontWeight = "bold";
+        }
 
-        document.getElementById('m-t2q-pengampu').innerText = d.pengampu || "-";
-        document.getElementById('m-t2q-alpa').innerText = (d.tidak_setor || "0") + " kali";
+        setText('m-t2q-pengampu', d.pengampu || "-");
+        setText('m-t2q-alpa', (d.tidak_setor || "0") + " kali");
 
         // Munculkan Popup
         document.getElementById('modalT2Q').style.display = 'flex';
@@ -836,9 +850,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
-        const triggerBtn = e.target.closest('button');
-        if (!triggerBtn && !menu.contains(e.target) && !menu.classList.contains('hidden')) {
-            toggleMenu();
+        const triggerBtn = e.target.closest('button'); // Sesuaikan selector tombol jika perlu
+        
+        // Cek jika klik di luar menu DAN menu sedang terbuka
+        if (menu && !menu.classList.contains('hidden')) {
+             // Pastikan yang diklik bukan tombol trigger menu (tombol titik tiga)
+             // Asumsi tombol trigger memiliki onclick="toggleMenu()"
+             if (!triggerBtn || !triggerBtn.onclick) { 
+                 // Logic tambahan: Periksa apakah klik di dalam menu
+                 if (!menu.contains(e.target) && !e.target.closest('[onclick="toggleMenu()"]')) {
+                     toggleMenu();
+                 }
+             }
         }
     });
 
@@ -977,7 +1000,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-        function bukaInfo() {
+    function bukaInfo() {
         document.getElementById('modalInfo').style.display = 'flex';
     }
 
@@ -988,73 +1011,77 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-        // --- Fungsi UI Modal ---
-function bukaModalPassword() {
-    document.getElementById('modalGantiPass').classList.remove('hidden');
-}
+    // --- Fungsi UI Modal Ganti Password ---
+    function bukaModalPassword() {
+        document.getElementById('modalGantiPass').classList.remove('hidden');
+    }
 
-function tutupModalPassword() {
-    document.getElementById('modalGantiPass').classList.add('hidden');
-    document.getElementById('formGantiPass').reset(); // Reset form saat ditutup
-}
+    function tutupModalPassword() {
+        document.getElementById('modalGantiPass').classList.add('hidden');
+        document.getElementById('formGantiPass').reset(); // Reset form saat ditutup
+    }
 
-function prosesGantiPass(e) {
-    e.preventDefault();
-    
-    // --- TEMPEL URL ANDA DI SINI (WAJIB) ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec"; 
-    // ---------------------------------------
-
-    const passBaru = document.getElementById('passBaru').value;
-    const konfirmasi = document.getElementById('konfirmasiPass').value;
-    const btnSimpan = document.getElementById('btnSimpanPass');
-
-    // 1. Validasi Password
-    if (!passBaru || !konfirmasi) { alert("Password kosong!"); return; }
-    if (passBaru !== konfirmasi) { alert("Password tidak sama!"); return; }
-
-    // 2. Ambil NISN dari LocalStorage
-    const savedData = localStorage.getItem('user_data');
-    let userNISN = "";
-    if (savedData) userNISN = JSON.parse(savedData).nisn;
-    
-    if (!userNISN) { alert("Error: NISN tidak ditemukan, silakan login ulang."); return; }
-
-    // 3. Ubah Tombol Loading
-    const textAsli = btnSimpan.innerText;
-    btnSimpan.innerText = "Menyimpan...";
-    btnSimpan.disabled = true;
-
-    // 4. Siapkan Data
-    const formData = new FormData();
-    formData.append('action', 'gantiPass');
-    formData.append('nisn', userNISN);
-    formData.append('password', passBaru);
-
-    // 5. Kirim pakai FETCH (Pengganti google.script.run)
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(result => {
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
+    function prosesGantiPass(e) {
+        e.preventDefault();
         
-        if (result.status === 'sukses') {
-            alert("Berhasil ganti password!");
-            tutupModalPassword();
-        } else {
-            alert("Gagal: " + result.pesan);
+        // --- TEMPEL URL ANDA DI SINI (WAJIB) ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec"; 
+        // ---------------------------------------
+
+        const passBaru = document.getElementById('passBaru').value;
+        const konfirmasi = document.getElementById('konfirmasiPass').value;
+        const btnSimpan = document.getElementById('btnSimpanPass');
+
+        // 1. Validasi Password
+        if (!passBaru || !konfirmasi) { alert("Password kosong!"); return; }
+        if (passBaru !== konfirmasi) { alert("Password tidak sama!"); return; }
+
+        // 2. Ambil NISN dari LocalStorage
+        const savedData = localStorage.getItem('user_data');
+        let userNISN = "";
+        try {
+            if (savedData) userNISN = JSON.parse(savedData).nisn;
+        } catch(err) {
+            console.error(err);
         }
-    })
-    .catch(err => {
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
-        alert("Gagal koneksi. Cek internet atau URL Script.");
-        console.error(err);
-    });
-}
+        
+        if (!userNISN) { alert("Error: NISN tidak ditemukan, silakan login ulang."); return; }
+
+        // 3. Ubah Tombol Loading
+        const textAsli = btnSimpan.innerText;
+        btnSimpan.innerText = "Menyimpan...";
+        btnSimpan.disabled = true;
+
+        // 4. Siapkan Data
+        const formData = new FormData();
+        formData.append('action', 'gantiPass');
+        formData.append('nisn', userNISN);
+        formData.append('password', passBaru);
+
+        // 5. Kirim pakai FETCH
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(result => {
+            btnSimpan.innerText = textAsli;
+            btnSimpan.disabled = false;
+            
+            if (result.status === 'sukses') {
+                alert("Berhasil ganti password!");
+                tutupModalPassword();
+            } else {
+                alert("Gagal: " + result.pesan);
+            }
+        })
+        .catch(err => {
+            btnSimpan.innerText = textAsli;
+            btnSimpan.disabled = false;
+            alert("Gagal koneksi. Cek internet atau URL Script.");
+            console.error(err);
+        });
+    }
 </script>
 
 </body>
