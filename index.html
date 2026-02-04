@@ -40,27 +40,25 @@
     // URL GOOGLE SCRIPT ANDA
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydMwMk-q0_MU2i2SFf4tpKqu9iTqQLuS94rnPa--8gaaDIoT_ElhadEzvwG1CLC6G7/exec';
 
-    // --- LOGIKA ANTI-LOOP (REM DARURAT) ---
-    // Kita cek apakah user baru saja logout?
-    const urlParams = new URLSearchParams(window.location.search);
-    const isLogout = urlParams.get('status') === 'logout';
+    // --- LOGIKA ANTI-LOOP (PERBAIKAN) ---
+const urlParams = new URLSearchParams(window.location.search);
+const isLogout = urlParams.get('status') === 'logout';
 
-    if (isLogout) {
-        // Jika user baru logout, PAKSA hapus semua data
-        localStorage.clear();
-        localStorage.removeItem('nisn');
-        localStorage.removeItem('user_data');
-        
-        // Bersihkan URL agar terlihat rapi (menghapus ?status=logout)
-        window.history.replaceState({}, document.title, window.location.pathname);
-    } 
-    else {
-        // Jika BUKAN logout, baru kita cek apakah sudah login?
-        // Ini mencegah redirect otomatis jika user sebenarnya ingin keluar
-        if (localStorage.getItem('nisn')) {
-            window.location.href = 'dashboardortu.html';
-        }
+if (isLogout) {
+    // Jika baru logout, bersihkan semuanya agar bersih total
+    localStorage.clear();
+    // Hilangkan parameter ?status=logout dari URL tanpa reload halaman
+    window.history.replaceState({}, document.title, window.location.pathname);
+} else {
+    // JIKA BUKAN LOGOUT, cek apakah data login masih ada di browser?
+    const savedData = localStorage.getItem('user_data');
+    const savedNISN = localStorage.getItem('nisn');
+
+    // Jika data lengkap, barulah lempar ke dashboard
+    if (savedData && savedNISN) {
+        window.location.replace('dashboardortu.html');
     }
+}
     // ---------------------------------------
 
     const loginForm = document.getElementById('login-form');
