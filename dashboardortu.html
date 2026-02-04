@@ -976,78 +976,11 @@ function tutupModalPassword() {
 
 // --- Fungsi Logika Ganti Password ---
 function prosesGantiPass(e) {
-    e.preventDefault(); // Mencegah reload halaman
-
-    // 1. Ambil Value dari Input
-    var passBaru = document.getElementById('passBaru').value;
-    var konfirmasi = document.getElementById('konfirmasiPass').value;
-    var btnSimpan = document.getElementById('btnSimpanPass'); // Pastikan ID tombol benar
-
-    // 2. Validasi Password
-    if (passBaru !== konfirmasi) {
-        alert("Password dan Konfirmasi tidak cocok!");
-        return;
-    }
-
-    if (passBaru.length < 5) {
-        alert("Password minimal 5 karakter!");
-        return;
-    }
-
-    // 3. Ambil NISN dengan Benar (Dari user_data)
-    // Kita ambil ulang dari localStorage agar aman
-    var savedData = localStorage.getItem('user_data');
-    var userObj = savedData ? JSON.parse(savedData) : null;
-    var userNISN = userObj ? userObj.nisn : "";
-
-    if (!userNISN) {
-        alert("Sesi login tidak valid atau kadaluarsa. Silakan login ulang.");
-        return;
-    }
-
-    // 4. Ubah Tampilan Tombol jadi Loading
-    var textAsli = btnSimpan.innerText;
-    btnSimpan.innerText = "Menyimpan...";
-    btnSimpan.disabled = true;
-
-    // ============================================================
-    // BAGIAN PENGHUBUNG KE GOOGLE SCRIPT (Ganti URL di bawah ini)
-    // ============================================================
-    var scriptURL = "https://script.google.com/macros/s/AKfycbx...MASUKKAN_URL_DEPLOY_TERBARU_ANDA_DISINI.../exec";
-
-    // Bungkus data supaya bisa dibaca oleh doPost(e)
-    var formData = new FormData();
-    formData.append('action', 'gantiPass');
-    formData.append('nisn', userNISN);
-    formData.append('password', passBaru);
-
-    // Kirim data menggunakan FETCH
-    fetch(scriptURL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json()) // Ubah balasan jadi JSON
-    .then(result => {
-        // Balikkan tombol seperti semula
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
-
-        // Cek hasil dari Google Script
-        if (result.status === 'sukses') {
-            alert("Berhasil! Password Anda telah diganti.");
-            tutupModalPassword();
-        } else {
-            alert("Gagal: " + result.pesan);
-        }
-    })
-    .catch(error => {
-        // Jika internet mati atau URL salah
-        console.error('Error:', error);
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
-        alert("Terjadi kesalahan koneksi. Cek internet Anda.");
-    });
-}
+    e.preventDefault();
+    
+    const passBaru = document.getElementById('passBaru').value;
+    const konfirmasi = document.getElementById('konfirmasiPass').value;
+    const btnSimpan = document.getElementById('btnSimpanPass');
 
     // 1. Validasi Input
     if (passBaru !== konfirmasi) {
