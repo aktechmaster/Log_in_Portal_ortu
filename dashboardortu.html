@@ -1002,69 +1002,25 @@ function prosesGantiPass(e) {
     btnSimpan.innerText = "Menyimpan...";
     btnSimpan.disabled = true;
 
-    function prosesGantiPass(e) {
-    e.preventDefault(); // Mencegah reload halaman
-
-    // 1. Ambil data dari form
-    var passBaru = document.getElementById('passBaru').value; // Sesuaikan ID input Anda
-    var passKonf = document.getElementById('passKonf').value; // Sesuaikan ID input Anda
-    
-    // Ambil data user dari LocalStorage (Session login)
-    var userData = JSON.parse(localStorage.getItem('user_data')); 
-    var nisnSiswa = userData ? userData.nisn : ''; 
-
-    // Validasi sederhana
-    if (passBaru !== passKonf) {
-        alert("Password dan Konfirmasi tidak sama!");
-        return;
-    }
-    if (!nisnSiswa) {
-        alert("Sesi login habis, silakan login ulang.");
-        return;
-    }
-
-    // Ubah tombol jadi Loading
-    var btnSimpan = document.querySelector('.btn-simpan'); // Sesuaikan selector tombol
-    var textAsli = btnSimpan.innerText;
-    btnSimpan.innerText = "Menyimpan...";
-    btnSimpan.disabled = true;
-
-    // --- BAGIAN INI YANG DIGANTI (JANGAN PAKAI google.script.run) ---
-    
-    // Masukkan URL Web App Script Anda di sini (Akhirannya /exec)
-    var scriptURL = "https://script.google.com/macros/s/AKfycbx...MASUKKAN_URL_DEPLOY_TERBARU_DISINI.../exec";
-
-    // Siapkan data form
-    var formData = new FormData();
-    formData.append('action', 'gantiPass');
-    formData.append('nisn', nisnSiswa);
-    formData.append('password', passBaru);
-
-    // Kirim ke Google Script pakai Fetch
-    fetch(scriptURL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        // Balikin tombol
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
-
-        if (result.status === 'sukses') {
-            alert("Berhasil! Password telah diganti.");
-            // Tutup modal atau reset form jika perlu
-            document.getElementById('formGantiPass').reset();
-        } else {
-            alert("Gagal: " + result.pesan);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        btnSimpan.innerText = textAsli;
-        btnSimpan.disabled = false;
-        alert("Terjadi kesalahan jaringan.");
-    });
+    // 4. Kirim ke Google Apps Script
+    google.script.run
+        .withSuccessHandler(function(response) {
+            btnSimpan.innerText = textAsli;
+            btnSimpan.disabled = false;
+            
+            if (response.status === 'sukses') {
+                alert("Berhasil! Password Anda telah diganti.");
+                tutupModalPassword();
+            } else {
+                alert("Gagal: " + response.pesan);
+            }
+        })
+        .withFailureHandler(function(error) {
+            btnSimpan.innerText = textAsli;
+            btnSimpan.disabled = false;
+            alert("Terjadi kesalahan koneksi.");
+        })
+        .gantiPasswordSiswa(userNISN, passBaru);
 }
 </script>
 
