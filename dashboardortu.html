@@ -207,7 +207,7 @@
 
         <div class="grid grid-cols-2 gap-3 fade-in delay-200">
 
-            <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+            <div onclick="T2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
                 <div class="relative z-10">
                     <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
@@ -224,7 +224,7 @@
                 </div>
             </div>
 
-            <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+            <div onclick="Bina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
                 <div class="relative z-10">
                     <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
@@ -313,7 +313,7 @@
             <span class="text-[9px] font-medium">Profil</span>
         </button>
         
-        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="bukaModalLogout()">
+        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="Logout()">
             <i class="fa-solid fa-right-from-bracket text-lg"></i>
             <span class="text-[9px] font-medium">Keluar</span>
         </button>
@@ -695,24 +695,19 @@
         document.getElementById('sapaan-waktu').innerText = greet;
     }
 
-    // --- LOGIC LOGOUT BARU (Tanpa Alert Bawaan) ---
-    
-    // 1. Fungsi untuk MEMBUKA Modal saat tombol ditekan
+    // LOGIC MODAL LOGOUT MERAH
     function bukaModalLogout() {
         document.getElementById('modalLogout').style.display = 'flex';
     }
 
-    // 2. Fungsi untuk MENUTUP Modal (jika batal)
     function tutupModalLogout() {
         document.getElementById('modalLogout').style.display = 'none';
     }
 
-    // 3. Fungsi EKSEKUSI Logout (jika pilih Ya)
     function prosesLogout() {
-        // Hapus data login
+        // Hapus sesi login
         localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userNISN');
-        // Arahkan kembali ke halaman login (index.html)
+        // Arahkan ke halaman login
         window.location.href = 'index.html'; 
     }
 
