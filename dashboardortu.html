@@ -706,8 +706,15 @@
     }
 
     function logout() {
-    // 1. Konfirmasi (Opsional, boleh dihapus jika tidak mau pakai)
-    if (!confirm("Apakah Anda yakin ingin keluar?")) return;
+    if (confirm("Yakin ingin keluar?")) {
+        // Hapus data
+        localStorage.clear();
+        
+        // PENTING: Redirect ke halaman login DENGAN SINYAL status=logout
+        // Ganti 'index.html' sesuai nama file login Anda jika berbeda
+        window.location.replace("index.html?status=logout"); 
+    }
+}
 
     // 2. HAPUS DATA TERLEBIH DAHULU (Sangat Penting)
     localStorage.removeItem('user_data');
