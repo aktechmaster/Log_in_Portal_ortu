@@ -337,13 +337,25 @@
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
             <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-500 ease-out max-h-[85vh] overflow-y-auto no-scrollbar mx-auto max-w-[480px]" id="modal-content">
                 <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+                
                 <div class="text-center mb-6">
-                    <div class="inline-block p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
-                        <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover">
+                    <div class="relative inline-block">
+                        <div class="p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
+                            <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover bg-slate-100">
+                        </div>
+                        <button onclick="document.getElementById('inputFoto').click()" class="absolute bottom-2 right-0 w-7 h-7 bg-emerald-600 text-white rounded-full border-2 border-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <i class="fa-solid fa-camera text-[10px]"></i>
+                        </button>
                     </div>
+                    
+                    <input type="file" id="inputFoto" accept="image/*" class="hidden" onchange="prosesUpload(this)">
+                    
                     <h2 class="text-xl font-bold text-slate-800" id="pop-nama">...</h2>
                     <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full font-bold mt-1 inline-block" id="pop-nisn">...</span>
+                    
+                    <p id="statusUpload" class="text-[10px] text-emerald-600 mt-2 font-medium h-4"></p>
                 </div>
+
                 <div class="space-y-4 pb-10">
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -357,6 +369,7 @@
                             <div class="col-span-2"><p class="text-[10px] text-slate-400">Alamat</p><p class="font-semibold text-slate-700 leading-tight" id="pop-alamat">-</p></div>
                         </div>
                     </div>
+
                     <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-users text-blue-500"></i> Data Orang Tua
@@ -373,6 +386,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <button onclick="tutupProfil()" class="w-full py-3 bg-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-300 transition">Tutup</button>
                 </div>
             </div>
@@ -961,6 +975,54 @@
             console.error(err);
         });
     }
+
+        function prosesUpload(input) {
+    const file = input.files[0];
+    const status = document.getElementById('statusUpload');
+    if (!file) return;
+
+    // Validasi Ukuran (Maks 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert("File terlalu besar! Maksimal 2MB.");
+        return;
+    }
+
+    const reader = new FileReader();
+    status.innerText = "Mengompres & Mengupload...";
+    
+    reader.onload = function(e) {
+        const base64Data = e.target.result;
+        const formData = new FormData();
+        formData.append('action', 'uploadFoto');
+        formData.append('nisn', user.nisn);
+        formData.append('fileData', base64Data);
+        formData.append('fileName', file.name);
+
+        // Gunakan SCRIPT_URL yang sudah Anda punya
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'sukses') {
+                status.innerText = "Berhasil! Refresh untuk melihat perubahan.";
+                document.getElementById('foto-siswa').src = res.link;
+                // Update local storage agar saat refresh foto tetap baru
+                user.foto = res.link;
+                localStorage.setItem('user_data', JSON.stringify(user));
+            } else {
+                status.innerText = "Gagal upload.";
+                alert(res.pesan);
+            }
+        })
+        .catch(err => {
+            status.innerText = "Kesalahan koneksi.";
+            console.error(err);
+        });
+    };
+    reader.readAsDataURL(file);
+}
 </script>
 
 </body>
