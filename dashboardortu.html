@@ -490,12 +490,17 @@
             setText('kelas-siswa', user.kelas);
             setGreeting();
             
-            // --- LOGIK FOTO (DIPERBAIKI) ---
+            // --- LOGIK FOTO (DIPERBAIKI FORMAT DRIVE-NYA) ---
             const imgEl = document.getElementById('foto-siswa');
             if (imgEl) {
                 // Jika user.foto ada isinya (dari database), pakai itu. Jika tidak, pakai Dicebear.
                 if (user.foto && user.foto !== "") {
-                    imgEl.src = user.foto;
+                    // MENGUBAH VIEW JADI DOWNLOAD SECARA OTOMATIS AGAR FOTO MUNCUL
+                    let linkAman = user.foto;
+                    if (linkAman.includes("export=view")) {
+                        linkAman = linkAman.replace("export=view", "export=download");
+                    }
+                    imgEl.src = linkAman;
                 } else {
                     const safeName = encodeURIComponent(user.nama || "User");
                     imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
@@ -949,7 +954,7 @@
         });
     }
 
-    // --- PROSES UPLOAD FOTO (DIPERBAIKI) ---
+    // --- PROSES UPLOAD FOTO (DIPERBAIKI FORMAT RESPONSE-NYA) ---
     function prosesUpload(input) {
         const file = input.files[0];
         const status = document.getElementById('statusUpload');
@@ -988,7 +993,15 @@
                     const resJson = JSON.parse(text);
                     if (resJson.status === 'sukses') {
                         status.innerText = "Berhasil! Foto diperbarui.";
-                        document.getElementById('foto-siswa').src = resJson.link;
+                        
+                        // MENGUBAH VIEW JADI DOWNLOAD AGAR LANGSUNG MUNCUL DI PREVIEW
+                        let linkBaru = resJson.link;
+                        if(linkBaru.includes("export=view")) {
+                            linkBaru = linkBaru.replace("export=view", "export=download");
+                        }
+                        
+                        document.getElementById('foto-siswa').src = linkBaru;
+                        
                         // Update data lokal
                         user.foto = resJson.link;
                         localStorage.setItem('user_data', JSON.stringify(user));
