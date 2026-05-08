@@ -14,6 +14,16 @@
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
+        /* PERBAIKAN: Container utama agar tidak lebar kali */
+        .app-container {
+            max-width: 480px; /* Ukuran standar mobile */
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #f8fafc;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Shadow halus di sisi kiri-kanan saat di desktop */
+        }
+
         /* Custom Scrollbar Hide */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -40,525 +50,395 @@
         .delay-300 { animation-delay: 0.3s; }
 
         /* Gaya untuk Modal/Popup */
-.modal-overlay {
-  display: none; /* Tersembunyi default */
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(2px);
-}
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
 
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 350px;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  animation: slideUp 0.3s ease;
-}
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 350px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease;
+        }
 
-@keyframes slideUp {
-  from {transform: translateY(20px); opacity: 0;}
-  to {transform: translateY(0); opacity: 1;}
-}
+        @keyframes slideUp {
+            from {transform: translateY(20px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
 
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
-}
-.modal-header h3 { margin: 0; color: #00b894; }
-.close-btn { font-size: 24px; cursor: pointer; color: #aaa; }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+        }
+        .modal-header h3 { margin: 0; color: #00b894; }
+        .close-btn { font-size: 24px; cursor: pointer; color: #aaa; }
 
-.info-row {
-  display: flex; justify-content: space-between;
-  margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px;
-}
-.info-row .label { color: #888; font-size: 12px; }
-.info-row .value { color: #333; font-weight: 500; font-size: 13px; text-align: right; }
-.btn-tutup {
-  width: 100%; padding: 10px; background: #00b894; color: white;
-  border: none; border-radius: 8px; margin-top: 10px; cursor: pointer;
-}
+        .info-row {
+            display: flex; justify-content: space-between;
+            margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px;
+        }
+        .info-row .label { color: #888; font-size: 12px; }
+        .info-row .value { color: #333; font-weight: 500; font-size: 13px; text-align: right; }
+        .btn-tutup {
+            width: 100%; padding: 10px; background: #00b894; color: white;
+            border: none; border-radius: 8px; margin-top: 10px; cursor: pointer;
+        }
+
+        /* PERBAIKAN: Posisi Navigasi agar tetap di dalam container */
+        .fixed-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px; /* Samakan dengan app-container */
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid #e2e8f0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 24px;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-24 select-none">
+<body class="bg-slate-200 text-slate-800 select-none">
 
-    <header class="relative pt-8 pb-16 px-6">
-        
-        <div class="absolute inset-0 bg-gradient-to-br from-emerald-800 to-emerald-600 rounded-b-[40px] shadow-xl overflow-hidden">
-            <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
-            <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
-        </div>
+    <div class="app-container">
 
-        <div class="flex justify-between items-center mb-6 relative">
-            
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
-                    <img src="logosmpit.png" alt="Logo" class="w-5 h-5 object-contain">
-                </div>
-                <span class="text-sm font-bold text-white tracking-wide shadow-sm">SMP IT AL-KAUTSAR</span>
+        <header class="relative pt-8 pb-16 px-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-800 to-emerald-600 rounded-b-[40px] shadow-xl overflow-hidden">
+                <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-emerald-500 rounded-full opacity-20 blur-3xl"></div>
+                <div class="absolute bottom-[10%] left-[-10%] w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
             </div>
 
-            <div class="relative z-50">
-                <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg cursor-pointer">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+            <div class="flex justify-between items-center mb-6 relative">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
+                        <img src="logosmpit.png" alt="Logo" class="w-5 h-5 object-contain">
+                    </div>
+                    <span class="text-sm font-bold text-white tracking-wide shadow-sm">SMP IT AL-KAUTSAR</span>
+                </div>
 
-                <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0">
-                    <div class="py-1">
-                        <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                            <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
-                        </button>
-                        
-                        <div onclick="bukaInfo()" class="flex items-center w-full p-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 group">
-    
-    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3 group-hover:bg-blue-200 transition-colors">
-        <i class="fa-solid fa-circle-info text-sm"></i>
-    </div>
+                <div class="relative z-50">
+                    <button onclick="toggleMenu()" class="w-9 h-9 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white hover:bg-white/20 transition active:scale-90 border border-white/10 shadow-lg cursor-pointer">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
-    <div class="font-medium text-slate-700 text-sm">
-        Tentang Aplikasi
-    </div>
+                    <div id="dropdown-menu" class="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 hidden transform origin-top-right transition-all duration-200 scale-95 opacity-0">
+                        <div class="py-1">
+                            <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-rotate-right w-4 text-center"></i> Refresh
+                            </button>
+                            
+                            <div onclick="bukaInfo()" class="flex items-center w-full p-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 group">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3 group-hover:bg-blue-200 transition-colors">
+                                    <i class="fa-solid fa-circle-info text-sm"></i>
+                                </div>
+                                <div class="font-medium text-slate-700 text-sm">Tentang Aplikasi</div>
+                            </div>
 
-</div>
+                            <button onclick="bukaModalPassword()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
+                            </button>
+                            
+                            <div class="h-px bg-slate-100 my-1"></div>
 
-                        <button onclick="bukaModalPassword()" class="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-3 transition-colors">
-                        <i class="fa-solid fa-key w-4 text-center"></i> Ganti Pass
-                        </button>
-                        
-                        <div class="h-px bg-slate-100 my-1"></div>
-
-                        <button onclick="logout()" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors font-medium">
-                            <i class="fa-solid fa-power-off w-4 text-center"></i> Keluar
-                        </button>
+                            <button onclick="logout()" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors font-medium">
+                                <i class="fa-solid fa-power-off w-4 text-center"></i> Keluar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
-            <div class="relative group">
-                <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
-                    <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
-                </div>
-            </div>
-
-            <div class="flex-1 min-w-0">
-                <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
-                <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
-                
-                <div class="flex items-center gap-2 mt-1.5">
-                    <div id="kelas-siswa" class="bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
-                        --
+            <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
+                <div class="relative group">
+                    <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
+                        <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
                     </div>
-                    <p class="text-emerald-100/70 text-[10px] font-mono tracking-wider truncate">
-                        NISN: <span id="nisn-siswa">...</span>
-                    </p>
                 </div>
-            </div>
-        </div>
-    </header>
 
-    <main class="px-5 -mt-10 relative z-20 space-y-4">
-
-        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
-            <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
-                <div class="progress-inner">
-                    <span id="absen-persen" class="text-lg font-bold text-emerald-600">0%</span>
-                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold transform scale-50 origin-top -mt-1">
-                        Kehadiran
-                    </span>
-                </div>
-            </div>
-            <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
-                <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
-                <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
-                <div class="flex gap-2">
-                    <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
-                    <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
-                    <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
-                    <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="fade-in delay-200">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
-                <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
-                    <i class="fa-solid fa-check text-xs"></i>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
-                    <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
-                        <span id="text-deskripsi">Sedang memuat data...</span>
-                        <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                            --
-                        </span>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 fade-in delay-200">
-
-            <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-                <div class="relative z-10">
-                    <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-quran"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
-                    <p id="t2q-batas" class="text-xs mt-0.5 truncate flex items-center gap-1">
-    Memuat...
-</p>
+                <div class="flex-1 min-w-0">
+                    <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
+                    <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
                     
-                    <div class="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                        <div class="h-full bg-emerald-500 w-2/3 rounded-full"></div>
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <div id="kelas-siswa" class="bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
+                            --
+                        </div>
+                        <p class="text-emerald-100/70 text-[10px] font-mono tracking-wider truncate">
+                            NISN: <span id="nisn-siswa">...</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-5 -mt-10 relative z-20 space-y-4 pb-32">
+
+            <div class="bg-white rounded-2xl p-4 shadow-lg shadow-slate-200/50 flex items-center justify-between fade-in delay-100">
+                <div id="absen-ring" class="progress-ring" style="--percent: 0deg;"> 
+                    <div class="progress-inner">
+                        <span id="absen-persen" class="text-lg font-bold text-emerald-600">0%</span>
+                        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold transform scale-50 origin-top -mt-1">
+                            Kehadiran
+                        </span>
+                    </div>
+                </div>
+                <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
+                    <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
+                    <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
+                    <div class="flex gap-2">
+                        <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
+                        <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
+                        <span id="val-i" class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">- I</span>
+                        <span id="val-a" class="px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded">- A</span>
                     </div>
                 </div>
             </div>
 
-            <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
-                <div class="relative z-10">
-                    <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-hands-praying"></i>
+            <div class="fade-in delay-200">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3">
+                    <div id="icon-status-bg" class="bg-slate-400 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300">
+                        <i class="fa-solid fa-check text-xs"></i>
                     </div>
-                    <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
-                    <div id="container-bintang" class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
-                        <i class="fa-regular fa-star text-slate-300"></i>
-                        <i class="fa-regular fa-star text-slate-300"></i>
-                        <i class="fa-regular fa-star text-slate-300"></i>
-                        <i class="fa-regular fa-star text-slate-300"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div onclick="bukaCatatanWali()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
-                <div class="flex justify-between items-start mb-3">
-                    <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-comment-dots"></i>
-                    </div>
-                    <span id="notif-dot" class="hidden w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-300"></span>
-                </div>
-                <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
-                <p id="label-catatan" class="text-[10px] text-slate-400">Tidak ada pesan</p>
-            </div>
-
-            <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
-                <div class="flex justify-between items-start mb-3">
-                    <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
-                        <i class="fa-solid fa-bullhorn"></i>
-                    </div>
-                </div>
-                <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
-                <p class="text-[10px] text-slate-400">Update Kegiatan</p>
-            </div>
-
-        </div> 
-        <div class="fade-in delay-300 pb-4">
-            <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
-                Aktivitas Terakhir
-                <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
-            </h3>
-            <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
-                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
-                        <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
-                    <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
-                        <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
+                    <div>
+                        <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
+                        <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
+                            <span id="text-deskripsi">Sedang memuat data...</span>
+                            <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                                --
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <div class="grid grid-cols-2 gap-3 fade-in delay-200">
+                <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                    <div class="relative z-10">
+                        <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
+                            <i class="fa-solid fa-quran"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-700 text-xs">Laporan T2Q</h4>
+                        <p id="t2q-batas" class="text-xs mt-0.5 truncate flex items-center gap-1">Memuat...</p>
+                        <div class="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-emerald-500 w-2/3 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-between items-center z-50 text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
-        <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[9px] font-medium">Beranda</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
-            <span class="text-[9px] font-medium">Laporan</span>
-        </button>
-        
-        <div class="relative -top-6">
-            <button class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 ring-4 ring-slate-50 active:scale-95 transition transform hover:-translate-y-1">
-                <i class="fa-solid fa-qrcode text-xl"></i>
+                <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
+                    <div class="relative z-10">
+                        <div class="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
+                            <i class="fa-solid fa-hands-praying"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-700 text-xs">Bina Pribadi</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Adab & Ibadah</p>
+                        <div id="container-bintang" class="flex text-yellow-400 text-[8px] gap-0.5 mt-2">
+                            <i class="fa-regular fa-star text-slate-300"></i>
+                            <i class="fa-regular fa-star text-slate-300"></i>
+                            <i class="fa-regular fa-star text-slate-300"></i>
+                            <i class="fa-regular fa-star text-slate-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="bukaCatatanWali()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-9 h-9 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-orange-600 group-hover:text-white transition">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </div>
+                        <span id="notif-dot" class="hidden w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-300"></span>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-xs">Catatan Wali</h4>
+                    <p id="label-catatan" class="text-[10px] text-slate-400">Tidak ada pesan</p>
+                </div>
+
+                <div onclick="alert('Pengumuman Sekolah')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
+                    <p class="text-[10px] text-slate-400">Update Kegiatan</p>
+                </div>
+            </div> 
+
+            <div class="fade-in delay-300 pb-4">
+                <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
+                    Aktivitas Terakhir
+                    <span class="text-[10px] text-emerald-600 font-normal">Lihat Semua</span>
+                </h3>
+                <div class="bg-white rounded-xl border border-slate-100 p-1 shadow-sm">
+                    <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px]">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h5 class="text-xs font-bold text-slate-700">Presensi Masuk</h5>
+                            <p class="text-[10px] text-slate-400">Hari ini, 06:55 WIB</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 border-b border-slate-50 last:border-0">
+                        <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h5 class="text-xs font-bold text-slate-700">Setoran Hafalan</h5>
+                            <p class="text-[10px] text-slate-400">Kemarin, Surah Al-Mulk</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="fixed-nav text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+            <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[9px] font-medium">Beranda</span>
             </button>
-        </div>
-
-        <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[9px] font-medium">Profil</span>
-        </button>
-        
-        <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
-            <i class="fa-solid fa-right-from-bracket text-lg"></i>
-            <span class="text-[9px] font-medium">Keluar</span>
-        </button>
-    </nav>
-
-    <div id="modal-profil" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
-        
-        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-500 ease-out max-h-[85vh] overflow-y-auto no-scrollbar" id="modal-content">
+            <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
+                <i class="fa-solid fa-chart-pie text-lg"></i>
+                <span class="text-[9px] font-medium">Laporan</span>
+            </button>
             
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
-
-            <div class="text-center mb-6">
-                <div class="inline-block p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
-                    <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover">
-                </div>
-                <h2 class="text-xl font-bold text-slate-800" id="pop-nama">...</h2>
-                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full font-bold mt-1 inline-block" id="pop-nisn">...</span>
+            <div class="relative -top-6">
+                <button class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 ring-4 ring-slate-50 active:scale-95 transition transform hover:-translate-y-1">
+                    <i class="fa-solid fa-qrcode text-xl"></i>
+                </button>
             </div>
 
-            <div class="space-y-4 pb-10">
-                
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user text-emerald-500"></i> Data Pribadi
-                    </h3>
-                    <div class="grid grid-cols-2 gap-y-4 text-sm">
-                        <div>
-                            <p class="text-[10px] text-slate-400">NIS Lokal</p>
-                            <p class="font-semibold text-slate-700" id="pop-nis">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-400">Jenis Kelamin</p>
-                            <p class="font-semibold text-slate-700" id="pop-jk">-</p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-[10px] text-slate-400">Tempat, Tanggal Lahir</p>
-                            <p class="font-semibold text-slate-700" id="pop-ttl">-</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-400">Agama</p>
-                            <p class="font-semibold text-slate-700" id="pop-agama">-</p>
-                        </div>
-                         <div class="col-span-2">
-                            <p class="text-[10px] text-slate-400">Alamat</p>
-                            <p class="font-semibold text-slate-700 leading-tight" id="pop-alamat">-</p>
+            <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
+                <i class="fa-solid fa-user text-lg"></i>
+                <span class="text-[9px] font-medium">Profil</span>
+            </button>
+            
+            <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                <span class="text-[9px] font-medium">Keluar</span>
+            </button>
+        </nav>
+
+        <div id="modal-profil" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
+            <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-500 ease-out max-h-[85vh] overflow-y-auto no-scrollbar mx-auto max-w-[480px]" id="modal-content">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+                <div class="text-center mb-6">
+                    <div class="inline-block p-1 rounded-full border-2 border-dashed border-emerald-400 mb-2">
+                        <img id="pop-foto" src="" class="w-20 h-20 rounded-full object-cover">
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800" id="pop-nama">...</h2>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full font-bold mt-1 inline-block" id="pop-nisn">...</span>
+                </div>
+                <div class="space-y-4 pb-10">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-user text-emerald-500"></i> Data Pribadi
+                        </h3>
+                        <div class="grid grid-cols-2 gap-y-4 text-sm">
+                            <div><p class="text-[10px] text-slate-400">NIS Lokal</p><p class="font-semibold text-slate-700" id="pop-nis">-</p></div>
+                            <div><p class="text-[10px] text-slate-400">Jenis Kelamin</p><p class="font-semibold text-slate-700" id="pop-jk">-</p></div>
+                            <div class="col-span-2"><p class="text-[10px] text-slate-400">Tempat, Tanggal Lahir</p><p class="font-semibold text-slate-700" id="pop-ttl">-</p></div>
+                            <div><p class="text-[10px] text-slate-400">Agama</p><p class="font-semibold text-slate-700" id="pop-agama">-</p></div>
+                            <div class="col-span-2"><p class="text-[10px] text-slate-400">Alamat</p><p class="font-semibold text-slate-700 leading-tight" id="pop-alamat">-</p></div>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-users text-blue-500"></i> Data Orang Tua
-                    </h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-user-tie text-xs"></i></div>
-                            <div>
-                                <p class="font-bold text-slate-700" id="pop-ayah">-</p>
-                                <p class="text-xs text-slate-500" id="pop-ker-ayah">Pekerjaan: -</p>
+                    <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-blue-500"></i> Data Orang Tua
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-user-tie text-xs"></i></div>
+                                <div><p class="font-bold text-slate-700" id="pop-ayah">-</p><p class="text-xs text-slate-500" id="pop-ker-ayah">Pekerjaan: -</p></div>
                             </div>
-                        </div>
-                        <hr class="border-blue-100">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shrink-0"><i class="fa-solid fa-person-dress text-xs"></i></div>
-                            <div>
-                                <p class="font-bold text-slate-700" id="pop-ibu">-</p>
-                                <p class="text-xs text-slate-500" id="pop-ker-ibu">Pekerjaan: -</p>
+                            <hr class="border-blue-100">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shrink-0"><i class="fa-solid fa-person-dress text-xs"></i></div>
+                                <div><p class="font-bold text-slate-700" id="pop-ibu">-</p><p class="text-xs text-slate-500" id="pop-ker-ibu">Pekerjaan: -</p></div>
                             </div>
                         </div>
                     </div>
+                    <button onclick="tutupProfil()" class="w-full py-3 bg-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-300 transition">Tutup</button>
                 </div>
-                
-                 <button onclick="tutupProfil()" class="w-full py-3 bg-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-300 transition">
-                    Tutup
-                </button>
             </div>
         </div>
-    </div>
 
-    <div id="modalT2Q" class="modal-overlay" onclick="tutupModalT2Q(event)">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Detail T2Q</h3>
-      <span class="close-btn" onclick="tutupModalT2Q(null)">&times;</span>
-    </div>
-    
-    <div class="modal-body">
-      <div class="info-row">
-        <span class="label">Nama Siswa</span>
-        <span class="value" id="m-t2q-nama">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Kelas</span>
-        <span class="value" id="m-t2q-kelas">-</span>
-      </div>
-      <div class="info-row highlight">
-        <span class="label">Capaian / Batas</span>
-        <span class="value" id="m-t2q-batas" style="color: #00b894; font-weight:bold;">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Pengampu</span>
-        <span class="value" id="m-t2q-pengampu">-</span>
-      </div>
-      <div class="info-row">
-        <span class="label">Tidak Setor</span>
-        <span class="value" id="m-t2q-alpa">-</span>
-      </div>
-    </div>
-    
-    <button class="btn-tutup" onclick="tutupModalT2Q(null)">Tutup</button>
-  </div>
-</div>
-
-    <div id="modalBina" class="modal-overlay" onclick="tutupModalBina(event)">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 class="text-purple-600"><i class="fa-solid fa-star mr-2"></i>Detail Bina Pribadi</h3>
-      <span class="close-btn" onclick="tutupModalBina(null)">&times;</span>
-    </div>
-    
-    <div class="modal-body pt-2">
-      <p class="text-xs text-center text-slate-500 mb-4">Rekap penilaian karakter ananda periode ini.</p>
-      
-      <div class="info-row">
-        <span class="label flex items-center gap-2">
-            <i class="fa-solid fa-user-clock text-blue-400 w-4"></i> Kedisiplinan
-        </span>
-        <span class="value" id="val-disiplin">-</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="label flex items-center gap-2">
-            <i class="fa-solid fa-mosque text-emerald-400 w-4"></i> Ibadah
-        </span>
-        <span class="value" id="val-ibadah">-</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label flex items-center gap-2">
-            <i class="fa-solid fa-users text-orange-400 w-4"></i> Sosial
-        </span>
-        <span class="value" id="val-sosial">-</span>
-      </div>
-      
-      <div class="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-100 text-center">
-         <p class="text-[10px] text-purple-800">Skala Penilaian: 1 (Kurang) s/d 4 (Sangat Baik)</p>
-      </div>
-    </div>
-    
-    <button class="btn-tutup bg-purple-600 hover:bg-purple-700 transition" onclick="tutupModalBina(null)">Tutup</button>
-  </div>
-</div>
-
-    <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)" style="display: none;">
-  <div class="modal-content">
-    <div class="text-center mb-2 pt-2">
-       <div id="mc-icon-bg" class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce">
-         <i id="mc-icon" class="fa-solid fa-comment-dots"></i>
-       </div>
-       <h3 id="mc-title" class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3>
-    </div>
-    
-    <div id="mc-body-bg" class="bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2">
-       <i class="fa-solid fa-quote-left text-black/10 absolute top-2 left-3 text-xl"></i>
-       
-       <p id="isi-pesan-wali" class="text-slate-700 text-sm font-medium leading-relaxed italic relative z-10">
-          - Memuat pesan -
-       </p>
-       
-       <i class="fa-solid fa-quote-right text-black/10 absolute bottom-2 right-3 text-xl"></i>
-    </div>
-    
-    <div class="mt-6">
-       <button onclick="tutupCatatanWali(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 active:scale-95 transition transform">
-         Oke, Siap
-       </button>
-    </div>
-  </div>
-</div>
-
-    <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)" style="display: none;">
-  <div class="modal-content">
-    <div class="text-center mb-2 pt-2">
-       <div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm">
-         <i class="fa-solid fa-circle-info"></i>
-       </div>
-       <h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3>
-    </div>
-    
-    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center space-y-2">
-       <h4 class="font-bold text-blue-800 text-lg">Dashboard Wali Murid</h4>
-       <div class="inline-block bg-white px-3 py-1 rounded-full text-xs font-bold text-blue-500 border border-blue-200 shadow-sm">
-         Versi 1.0 Beta
-       </div>
-       <div class="border-t border-blue-200 my-3"></div>
-       <p class="text-xs text-slate-500 font-medium">
-         &copy; 2026 <span>aktechmaster</span> <br> Designed & Developed by aktechmaster
-       </p>
-    </div>
-    
-    <div class="mt-6">
-       <button onclick="tutupInfo(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-700 transition transform active:scale-95">
-         Tutup
-       </button>
-    </div>
-  </div>
-</div>
-
-    <div id="modalGantiPass" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="tutupModalPassword()"></div>
-    
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-6 bg-white rounded-2xl shadow-2xl border border-slate-100">
-        
-        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-lock text-emerald-500"></i> Ganti Password
-        </h3>
-
-        <form id="formGantiPass" onsubmit="prosesGantiPass(event)" class="space-y-4">
-            
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Password Baru</label>
-                <input type="password" id="passBaru" required minlength="6"
-                    class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
-                    placeholder="Minimal 6 karakter">
+        <div id="modalT2Q" class="modal-overlay" onclick="tutupModalT2Q(event)">
+            <div class="modal-content">
+                <div class="modal-header"><h3>Detail T2Q</h3><span class="close-btn" onclick="tutupModalT2Q(null)">&times;</span></div>
+                <div class="modal-body">
+                    <div class="info-row"><span class="label">Nama Siswa</span><span class="value" id="m-t2q-nama">-</span></div>
+                    <div class="info-row"><span class="label">Kelas</span><span class="value" id="m-t2q-kelas">-</span></div>
+                    <div class="info-row highlight"><span class="label">Capaian / Batas</span><span class="value" id="m-t2q-batas" style="color: #00b894; font-weight:bold;">-</span></div>
+                    <div class="info-row"><span class="label">Pengampu</span><span class="value" id="m-t2q-pengampu">-</span></div>
+                    <div class="info-row"><span class="label">Tidak Setor</span><span class="value" id="m-t2q-alpa">-</span></div>
+                </div>
+                <button class="btn-tutup" onclick="tutupModalT2Q(null)">Tutup</button>
             </div>
+        </div>
 
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Konfirmasi Password</label>
-                <input type="password" id="konfirmasiPass" required
-                    class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
-                    placeholder="Ketik ulang password">
+        <div id="modalBina" class="modal-overlay" onclick="tutupModalBina(event)">
+            <div class="modal-content">
+                <div class="modal-header"><h3 class="text-purple-600"><i class="fa-solid fa-star mr-2"></i>Detail Bina Pribadi</h3><span class="close-btn" onclick="tutupModalBina(null)">&times;</span></div>
+                <div class="modal-body pt-2">
+                    <div class="info-row"><span class="label flex items-center gap-2"><i class="fa-solid fa-user-clock text-blue-400 w-4"></i> Kedisiplinan</span><span class="value" id="val-disiplin">-</span></div>
+                    <div class="info-row"><span class="label flex items-center gap-2"><i class="fa-solid fa-mosque text-emerald-400 w-4"></i> Ibadah</span><span class="value" id="val-ibadah">-</span></div>
+                    <div class="info-row"><span class="label flex items-center gap-2"><i class="fa-solid fa-users text-orange-400 w-4"></i> Sosial</span><span class="value" id="val-sosial">-</span></div>
+                </div>
+                <button class="btn-tutup bg-purple-600 hover:bg-purple-700 transition" onclick="tutupModalBina(null)">Tutup</button>
             </div>
+        </div>
 
-            <div class="flex gap-3 pt-2">
-                <button type="button" onclick="tutupModalPassword()" 
-                    class="flex-1 px-4 py-2 rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 font-medium text-sm transition-colors">
-                    Batal
-                </button>
-                <button type="submit" id="btnSimpanPass"
-                    class="flex-1 px-4 py-2 rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 font-medium text-sm shadow-md shadow-emerald-200 transition-all">
-                    Simpan
-                </button>
+        <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)">
+            <div class="modal-content">
+                <div class="text-center mb-2 pt-2"><div class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-comment-dots"></i></div><h3 class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3></div>
+                <div class="bg-orange-50 p-5 rounded-xl border border-orange-100 text-center"><p id="isi-pesan-wali" class="text-slate-700 text-sm italic">- Memuat pesan -</p></div>
+                <button onclick="tutupCatatanWali(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl mt-6 font-bold">Oke, Siap</button>
             </div>
-        </form>
+        </div>
+
+        <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)">
+            <div class="modal-content">
+                <div class="text-center mb-2 pt-2"><div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-circle-info"></i></div><h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3></div>
+                <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-center">
+                    <h4 class="font-bold text-blue-800 text-lg">Dashboard Wali Murid</h4>
+                    <p class="text-xs text-slate-500 font-medium">&copy; 2026 aktechmaster</p>
+                </div>
+                <button onclick="tutupInfo(null)" class="w-full bg-slate-800 text-white py-3 rounded-xl mt-6 font-bold">Tutup</button>
+            </div>
+        </div>
+
+        <div id="modalGantiPass" class="fixed inset-0 z-[100] hidden">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="tutupModalPassword()"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm p-6 bg-white rounded-2xl shadow-2xl">
+                <h3 class="text-lg font-bold mb-4">Ganti Password</h3>
+                <form onsubmit="prosesGantiPass(event)" class="space-y-4">
+                    <input type="password" id="passBaru" placeholder="Password Baru" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input type="password" id="konfirmasiPass" placeholder="Konfirmasi Password" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="tutupModalPassword()" class="flex-1 py-2 bg-slate-100 rounded-lg">Batal</button>
+                        <button type="submit" class="flex-1 py-2 bg-emerald-600 text-white rounded-lg">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
-</div>
 
     <script>
     // === LOGIC UTAMA ===
