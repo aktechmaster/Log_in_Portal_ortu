@@ -457,6 +457,9 @@
     <script>
     // === LOGIC UTAMA ===
 
+    // --- KONFIGURASI URL (Diletakkan di luar agar bisa dipakai semua fungsi) ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec"; 
+
     // 1. Cek Login & Ambil Data
     const savedData = localStorage.getItem('user_data');
     var user = null; // Inisialisasi variabel user agar tidak undefined
@@ -487,11 +490,16 @@
             setText('kelas-siswa', user.kelas);
             setGreeting();
             
-            // Set Avatar Dicebear (Pindahkan ke sini agar rapi)
+            // --- LOGIK FOTO (DIPERBAIKI) ---
             const imgEl = document.getElementById('foto-siswa');
             if (imgEl) {
-                const safeName = encodeURIComponent(user.nama || "User");
-                imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
+                // Jika user.foto ada isinya (dari database), pakai itu. Jika tidak, pakai Dicebear.
+                if (user.foto && user.foto !== "") {
+                    imgEl.src = user.foto;
+                } else {
+                    const safeName = encodeURIComponent(user.nama || "User");
+                    imgEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${safeName}&backgroundColor=e6f4f1`;
+                }
             }
 
             // --- UPDATE ABSENSI ---
@@ -622,15 +630,12 @@
         if(elSapa) elSapa.innerText = greet;
     }
 
-    // --- PERBAIKAN FUNGSI LOGOUT (INI YANG MENYEBABKAN ERROR SEBELUMNYA) ---
+    // --- PERBAIKAN FUNGSI LOGOUT ---
     function logout() {
         if (confirm("Yakin ingin keluar?")) {
-            // 1. Hapus semua data session
             localStorage.removeItem('user_data');
             localStorage.removeItem('nisn');
             localStorage.clear(); 
-            
-            // 2. Force Redirect dengan Cache Busting (?v=waktu)
             window.location.replace("index.html?status=logout&v=" + new Date().getTime());
         }
     }
@@ -690,7 +695,6 @@
     window.bukaModalT2Q = function() {
         var d = window.dataT2QUser;
         if(!d) {
-            // Coba ambil ulang dari user jika window data kosong
             if(user && user.t2q) d = user.t2q;
             else {
                 alert("Data T2Q belum dimuat. Silakan refresh.");
@@ -698,11 +702,9 @@
             }
         }
 
-        // Isi data ke dalam Popup
         setText('m-t2q-nama', d.nama || user.nama || "-");
         setText('m-t2q-kelas', d.kelas || user.kelas || "-");
         
-        // Style warna hijau untuk batas
         const elBatas = document.getElementById('m-t2q-batas');
         if(elBatas) {
             elBatas.innerText = d.batas || "Belum ada data";
@@ -713,7 +715,6 @@
         setText('m-t2q-pengampu', d.pengampu || "-");
         setText('m-t2q-alpa', (d.tidak_setor || "0") + " kali");
 
-        // Munculkan Popup
         document.getElementById('modalT2Q').style.display = 'flex';
     }
 
@@ -743,14 +744,10 @@
 
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
-        const triggerBtn = e.target.closest('button'); // Sesuaikan selector tombol jika perlu
+        const triggerBtn = e.target.closest('button'); 
         
-        // Cek jika klik di luar menu DAN menu sedang terbuka
         if (menu && !menu.classList.contains('hidden')) {
-             // Pastikan yang diklik bukan tombol trigger menu (tombol titik tiga)
-             // Asumsi tombol trigger memiliki onclick="toggleMenu()"
              if (!triggerBtn || !triggerBtn.onclick) { 
-                 // Logic tambahan: Periksa apakah klik di dalam menu
                  if (!menu.contains(e.target) && !e.target.closest('[onclick="toggleMenu()"]')) {
                      toggleMenu();
                  }
@@ -809,22 +806,16 @@
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
 
-    // --- FUNCTION BARU: BINA PRIBADI & CATATAN WALI ---
-    
-    // 1. Logic Modal Bina Pribadi
+    // --- BINA PRIBADI & CATATAN WALI ---
     function bukaModalBina() {
         const d = window.dataBina;
         if (!d) {
             alert("Data Bina Pribadi belum tersedia.");
             return;
         }
-        
-        // Isi Data ke Modal
         setText('val-disiplin', (d.d || 0) + " / 4");
         setText('val-ibadah', (d.i || 0) + " / 4");
         setText('val-sosial', (d.s || 0) + " / 4");
-        
-        // Buka Modal
         const el = document.getElementById('modalBina');
         if(el) el.style.display = 'flex';
     }
@@ -836,13 +827,11 @@
         }
     }
 
-    // --- LOGIC BUKA CATATAN WALI (Dinamis & Estetik) ---
     function bukaCatatanWali() {
         const pesan = window.pesanWali;
         const elLabel = document.getElementById('label-catatan');
         const labelText = elLabel ? elLabel.innerText : "";
 
-        // Elemen-elemen Modal yang akan kita manipulasi
         const modal = document.getElementById('modalCatatan');
         const elIconBg = document.getElementById('mc-icon-bg');
         const elIcon = document.getElementById('mc-icon');
@@ -850,28 +839,23 @@
         const elBodyBg = document.getElementById('mc-body-bg');
         const elText = document.getElementById('isi-pesan-wali');
 
-        // Cek apakah KOSONG atau ADA ISI
         const isKosong = (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "");
 
         if (isKosong) {
-            // == TAMPILAN JIKA KOSONG (Mode Biru/Info) ==
             elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
-            elIcon.className = "fa-solid fa-clipboard-check"; // Ikon Centang
+            elIcon.className = "fa-solid fa-clipboard-check";
             elTitle.innerText = "Belum Ada Catatan";
             elBodyBg.className = "bg-slate-50 p-5 rounded-xl border border-slate-100 text-center relative mt-2";
             elText.innerText = "Saat ini belum ada catatan baru dari Wali Kelas untuk Ananda. Tetap semangat!";
-            elText.classList.remove('italic'); // Hapus miring biar tegak
-        
+            elText.classList.remove('italic');
         } else {
-            // == TAMPILAN JIKA ADA PESAN (Mode Oranye/Alert) ==
             elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
-            elIcon.className = "fa-solid fa-comment-dots"; // Ikon Pesan
+            elIcon.className = "fa-solid fa-comment-dots";
             elTitle.innerText = "Pesan Wali Kelas";
             elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
             elText.innerText = pesan;
-            elText.classList.add('italic'); // Pakai font miring biar estetik
+            elText.classList.add('italic');
 
-            // Update status 'Sudah Dibaca'
             const elNotif = document.getElementById('notif-dot');
             if(elNotif) elNotif.classList.add('hidden');
             
@@ -881,8 +865,6 @@
                 elLabel.classList.add('text-slate-400');
             }
         }
-
-        // Tampilkan Modal
         modal.style.display = 'flex';
     }
 
@@ -904,54 +886,42 @@
         }
     }
 
-    // --- Fungsi UI Modal Ganti Password ---
+    // --- GANTI PASSWORD ---
     function bukaModalPassword() {
         document.getElementById('modalGantiPass').classList.remove('hidden');
     }
 
     function tutupModalPassword() {
         document.getElementById('modalGantiPass').classList.add('hidden');
-        document.getElementById('formGantiPass').reset(); // Reset form saat ditutup
+        document.getElementById('formGantiPass').reset();
     }
 
     function prosesGantiPass(e) {
         e.preventDefault();
-        
-        // --- TEMPEL URL ANDA DI SINI (WAJIB) ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec"; 
-        // ---------------------------------------
-
         const passBaru = document.getElementById('passBaru').value;
         const konfirmasi = document.getElementById('konfirmasiPass').value;
         const btnSimpan = document.getElementById('btnSimpanPass');
 
-        // 1. Validasi Password
         if (!passBaru || !konfirmasi) { alert("Password kosong!"); return; }
         if (passBaru !== konfirmasi) { alert("Password tidak sama!"); return; }
 
-        // 2. Ambil NISN dari LocalStorage
         const savedData = localStorage.getItem('user_data');
         let userNISN = "";
         try {
             if (savedData) userNISN = JSON.parse(savedData).nisn;
-        } catch(err) {
-            console.error(err);
-        }
+        } catch(err) { console.error(err); }
         
         if (!userNISN) { alert("Error: NISN tidak ditemukan, silakan login ulang."); return; }
 
-        // 3. Ubah Tombol Loading
         const textAsli = btnSimpan.innerText;
         btnSimpan.innerText = "Menyimpan...";
         btnSimpan.disabled = true;
 
-        // 4. Siapkan Data
         const formData = new FormData();
         formData.append('action', 'gantiPass');
         formData.append('nisn', userNISN);
         formData.append('password', passBaru);
 
-        // 5. Kirim pakai FETCH
         fetch(SCRIPT_URL, {
             method: 'POST',
             body: formData
@@ -960,7 +930,6 @@
         .then(result => {
             btnSimpan.innerText = textAsli;
             btnSimpan.disabled = false;
-            
             if (result.status === 'sukses') {
                 alert("Berhasil ganti password!");
                 tutupModalPassword();
@@ -971,58 +940,57 @@
         .catch(err => {
             btnSimpan.innerText = textAsli;
             btnSimpan.disabled = false;
-            alert("Gagal koneksi. Cek internet atau URL Script.");
+            alert("Gagal koneksi.");
             console.error(err);
         });
     }
 
-        function prosesUpload(input) {
-    const file = input.files[0];
-    const status = document.getElementById('statusUpload');
-    if (!file) return;
+    // --- PROSES UPLOAD FOTO (DIPERBAIKI) ---
+    function prosesUpload(input) {
+        const file = input.files[0];
+        const status = document.getElementById('statusUpload');
+        if (!file) return;
 
-    // Validasi Ukuran (Maks 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-        alert("File terlalu besar! Maksimal 2MB.");
-        return;
+        if (file.size > 2 * 1024 * 1024) {
+            alert("File terlalu besar! Maksimal 2MB.");
+            return;
+        }
+
+        const reader = new FileReader();
+        status.innerText = "Mengompres & Mengupload...";
+        
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
+            const formData = new FormData();
+            formData.append('action', 'uploadFoto');
+            formData.append('nisn', user.nisn);
+            formData.append('fileData', base64Data);
+            formData.append('fileName', file.name);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'sukses') {
+                    status.innerText = "Berhasil! Foto diperbarui.";
+                    document.getElementById('foto-siswa').src = res.link;
+                    // Update data lokal
+                    user.foto = res.link;
+                    localStorage.setItem('user_data', JSON.stringify(user));
+                } else {
+                    status.innerText = "Gagal upload.";
+                    alert(res.pesan);
+                }
+            })
+            .catch(err => {
+                status.innerText = "Kesalahan koneksi.";
+                console.error(err);
+            });
+        };
+        reader.readAsDataURL(file);
     }
-
-    const reader = new FileReader();
-    status.innerText = "Mengompres & Mengupload...";
-    
-    reader.onload = function(e) {
-        const base64Data = e.target.result;
-        const formData = new FormData();
-        formData.append('action', 'uploadFoto');
-        formData.append('nisn', user.nisn);
-        formData.append('fileData', base64Data);
-        formData.append('fileName', file.name);
-
-        // Gunakan SCRIPT_URL yang sudah Anda punya
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'sukses') {
-                status.innerText = "Berhasil! Refresh untuk melihat perubahan.";
-                document.getElementById('foto-siswa').src = res.link;
-                // Update local storage agar saat refresh foto tetap baru
-                user.foto = res.link;
-                localStorage.setItem('user_data', JSON.stringify(user));
-            } else {
-                status.innerText = "Gagal upload.";
-                alert(res.pesan);
-            }
-        })
-        .catch(err => {
-            status.innerText = "Kesalahan koneksi.";
-            console.error(err);
-        });
-    };
-    reader.readAsDataURL(file);
-}
 </script>
 
 </body>
