@@ -744,13 +744,11 @@
 
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('dropdown-menu');
-        const triggerBtn = e.target.closest('button'); 
+        const triggerBtn = e.target.closest('[onclick="toggleMenu()"]'); 
         
         if (menu && !menu.classList.contains('hidden')) {
-             if (!triggerBtn || !triggerBtn.onclick) { 
-                 if (!menu.contains(e.target) && !e.target.closest('[onclick="toggleMenu()"]')) {
-                     toggleMenu();
-                 }
+             if (!menu.contains(e.target) && !triggerBtn) {
+                 toggleMenu();
              }
         }
     });
@@ -926,15 +924,21 @@
             method: 'POST',
             body: formData
         })
-        .then(res => res.json())
-        .then(result => {
+        .then(res => res.text()) // PERBAIKAN: Gunakan text() agar tidak crash jika GAS mengirim HTML Error
+        .then(text => {
             btnSimpan.innerText = textAsli;
             btnSimpan.disabled = false;
-            if (result.status === 'sukses') {
-                alert("Berhasil ganti password!");
-                tutupModalPassword();
-            } else {
-                alert("Gagal: " + result.pesan);
+            try {
+                const result = JSON.parse(text);
+                if (result.status === 'sukses') {
+                    alert("Berhasil ganti password!");
+                    tutupModalPassword();
+                } else {
+                    alert("Gagal: " + result.pesan);
+                }
+            } catch(err) {
+                alert("Terjadi masalah pada server. Pastikan URL Apps Script benar dan di-deploy dengan benar.");
+                console.error("Respons dari server bukan JSON:", text);
             }
         })
         .catch(err => {
@@ -960,28 +964,42 @@
         status.innerText = "Mengompres & Mengupload...";
         
         reader.onload = function(e) {
-            const base64Data = e.target.result;
+            // PERBAIKAN KRUSIAL: Memisahkan header "data:image/jpeg;base64," agar Apps Script tidak gagal memproses gambarnya.
+            const fullBase64 = e.target.result;
+            let cleanBase64 = fullBase64;
+            if (fullBase64.includes(",")) {
+                cleanBase64 = fullBase64.split(",")[1];
+            }
+
             const formData = new FormData();
             formData.append('action', 'uploadFoto');
             formData.append('nisn', user.nisn);
-            formData.append('fileData', base64Data);
+            formData.append('fileData', cleanBase64); // Kirim yang sudah bersih
             formData.append('fileName', file.name);
+            formData.append('mimeType', file.type);   // Kirim identitas ekstensi sebagai cadangan
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(res => {
-                if (res.status === 'sukses') {
-                    status.innerText = "Berhasil! Foto diperbarui.";
-                    document.getElementById('foto-siswa').src = res.link;
-                    // Update data lokal
-                    user.foto = res.link;
-                    localStorage.setItem('user_data', JSON.stringify(user));
-                } else {
-                    status.innerText = "Gagal upload.";
-                    alert(res.pesan);
+            .then(res => res.text()) // PERBAIKAN: Gunakan text() agar bisa menangkap error "Akses Ditolak" yang berbentuk HTML
+            .then(text => {
+                try {
+                    const resJson = JSON.parse(text);
+                    if (resJson.status === 'sukses') {
+                        status.innerText = "Berhasil! Foto diperbarui.";
+                        document.getElementById('foto-siswa').src = resJson.link;
+                        // Update data lokal
+                        user.foto = resJson.link;
+                        localStorage.setItem('user_data', JSON.stringify(user));
+                    } else {
+                        status.innerText = "Gagal upload.";
+                        alert(resJson.pesan);
+                    }
+                } catch (err) {
+                    status.innerText = "Gagal membaca respons server.";
+                    alert("Akses Server Ditolak/Error. Jika sebelumnya Anda mendapat peringatan 'Akses ditolak DriveApp', artinya GAS Anda masih mengeksekusi versi lama. Pastikan Deploy sebagai Versi Baru.");
+                    console.error("Respons dari server bukan JSON yang valid. Respons:", text);
                 }
             })
             .catch(err => {
