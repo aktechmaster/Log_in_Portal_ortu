@@ -1108,6 +1108,42 @@ function tutupPengumuman(e) {
         };
         reader.readAsDataURL(file);
     }
+
+        <script>
+// ==========================================
+// FITUR AUTO-REFRESH DI BELAKANG LAYAR
+// ==========================================
+document.addEventListener('visibilitychange', function() {
+    // Jika status layarnya berubah menjadi 'visible' (sedang dilihat user lagi)
+    if (document.visibilityState === 'visible') {
+        
+        // Sesuaikan SCRIPT_URL dengan punyamu
+        const URL_GAS = 'https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec';
+        
+        // Ambil NISN dan Password dari loker
+        const savedNISN = localStorage.getItem('nisn');
+        const savedPass = localStorage.getItem('user_pass');
+
+        // Jika data loginnya ada, jalankan pengambilan data diam-diam
+        if (savedNISN && savedPass) {
+            console.log("Mendeteksi user kembali ke aplikasi. Memperbarui data...");
+            
+            fetch(`${URL_GAS}?username=${encodeURIComponent(savedNISN)}&password=${encodeURIComponent(savedPass)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        // Timpa data lama dengan data baru dari Google Sheet
+                        localStorage.setItem('user_data', JSON.stringify(data));
+                        console.log("Data berhasil di-refresh otomatis!");
+                    }
+                })
+                .catch(error => {
+                    console.log("Auto-refresh gagal (mungkin masalah jaringan):", error);
+                });
+        }
+    }
+});
+</script>
 </script>
 
 </body>
