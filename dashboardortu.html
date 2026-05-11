@@ -933,7 +933,7 @@ function tutupInfo(e) {
     }
 }
 
-        function bukaPengumuman() {
+function bukaPengumuman() {
     const elModal = document.getElementById('modalPengumuman');
     const elKonten = document.getElementById('kontenPengumuman');
     
@@ -947,7 +947,7 @@ function tutupInfo(e) {
     elModal.style.display = 'flex';
     
     // Ambil data siswa
-    const dataString = localStorage.getItem('dataUser'); 
+   const dataString = localStorage.getItem('user_data'); 
     
     if (dataString) {
         const dataSiswa = JSON.parse(dataString);
