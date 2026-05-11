@@ -50,6 +50,7 @@
     } else {
         const savedData = localStorage.getItem('user_data');
         const savedNISN = localStorage.getItem('nisn');
+        
 
         if (savedData && savedNISN) {
             window.location.replace('dashboardortu.html');
@@ -77,6 +78,7 @@
                 if (data.result === 'success') {
                     localStorage.setItem('user_data', JSON.stringify(data));
                     localStorage.setItem('nisn', username); 
+                    localStorage.setItem('user_pass', password); // <-- TAMBAHKAN BARIS INI
                     window.location.href = 'dashboardortu.html';
                 } else {
                     alert("Gagal: " + (data.message || "NISN/Password Salah"));
