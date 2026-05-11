@@ -809,7 +809,7 @@
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
 
-    // --- BINA PRIBADI & CATATAN WALI ---
+    // --- BINA PRIBADI & CATATAN WALI (DIPERBAIKI) ---
     function bukaModalBina() {
         const d = window.dataBina;
         if (!d) {
@@ -830,12 +830,20 @@
         }
     }
 
-    function bukaCatatanWali() {
+    // PERBAIKAN 1: Tambahkan window. agar fungsi bisa dipanggil dari HTML onclick
+    window.bukaCatatanWali = function() {
         const pesan = window.pesanWali;
         const elLabel = document.getElementById('label-catatan');
         const labelText = elLabel ? elLabel.innerText : "";
 
         const modal = document.getElementById('modalCatatan');
+        
+        // Cek apakah modal ada di HTML
+        if (!modal) {
+            console.error("Elemen dengan ID 'modalCatatan' tidak ditemukan di HTML!");
+            return;
+        }
+
         const elIconBg = document.getElementById('mc-icon-bg');
         const elIcon = document.getElementById('mc-icon');
         const elTitle = document.getElementById('mc-title');
@@ -844,20 +852,26 @@
 
         const isKosong = (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "");
 
+        // PERBAIKAN 2: Tambahkan validasi "if(nama_elemen)" sebelum mengubah class/teks 
+        // agar script tidak mati tiba-tiba jika ID HTML belum lengkap.
         if (isKosong) {
-            elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
-            elIcon.className = "fa-solid fa-clipboard-check";
-            elTitle.innerText = "Belum Ada Catatan";
-            elBodyBg.className = "bg-slate-50 p-5 rounded-xl border border-slate-100 text-center relative mt-2";
-            elText.innerText = "Saat ini belum ada catatan baru dari Wali Kelas untuk Ananda. Tetap semangat!";
-            elText.classList.remove('italic');
+            if(elIconBg) elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
+            if(elIcon) elIcon.className = "fa-solid fa-clipboard-check";
+            if(elTitle) elTitle.innerText = "Belum Ada Catatan";
+            if(elBodyBg) elBodyBg.className = "bg-slate-50 p-5 rounded-xl border border-slate-100 text-center relative mt-2";
+            if(elText) {
+                elText.innerText = "Saat ini belum ada catatan baru dari Wali Kelas untuk Ananda. Tetap semangat!";
+                elText.classList.remove('italic');
+            }
         } else {
-            elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
-            elIcon.className = "fa-solid fa-comment-dots";
-            elTitle.innerText = "Pesan Wali Kelas";
-            elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
-            elText.innerText = pesan;
-            elText.classList.add('italic');
+            if(elIconBg) elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
+            if(elIcon) elIcon.className = "fa-solid fa-comment-dots";
+            if(elTitle) elTitle.innerText = "Pesan Wali Kelas";
+            if(elBodyBg) elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
+            if(elText) {
+                elText.innerText = pesan;
+                elText.classList.add('italic');
+            }
 
             const elNotif = document.getElementById('notif-dot');
             if(elNotif) elNotif.classList.add('hidden');
@@ -868,13 +882,18 @@
                 elLabel.classList.add('text-slate-400');
             }
         }
+        
+        // PERBAIKAN 3: Pastikan class 'hidden' dihapus jika menggunakan Tailwind CSS
+        modal.classList.remove('hidden'); 
         modal.style.display = 'flex';
     }
 
-    function tutupCatatanWali(e) {
-        const el = document.getElementById('modalCatatan');
-        if (el && (e === null || e.target.id === 'modalCatatan')) {
-            el.style.display = 'none';
+    // PERBAIKAN 4: Tambahkan window. pada fungsi tutup
+    window.tutupCatatanWali = function(e) {
+        const modal = document.getElementById('modalCatatan');
+        if (modal && (e === null || e.target.id === 'modalCatatan')) {
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
         }
     }
 
