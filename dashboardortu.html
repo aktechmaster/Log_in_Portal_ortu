@@ -267,19 +267,14 @@
                     <p id="label-catatan" class="text-[10px] text-slate-400">Tidak ada pesan</p>
                 </div>
 
-                <div id="modalPengumuman" class="fixed inset-0 z-[99] bg-slate-900/60 backdrop-blur-sm justify-center items-center p-4" style="display: none;" onclick="tutupPengumuman(event)">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden" onclick="event.stopPropagation()">
-        
-        <div class="bg-blue-600 p-4 flex justify-between items-center text-white">
-            <div class="font-semibold"><i class="fa-solid fa-bullhorn"></i> Info Sekolah Terbaru</div>
-            <button onclick="tutupPengumuman(null)"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <div onclick="bukaPengumuman()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300">
+    <div class="flex justify-between items-start mb-3">
+        <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
+            <i class="fa-solid fa-bullhorn"></i>
         </div>
-
-        <div id="kontenPengumuman" class="p-5 max-h-[60vh] overflow-y-auto">
-            <p class="text-center text-slate-500">Memuat...</p>
-        </div>
-
     </div>
+    <h4 class="font-bold text-slate-700 text-xs">Info Sekolah</h4>
+    <p class="text-[10px] text-slate-400">Update Kegiatan</p>
 </div>
             <div class="fade-in delay-300 pb-4">
                 <h3 class="font-bold text-slate-700 mb-3 px-1 text-sm flex justify-between items-center">
@@ -900,44 +895,44 @@
         }
     }
 
-    function bukaPengumuman() {
-    const elModal = document.getElementById('modalPengumuman');
-    const elKonten = document.getElementById('kontenPengumuman');
+    function bukaInfo() {
+    // 1. Cari elemen tempat menaruh isi pengumuman
+    const kontenModal = document.getElementById('konten-info');
     
-    // Cek apakah HTML modal sudah dipasang
-    if (!elModal || !elKonten) {
-        alert("Waduh, HTML Modal Pengumuman belum terbaca! Pastikan kodenya sudah dipaste di dalam <body>");
-        return;
-    }
-
-    // Tampilkan modal (metode ini persis seperti tutupInfo milikmu)
-    elModal.style.display = 'flex';
-    
-    // Ambil data siswa
-    const dataString = localStorage.getItem('dataUser'); 
+    // 2. Ambil data yang sudah disimpan saat login
+    // Sesuaikan 'dataUser' jika kamu menggunakan nama kunci (key) yang berbeda di localStorage
+    const dataString = localStorage.getItem('dataUser');
     
     if (dataString) {
         const dataSiswa = JSON.parse(dataString);
         
+        // Cek apakah array info_sekolah ada dan tidak kosong
         if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.length > 0) {
-            const infoTerbaru = dataSiswa.info_sekolah[0];
+            const infoTerbaru = dataSiswa.info_sekolah[0]; // Ambil urutan pertama (terbaru)
             
-            elKonten.innerHTML = `
+            // Masukkan Judul, Tanggal, dan Isi ke dalam HTML Modal
+            // Class Tailwind di bawah bisa kamu sesuaikan dengan desainmu
+            kontenModal.innerHTML = `
                 <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
-                <p class="text-xs text-blue-600 font-medium mb-4"><i class="fa-regular fa-calendar"></i> ${infoTerbaru.tanggal}</p>
-                <div class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
+                <p class="text-xs text-slate-500 mb-3"><i class="fa-regular fa-clock"></i> ${infoTerbaru.tanggal}</p>
+                <div class="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
             `;
         } else {
-            elKonten.innerHTML = `<p class="text-center text-slate-500 py-6">Belum ada pengumuman terbaru.</p>`;
+            // Jika array kosong
+            kontenModal.innerHTML = `<p class="text-center text-slate-500 py-4">Belum ada informasi terbaru dari sekolah.</p>`;
         }
     } else {
-        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+        // Jika data gagal diload dari localStorage
+        kontenModal.innerHTML = `<p class="text-center text-red-500 py-4">Gagal memuat data. Silakan login ulang.</p>`;
     }
+
+    // 3. Tampilkan modalnya (ini kode aslimu)
+    document.getElementById('modalInfo').style.display = 'flex';
 }
 
-function tutupPengumuman(e) {
-    const el = document.getElementById('modalPengumuman');
-    if (el && (e === null || e.target.id === 'modalPengumuman')) {
+function tutupInfo(e) {
+    const el = document.getElementById('modalInfo');
+    if (el && (e === null || e.target.id === 'modalInfo')) {
         el.style.display = 'none';
     }
 }
