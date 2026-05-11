@@ -14,7 +14,7 @@
     <div class="w-full max-w-sm text-center bg-white p-8 rounded-3xl shadow-xl">
         <div class="mb-6 flex justify-center">
             <div class="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                <img src="logosmpit.png" alt="Logo SMPIT" class="w-12 h-12 object-contain -rotate-3">
+                <img src="logosmpit.png" alt="Logo" class="w-14 h-14 object-contain -rotate-3">
             </div>
         </div>
         <h1 class="text-2xl font-bold text-gray-800 mb-1">My Al-Kautsar</h1>
@@ -41,24 +41,20 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCE2mexwL_a5OZ9upm1WRSitrOI1FfmqbYGNT5Wjx3wcruDLRvtLPAB7CTfAYkvxJB/exec';
 
     // --- LOGIKA ANTI-LOOP (PERBAIKAN) ---
-const urlParams = new URLSearchParams(window.location.search);
-const isLogout = urlParams.get('status') === 'logout';
+    const urlParams = new URLSearchParams(window.location.search);
+    const isLogout = urlParams.get('status') === 'logout';
 
-if (isLogout) {
-    // Jika baru logout, bersihkan semuanya agar bersih total
-    localStorage.clear();
-    // Hilangkan parameter ?status=logout dari URL tanpa reload halaman
-    window.history.replaceState({}, document.title, window.location.pathname);
-} else {
-    // JIKA BUKAN LOGOUT, cek apakah data login masih ada di browser?
-    const savedData = localStorage.getItem('user_data');
-    const savedNISN = localStorage.getItem('nisn');
+    if (isLogout) {
+        localStorage.clear();
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        const savedData = localStorage.getItem('user_data');
+        const savedNISN = localStorage.getItem('nisn');
 
-    // Jika data lengkap, barulah lempar ke dashboard
-    if (savedData && savedNISN) {
-        window.location.replace('dashboardortu.html');
+        if (savedData && savedNISN) {
+            window.location.replace('dashboardortu.html');
+        }
     }
-}
     // ---------------------------------------
 
     const loginForm = document.getElementById('login-form');
@@ -79,14 +75,9 @@ if (isLogout) {
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    
-                    // Simpan Data
                     localStorage.setItem('user_data', JSON.stringify(data));
                     localStorage.setItem('nisn', username); 
-                    
-                    // Pindah ke Dashboard
                     window.location.href = 'dashboardortu.html';
-
                 } else {
                     alert("Gagal: " + (data.message || "NISN/Password Salah"));
                     resetButton(originalText);
@@ -104,6 +95,6 @@ if (isLogout) {
         btnLogin.disabled = false;
         btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
     }
-</script>
+    </script>
 </body>
 </html>
