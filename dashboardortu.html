@@ -691,6 +691,11 @@
             }
             // --- BATAS UPDATE BINA PRIBADI ---
 
+        } catch (errUtama) {
+            console.error("Terjadi kesalahan pada proses utama:", errUtama);
+        }
+    }); // <--- INI PENUTUP YANG HILANG TADI
+
     // --- Helper Function ---
     function setText(id, text) {
         const el = document.getElementById(id);
@@ -990,7 +995,7 @@
             }
 
             // Buat ID bayangan dari teks pesannya agar titik merah hilang permanen
-            const idBayangan = btoa(pesanTunggal).substring(0, 15); 
+            const idBayangan = btoa(encodeURIComponent(pesanTunggal)).substring(0, 15); 
             localStorage.setItem('catatan_terbaca_' + nisnUser, idBayangan);
         }
         
@@ -1009,58 +1014,58 @@
     }
 
     // Ini khusus untuk tombol "Tentang Aplikasi"
-function bukaInfo() {
-    document.getElementById('modalInfo').style.display = 'flex';
-}
-
-function tutupInfo(e) {
-    const el = document.getElementById('modalInfo');
-    if (el && (e === null || e.target.id === 'modalInfo')) {
-        el.style.display = 'none';
-    }
-}
-
-function bukaPengumuman() {
-    const elModal = document.getElementById('modalPengumuman');
-    const elKonten = document.getElementById('kontenPengumuman');
-    
-    // Cek apakah HTML modal sudah dipasang
-    if (!elModal || !elKonten) {
-        alert("Waduh, HTML Modal Pengumuman belum terbaca! Pastikan kodenya sudah dipaste di dalam <body>");
-        return;
+    function bukaInfo() {
+        document.getElementById('modalInfo').style.display = 'flex';
     }
 
-    // Tampilkan modal (metode ini persis seperti tutupInfo milikmu)
-    elModal.style.display = 'flex';
-    
-    // Ambil data siswa
-   const dataString = localStorage.getItem('user_data'); 
-    
-    if (dataString) {
-        const dataSiswa = JSON.parse(dataString);
-        
-        if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.length > 0) {
-            const infoTerbaru = dataSiswa.info_sekolah[0];
-            
-            elKonten.innerHTML = `
-                <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
-                <p class="text-xs text-blue-600 font-medium mb-4"><i class="fa-regular fa-calendar"></i> ${infoTerbaru.tanggal}</p>
-                <div class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
-            `;
-        } else {
-            elKonten.innerHTML = `<p class="text-center text-slate-500 py-6">Belum ada pengumuman terbaru.</p>`;
+    function tutupInfo(e) {
+        const el = document.getElementById('modalInfo');
+        if (el && (e === null || e.target.id === 'modalInfo')) {
+            el.style.display = 'none';
         }
-    } else {
-        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
     }
-}
 
-function tutupPengumuman(e) {
-    const el = document.getElementById('modalPengumuman');
-    if (el && (e === null || e.target.id === 'modalPengumuman')) {
-        el.style.display = 'none';
+    function bukaPengumuman() {
+        const elModal = document.getElementById('modalPengumuman');
+        const elKonten = document.getElementById('kontenPengumuman');
+        
+        // Cek apakah HTML modal sudah dipasang
+        if (!elModal || !elKonten) {
+            alert("Waduh, HTML Modal Pengumuman belum terbaca! Pastikan kodenya sudah dipaste di dalam <body>");
+            return;
+        }
+
+        // Tampilkan modal (metode ini persis seperti tutupInfo milikmu)
+        elModal.style.display = 'flex';
+        
+        // Ambil data siswa
+        const dataString = localStorage.getItem('user_data'); 
+        
+        if (dataString) {
+            const dataSiswa = JSON.parse(dataString);
+            
+            if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.length > 0) {
+                const infoTerbaru = dataSiswa.info_sekolah[0];
+                
+                elKonten.innerHTML = `
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
+                    <p class="text-xs text-blue-600 font-medium mb-4"><i class="fa-regular fa-calendar"></i> ${infoTerbaru.tanggal}</p>
+                    <div class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
+                `;
+            } else {
+                elKonten.innerHTML = `<p class="text-center text-slate-500 py-6">Belum ada pengumuman terbaru.</p>`;
+            }
+        } else {
+            elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+        }
     }
-}
+
+    function tutupPengumuman(e) {
+        const el = document.getElementById('modalPengumuman');
+        if (el && (e === null || e.target.id === 'modalPengumuman')) {
+            el.style.display = 'none';
+        }
+    }
 
     // --- GANTI PASSWORD ---
     function bukaModalPassword() {
