@@ -653,17 +653,19 @@
                     window.riwayatPesanWali = user.catatan_wali_history || []; 
 
                     // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
-                    let sudahDibaca = false;
-                    const nisnAktif = user.nisn || "000";
-                
-                    if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
-                        const idTerbaru = window.riwayatPesanWali[0].id;
-                        if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idTerbaru) sudahDibaca = true;
-                    } else if (window.pesanWali && window.pesanWali !== "-") {
-                        // DITAMBAHKAN encodeURIComponent AGAR TIDAK CRASH KETIKA ADA EMOJI/KARAKTER SPESIAL
-                        const idBayangan = btoa(encodeURIComponent(window.pesanWali)).substring(0, 15);
-                        if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idBayangan) sudahDibaca = true;
-                    }
+let sudahDibaca = false;
+const nisnAktif = user.nisn || "000";
+
+if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
+    const idTerbaru = window.riwayatPesanWali[0].id;
+    // PERBAIKAN: Gunakan == (dua sama dengan), agar Angka 1 dianggap sama dengan Teks "1"
+    if (localStorage.getItem('catatan_terbaca_' + nisnAktif) == idTerbaru) sudahDibaca = true;
+    
+} else if (window.pesanWali && window.pesanWali !== "-") {
+    const idBayangan = btoa(encodeURIComponent(window.pesanWali)).substring(0, 15);
+    // PERBAIKAN: Gunakan == juga di sini untuk keamanan
+    if (localStorage.getItem('catatan_terbaca_' + nisnAktif) == idBayangan) sudahDibaca = true;
+}
 
                     const elNotif = document.getElementById('notif-dot');
                     const elLabel = document.getElementById('label-catatan');
