@@ -888,10 +888,8 @@
 
     // PERBAIKAN 1: Tambahkan window. agar fungsi bisa dipanggil dari HTML onclick
     window.bukaCatatanWali = function() {
-        const pesan = window.pesanWali;
-        const elLabel = document.getElementById('label-catatan');
-        const labelText = elLabel ? elLabel.innerText : "";
-
+        // Mengambil data riwayat pesan dari memori (sudah disiapkan saat login)
+        const riwayat = window.riwayatPesanWali || [];
         const modal = document.getElementById('modalCatatan');
         
         // Cek apakah modal ada di HTML
@@ -905,12 +903,19 @@
         const elTitle = document.getElementById('mc-title');
         const elBodyBg = document.getElementById('mc-body-bg');
         const elText = document.getElementById('isi-pesan-wali');
+        const elNotif = document.getElementById('notif-dot');
+        const elLabel = document.getElementById('label-catatan');
 
-        const isKosong = (labelText === "Tidak ada pesan" || !pesan || pesan === "-" || pesan === "");
+        // INSTAN: Matikan titik merah dan ubah teks jadi "Sudah dibaca" saat diklik
+        if(elNotif) elNotif.classList.add('hidden');
+        if(elLabel) {
+            elLabel.innerText = "Sudah dibaca";
+            elLabel.classList.remove('text-orange-600', 'font-bold');
+            elLabel.classList.add('text-slate-400');
+        }
 
-        // PERBAIKAN 2: Tambahkan validasi "if(nama_elemen)" sebelum mengubah class/teks 
-        // agar script tidak mati tiba-tiba jika ID HTML belum lengkap.
-        if (isKosong) {
+        // PERBAIKAN 2: Render isi modal berdasarkan ada/tidaknya riwayat
+        if (riwayat.length === 0) {
             if(elIconBg) elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
             if(elIcon) elIcon.className = "fa-solid fa-clipboard-check";
             if(elTitle) elTitle.innerText = "Belum Ada Catatan";
@@ -922,21 +927,33 @@
         } else {
             if(elIconBg) elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
             if(elIcon) elIcon.className = "fa-solid fa-comment-dots";
-            if(elTitle) elTitle.innerText = "Pesan Wali Kelas";
-            if(elBodyBg) elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
+            if(elTitle) elTitle.innerText = "Riwayat Pesan Wali Kelas";
+            
+            // Ubah sedikit style background agar bisa di-scroll jika pesan riwayatnya banyak
+            if(elBodyBg) elBodyBg.className = "bg-white p-2 rounded-xl border border-orange-100 text-center relative mt-2 max-h-60 overflow-y-auto"; 
+            
             if(elText) {
-                elText.innerText = pesan;
-                elText.classList.add('italic');
+                let htmlList = `<div class="text-left">`;
+                riwayat.forEach((pesan, index) => {
+                    // Pesan yang paling baru (index 0) warnanya dibedakan
+                    let bgClass = index === 0 ? "bg-orange-50 border-orange-200" : "bg-slate-50 border-slate-200";
+                    htmlList += `
+                    <div class="p-3 rounded-lg border ${bgClass} mb-2 shadow-sm">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-orange-600"><i class="fa-regular fa-calendar mr-1"></i> ${pesan.tanggal}</span>
+                            <span class="text-[9px] text-slate-400">${pesan.waktu}</span>
+                        </div>
+                        <p class="text-sm text-slate-700 italic">"${pesan.isi}"</p>
+                    </div>`;
+                });
+                htmlList += `</div>`;
+                elText.innerHTML = htmlList; 
             }
 
-            const elNotif = document.getElementById('notif-dot');
-            if(elNotif) elNotif.classList.add('hidden');
-            
-            if(elLabel) {
-                elLabel.innerText = "Sudah dibaca";
-                elLabel.classList.remove('text-orange-600', 'font-bold');
-                elLabel.classList.add('text-slate-400');
-            }
+            // Simpan ID pesan ke memori HP agar titik merah tidak muncul lagi pas direfresh
+            // Mengambil nisn siswa dari data yang login (agar aman jika ganti akun di HP yang sama)
+            const nisnUser = (window.dataUserAktif && window.dataUserAktif.nisn) ? window.dataUserAktif.nisn : 'siswa';
+            localStorage.setItem('catatan_terbaca_' + nisnUser, riwayat[0].id);
         }
         
         // PERBAIKAN 3: Pastikan class 'hidden' dihapus jika menggunakan Tailwind CSS
