@@ -888,8 +888,9 @@
 
     // PERBAIKAN 1: Tambahkan window. agar fungsi bisa dipanggil dari HTML onclick
     window.bukaCatatanWali = function() {
-        // Mengambil data riwayat pesan dari memori (sudah disiapkan saat login)
+        // Ambil data riwayat (jika sudah pakai array baru) ATAU pesan tunggal (jika masih pakai string lama)
         const riwayat = window.riwayatPesanWali || [];
+        const pesanTunggal = window.pesanWali || ""; 
         const modal = document.getElementById('modalCatatan');
         
         // Cek apakah modal ada di HTML
@@ -914,8 +915,15 @@
             elLabel.classList.add('text-slate-400');
         }
 
-        // PERBAIKAN 2: Render isi modal berdasarkan ada/tidaknya riwayat
-        if (riwayat.length === 0) {
+        // PERBAIKAN 2: Render isi modal secara "Anti-Gagal" (Support Array & String)
+        const isRiwayatAda = riwayat.length > 0;
+        const isPesanTunggalAda = pesanTunggal && pesanTunggal !== "-" && pesanTunggal.trim() !== "";
+
+        // Ambil NISN untuk keperluan memori HP
+        const nisnUser = (window.dataUserAktif && window.dataUserAktif.nisn) ? window.dataUserAktif.nisn : 'siswa';
+
+        if (!isRiwayatAda && !isPesanTunggalAda) {
+            // KONDISI 1: TIDAK ADA PESAN SAMA SEKALI
             if(elIconBg) elIconBg.className = "w-14 h-14 bg-slate-100 text-slate-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm";
             if(elIcon) elIcon.className = "fa-solid fa-clipboard-check";
             if(elTitle) elTitle.innerText = "Belum Ada Catatan";
@@ -924,18 +932,17 @@
                 elText.innerText = "Saat ini belum ada catatan baru dari Wali Kelas untuk Ananda. Tetap semangat!";
                 elText.classList.remove('italic');
             }
-        } else {
+
+        } else if (isRiwayatAda) {
+            // KONDISI 2: DATA SUDAH FORMAT ARRAY (RIWAYAT)
             if(elIconBg) elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
             if(elIcon) elIcon.className = "fa-solid fa-comment-dots";
             if(elTitle) elTitle.innerText = "Riwayat Pesan Wali Kelas";
-            
-            // Ubah sedikit style background agar bisa di-scroll jika pesan riwayatnya banyak
             if(elBodyBg) elBodyBg.className = "bg-white p-2 rounded-xl border border-orange-100 text-center relative mt-2 max-h-60 overflow-y-auto"; 
             
             if(elText) {
                 let htmlList = `<div class="text-left">`;
                 riwayat.forEach((pesan, index) => {
-                    // Pesan yang paling baru (index 0) warnanya dibedakan
                     let bgClass = index === 0 ? "bg-orange-50 border-orange-200" : "bg-slate-50 border-slate-200";
                     htmlList += `
                     <div class="p-3 rounded-lg border ${bgClass} mb-2 shadow-sm">
@@ -950,10 +957,23 @@
                 elText.innerHTML = htmlList; 
             }
 
-            // Simpan ID pesan ke memori HP agar titik merah tidak muncul lagi pas direfresh
-            // Mengambil nisn siswa dari data yang login (agar aman jika ganti akun di HP yang sama)
-            const nisnUser = (window.dataUserAktif && window.dataUserAktif.nisn) ? window.dataUserAktif.nisn : 'siswa';
+            // Simpan ID pesan ke memori HP agar titik merah hilang permanen
             localStorage.setItem('catatan_terbaca_' + nisnUser, riwayat[0].id);
+
+        } else if (isPesanTunggalAda) {
+            // KONDISI 3: DATA MASIH FORMAT LAMA (TEKS STRING BIASA)
+            if(elIconBg) elIconBg.className = "w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2 shadow-sm animate-bounce";
+            if(elIcon) elIcon.className = "fa-solid fa-comment-dots";
+            if(elTitle) elTitle.innerText = "Pesan Wali Kelas";
+            if(elBodyBg) elBodyBg.className = "bg-orange-50 p-5 rounded-xl border border-orange-100 text-center relative mt-2";
+            if(elText) {
+                elText.innerText = pesanTunggal;
+                elText.classList.add('italic');
+            }
+
+            // Buat ID bayangan dari teks pesannya agar titik merah hilang permanen
+            const idBayangan = btoa(pesanTunggal).substring(0, 15); 
+            localStorage.setItem('catatan_terbaca_' + nisnUser, idBayangan);
         }
         
         // PERBAIKAN 3: Pastikan class 'hidden' dihapus jika menggunakan Tailwind CSS
