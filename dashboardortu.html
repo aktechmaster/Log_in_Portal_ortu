@@ -626,68 +626,70 @@
 
             // --- UPDATE BINA PRIBADI (LOGIC BARU DISINI) ---
             if (user.bina_pribadi) {
-                // 1. Render Bintang (Max 4)
-                const rating = user.bina_pribadi.avg_bintang || 0;
-                let htmlBintang = '';
-            
-                // Loop 4 kali (asumsi skala 1-4)
-                for (let i = 1; i <= 4; i++) {
-                    if (i <= rating) {
-                        htmlBintang += `<i class="fa-solid fa-star"></i>`; // Bintang Penuh
-                    } else {
-                        htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`; // Bintang Kosong
+                try {
+                    // 1. Render Bintang (Max 4)
+                    const rating = user.bina_pribadi.avg_bintang || 0;
+                    let htmlBintang = '';
+                
+                    // Loop 4 kali (asumsi skala 1-4)
+                    for (let i = 1; i <= 4; i++) {
+                        if (i <= rating) {
+                            htmlBintang += `<i class="fa-solid fa-star text-yellow-500"></i>`; // Bintang Penuh
+                        } else {
+                            htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`; // Bintang Kosong
+                        }
                     }
+                    const elBintang = document.getElementById('container-bintang');
+                    if(elBintang) elBintang.innerHTML = htmlBintang;
+
+                    // 2. Simpan Data Detail ke Window untuk Modal
+                    window.dataBina = user.bina_pribadi.detail;
+
+                    // 3. Logic Catatan Wali (ANTI-CRASH)
+                    window.dataUserAktif = user; // Pastikan data NISN bisa dibaca saat modal dibuka
+                
+                    const adaPesan = user.bina_pribadi.ada_pesan || false;
+                    window.pesanWali = user.bina_pribadi.catatan_wali || "-"; 
+                    window.riwayatPesanWali = user.catatan_wali_history || []; 
+
+                    // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
+                    let sudahDibaca = false;
+                    const nisnAktif = user.nisn || "000";
+                
+                    if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
+                        const idTerbaru = window.riwayatPesanWali[0].id;
+                        if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idTerbaru) sudahDibaca = true;
+                    } else if (window.pesanWali && window.pesanWali !== "-") {
+                        // DITAMBAHKAN encodeURIComponent AGAR TIDAK CRASH KETIKA ADA EMOJI/KARAKTER SPESIAL
+                        const idBayangan = btoa(encodeURIComponent(window.pesanWali)).substring(0, 15);
+                        if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idBayangan) sudahDibaca = true;
+                    }
+
+                    const elNotif = document.getElementById('notif-dot');
+                    const elLabel = document.getElementById('label-catatan');
+
+                    if (adaPesan && !sudahDibaca) {
+                        // Munculkan notifikasi hanya jika ADA PESAN & BELUM DIBACA
+                        if(elNotif) elNotif.classList.remove('hidden');
+                        if(elLabel) {
+                            elLabel.innerText = "1 Pesan Baru";
+                            elLabel.classList.add('text-orange-600', 'font-bold');
+                            elLabel.classList.remove('text-slate-400');
+                        }
+                    } else {
+                        // Sembunyikan notifikasi jika tidak ada pesan atau sudah dibaca
+                        if(elNotif) elNotif.classList.add('hidden');
+                        if(elLabel) {
+                            elLabel.innerText = adaPesan ? "Sudah dibaca" : "Tidak ada pesan";
+                            elLabel.classList.remove('text-orange-600', 'font-bold');
+                            elLabel.classList.add('text-slate-400');
+                        }
+                    }
+                } catch (errBina) {
+                    console.error("Gagal memproses Bina Pribadi / Catatan Wali:", errBina);
                 }
-                const elBintang = document.getElementById('container-bintang');
-                if(elBintang) elBintang.innerHTML = htmlBintang;
-
-                // 2. Simpan Data Detail ke Window untuk Modal
-                window.dataBina = user.bina_pribadi.detail;
-
-                // 3. Logic Catatan Wali (DIPERBAIKI)
-            window.dataUserAktif = user; // Pastikan data NISN bisa dibaca saat modal dibuka
-            
-            const adaPesan = user.bina_pribadi.ada_pesan;
-            window.pesanWali = user.bina_pribadi.catatan_wali; 
-            window.riwayatPesanWali = user.catatan_wali_history; // <--- INI KUNCI UTAMANYA! Menangkap riwayat dari GS
-
-            // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
-            let sudahDibaca = false;
-            const nisnAktif = user.nisn;
-            
-            if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
-                const idTerbaru = window.riwayatPesanWali[0].id;
-                if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idTerbaru) sudahDibaca = true;
-            } else if (window.pesanWali && window.pesanWali !== "-") {
-                const idBayangan = btoa(window.pesanWali).substring(0, 15);
-                if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idBayangan) sudahDibaca = true;
             }
-
-            const elNotif = document.getElementById('notif-dot');
-            const elLabel = document.getElementById('label-catatan');
-
-            if (adaPesan && !sudahDibaca) {
-                // Munculkan notifikasi hanya jika ADA PESAN & BELUM DIBACA
-                if(elNotif) elNotif.classList.remove('hidden');
-                if(elLabel) {
-                    elLabel.innerText = "1 Pesan Baru";
-                    elLabel.classList.add('text-orange-600', 'font-bold');
-                    elLabel.classList.remove('text-slate-400');
-                }
-            } else {
-                // Sembunyikan notifikasi jika tidak ada pesan atau sudah dibaca
-                if(elNotif) elNotif.classList.add('hidden');
-                if(elLabel) {
-                    elLabel.innerText = adaPesan ? "Sudah dibaca" : "Tidak ada pesan";
-                    elLabel.classList.remove('text-orange-600', 'font-bold');
-                    elLabel.classList.add('text-slate-400');
-                }
-            }
-
-        } catch (err) {
-            console.error("Gagal memuat data ke UI:", err);
-        }
-    });
+            // --- BATAS UPDATE BINA PRIBADI ---
 
     // --- Helper Function ---
     function setText(id, text) {
