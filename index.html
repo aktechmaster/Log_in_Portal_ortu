@@ -45,7 +45,10 @@
     const isLogout = urlParams.get('status') === 'logout';
 
     if (isLogout) {
-        localStorage.clear();
+        // Hapus HANYA data sesi login, jangan gunakan localStorage.clear()
+        localStorage.removeItem('user_data');
+        localStorage.removeItem('nisn');
+        
         window.history.replaceState({}, document.title, window.location.pathname);
     } else {
         const savedData = localStorage.getItem('user_data');
