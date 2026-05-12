@@ -1202,6 +1202,79 @@
         };
         reader.readAsDataURL(file);
     }
+
+        function bukaYaumiyah() {
+        const elModal = document.getElementById('modalPengumuman'); // Gunakan ID pop-up yang sudah ada
+        const elKonten = document.getElementById('kontenPengumuman');
+        
+        elModal.style.display = 'flex';
+        const dataString = localStorage.getItem('user_data'); 
+        
+        if (dataString) {
+            const dataSiswa = JSON.parse(dataString);
+            const dataY = dataSiswa.yaumiyah;
+
+            if (!dataY || dataY.input === 0) {
+                elKonten.innerHTML = `
+                    <div class="text-center py-6">
+                        <i class="fa-solid fa-clipboard-list text-slate-300 text-5xl mb-3"></i>
+                        <h3 class="text-lg font-bold text-slate-800">Belum Ada Data</h3>
+                        <p class="text-sm text-slate-500 mt-2">Ananda belum mengisi form mutaba'ah yaumiyah sama sekali pada periode ini.</p>
+                    </div>`;
+                return;
+            }
+
+            // Menyusun List Apresiasi (Hijau)
+            let htmlApresiasi = '';
+            if (dataY.apresiasi.length > 0) {
+                htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
+                    <h4 class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Apresiasi (Sangat Baik/Baik)</h4>
+                    <ul class="text-xs text-emerald-800 list-disc pl-5 space-y-1">
+                        ${dataY.apresiasi.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            // Menyusun List Perhatian (Oranye/Merah)
+            let htmlPerhatian = '';
+            if (dataY.perhatian.length > 0) {
+                htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                    <h4 class="text-sm font-bold text-orange-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Perlu Perhatian (Kurang/Jarang)</h4>
+                    <ul class="text-xs text-orange-800 list-disc pl-5 space-y-1">
+                        ${dataY.perhatian.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            // Menyusun Kesimpulan Cerdas (Biru)
+            let teksKesimpulan = "";
+            if (dataY.perhatian.length === 0) {
+                teksKesimpulan = "Alhamdulillah! Ananda menunjukkan performa ibadah dan kemandirian yang luar biasa. Mohon Ayah/Bunda terus berikan pujian agar ananda tetap istiqomah.";
+            } else if (dataY.apresiasi.length > dataY.perhatian.length) {
+                teksKesimpulan = "Ananda sudah cukup baik di banyak aspek. Namun, mari bersama-sama kita motivasi dan berikan pendampingan lebih pada aspek yang masih butuh perhatian.";
+            } else {
+                teksKesimpulan = "Ayah/Bunda, saat ini ananda sangat membutuhkan dukungan dan pendampingan ekstra di rumah. Mari kita rutinkan kembali memantau ibadah dan aktivitas hariannya.";
+            }
+
+            let htmlKesimpulan = `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                    <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
+                </div>`;
+
+            // Gabungkan semua ke dalam konten modal
+            elKonten.innerHTML = `
+                <div class="mb-4 text-center border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
+                    <p class="text-xs text-slate-500 mt-1">Total Setoran Form: <span class="font-bold text-blue-600">${dataY.input} kali</span></p>
+                </div>
+                ${htmlApresiasi}
+                ${htmlPerhatian}
+                ${htmlKesimpulan}
+            `;
+        } else {
+            elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+        }
+    }
 </script>
 
 </body>
