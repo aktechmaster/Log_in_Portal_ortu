@@ -644,27 +644,43 @@
                 // 2. Simpan Data Detail ke Window untuk Modal
                 window.dataBina = user.bina_pribadi.detail;
 
-                // 3. Logic Catatan Wali
-                const adaPesan = user.bina_pribadi.ada_pesan;
-                window.pesanWali = user.bina_pribadi.catatan_wali; // Simpan pesan
+                // 3. Logic Catatan Wali (DIPERBAIKI)
+            window.dataUserAktif = user; // Pastikan data NISN bisa dibaca saat modal dibuka
+            
+            const adaPesan = user.bina_pribadi.ada_pesan;
+            window.pesanWali = user.bina_pribadi.catatan_wali; 
+            window.riwayatPesanWali = user.catatan_wali_history; // <--- INI KUNCI UTAMANYA! Menangkap riwayat dari GS
 
-                const elNotif = document.getElementById('notif-dot');
-                const elLabel = document.getElementById('label-catatan');
+            // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
+            let sudahDibaca = false;
+            const nisnAktif = user.nisn;
+            
+            if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
+                const idTerbaru = window.riwayatPesanWali[0].id;
+                if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idTerbaru) sudahDibaca = true;
+            } else if (window.pesanWali && window.pesanWali !== "-") {
+                const idBayangan = btoa(window.pesanWali).substring(0, 15);
+                if (localStorage.getItem('catatan_terbaca_' + nisnAktif) === idBayangan) sudahDibaca = true;
+            }
 
-                if (adaPesan) {
-                    if(elNotif) elNotif.classList.remove('hidden');
-                    if(elLabel) {
-                        elLabel.innerText = "1 Pesan Baru";
-                        elLabel.classList.add('text-orange-600', 'font-bold');
-                        elLabel.classList.remove('text-slate-400');
-                    }
-                } else {
-                    if(elNotif) elNotif.classList.add('hidden');
-                    if(elLabel) {
-                        elLabel.innerText = "Tidak ada pesan";
-                        elLabel.classList.remove('text-orange-600', 'font-bold');
-                        elLabel.classList.add('text-slate-400');
-                    }
+            const elNotif = document.getElementById('notif-dot');
+            const elLabel = document.getElementById('label-catatan');
+
+            if (adaPesan && !sudahDibaca) {
+                // Munculkan notifikasi hanya jika ADA PESAN & BELUM DIBACA
+                if(elNotif) elNotif.classList.remove('hidden');
+                if(elLabel) {
+                    elLabel.innerText = "1 Pesan Baru";
+                    elLabel.classList.add('text-orange-600', 'font-bold');
+                    elLabel.classList.remove('text-slate-400');
+                }
+            } else {
+                // Sembunyikan notifikasi jika tidak ada pesan atau sudah dibaca
+                if(elNotif) elNotif.classList.add('hidden');
+                if(elLabel) {
+                    elLabel.innerText = adaPesan ? "Sudah dibaca" : "Tidak ada pesan";
+                    elLabel.classList.remove('text-orange-600', 'font-bold');
+                    elLabel.classList.add('text-slate-400');
                 }
             }
 
