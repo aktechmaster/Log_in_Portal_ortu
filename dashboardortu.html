@@ -1281,6 +1281,49 @@
             elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
         }
     };
+
+        // ==========================================
+    // TAMBAHAN BARU: CEK STATUS BACA SAAT HALAMAN DIMUAT
+    // ==========================================
+    window.cekNotifCatatanWali = function() {
+        // Ambil data yang sama seperti di fungsi bukaCatatanWali
+        const riwayat = window.riwayatPesanWali || [];
+        const pesanTunggal = window.pesanWali || "";
+        const nisnUser = (window.dataUserAktif && window.dataUserAktif.nisn) ? window.dataUserAktif.nisn : 'siswa';
+
+        let idCatatanSaatIni = null;
+
+        // Ambil ID dari pesan yang sedang aktif sekarang
+        if (riwayat.length > 0) {
+            idCatatanSaatIni = riwayat[0].id;
+        } else if (pesanTunggal && pesanTunggal !== "-" && pesanTunggal.trim() !== "") {
+            idCatatanSaatIni = btoa(encodeURIComponent(pesanTunggal)).substring(0, 15);
+        }
+
+        // Jika memang ada pesan dari wali kelas
+        if (idCatatanSaatIni) {
+            // Cek ke memori HP, apakah ID pesan ini sudah pernah diklik/dibaca sebelumnya?
+            const memoriTerbaca = localStorage.getItem('catatan_terbaca_' + nisnUser);
+
+            if (memoriTerbaca === idCatatanSaatIni) {
+                // JIKA SAMA: Artinya sudah dibaca. Matikan titik merah secara permanen!
+                const elNotif = document.getElementById('notif-dot');
+                const elLabel = document.getElementById('label-catatan'); // Sesuaikan dengan ID teks "1 Pesan Baru" kamu
+
+                if(elNotif) elNotif.classList.add('hidden');
+                if(elLabel) {
+                    elLabel.innerText = "Sudah dibaca";
+                    elLabel.classList.remove('text-orange-600', 'font-bold');
+                    elLabel.classList.add('text-slate-400');
+                }
+            }
+        }
+    };
+
+    // PENTING: Panggil fungsi ini tepat setelah kamu selesai mengambil data dari Google Sheets 
+    // dan selesai merender tampilan Dashboard.
+    // Contoh pemanggilan:
+    // cekNotifCatatanWali();
 </script>
 
 </body>
