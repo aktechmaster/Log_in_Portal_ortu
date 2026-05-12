@@ -235,7 +235,7 @@
                 </div>
                 <div class="flex-1 pl-4 border-l border-slate-100 ml-4">
                     <h3 class="font-bold text-slate-700 text-sm">Rekap Presensi</h3>
-                    <p class="text-[10px] text-slate-400 mb-2">Semester Genap 2025</p>
+                    <p id="semester-text" class="text-[10px] text-slate-400 mb-2">Loading...</p>
                     <div class="flex gap-2">
                         <span id="val-h" class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded">- H</span>
                         <span id="val-s" class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold rounded">- S</span>
@@ -1325,6 +1325,28 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
     // dan selesai merender tampilan Dashboard.
     // Contoh pemanggilan:
     // cekNotifCatatanWali();
+
+        function updateSemester() {
+    const date = new Date();
+    const month = date.getMonth(); // 0 = Januari, 11 = Desember
+    const year = date.getFullYear();
+    let semester = "";
+
+    // Logika: 
+    // Januari (0) sampai Juni (5) = Semester Genap
+    // Juli (6) sampai Desember (11) = Semester Ganjil
+    if (month >= 0 && month <= 5) {
+      semester = "Semester Genap " + year;
+    } else {
+      semester = "Semester Ganjil " + year;
+    }
+
+    // Masukkan teks ke dalam HTML
+    document.getElementById("semester-text").innerText = semester;
+  }
+
+  // Jalankan fungsi saat halaman dimuat
+  updateSemester();
 </script>
 
 </body>
