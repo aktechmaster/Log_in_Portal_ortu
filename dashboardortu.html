@@ -342,7 +342,7 @@
         </main>
 
         <nav class="fixed-nav text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
-            <button class="flex flex-col items-center gap-1 text-emerald-600 p-2">
+            <button onclick="bukaYaumiyah()" class="flex flex-col items-center gap-1 text-emerald-600 p-2 hover:opacity-80 transition">
                 <i class="fa-solid fa-clipboard-list text-xl mb-1"></i>
                 <span class="text-[9px] font-medium">Lap. Yaumiyah</span>
             </button>
@@ -350,6 +350,7 @@
                 <i class="fa-solid fa-moon text-xl mb-1"></i>
                 <span class="text-[9px] font-medium">Lap. Shaumiyah</span>
             </button>
+        </nav>
             
             <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
                 <i class="fa-solid fa-user text-lg"></i>
@@ -1203,10 +1204,16 @@
         reader.readAsDataURL(file);
     }
 
-        function bukaYaumiyah() {
-        const elModal = document.getElementById('modalPengumuman'); // Gunakan ID pop-up yang sudah ada
+        // PASTIKAN pakai window.bukaYaumiyah
+    window.bukaYaumiyah = function() {
+        const elModal = document.getElementById('modalPengumuman'); 
         const elKonten = document.getElementById('kontenPengumuman');
         
+        if (!elModal || !elKonten) {
+            alert("Modal tidak ditemukan di HTML!");
+            return;
+        }
+
         elModal.style.display = 'flex';
         const dataString = localStorage.getItem('user_data'); 
         
@@ -1274,7 +1281,7 @@
         } else {
             elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
         }
-    }
+    };
 </script>
 
 </body>
