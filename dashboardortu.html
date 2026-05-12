@@ -719,7 +719,6 @@
         if (confirm("Yakin ingin keluar?")) {
             localStorage.removeItem('user_data');
             localStorage.removeItem('nisn');
-            localStorage.clear(); 
             window.location.replace("index.html?status=logout&v=" + new Date().getTime());
         }
     }
