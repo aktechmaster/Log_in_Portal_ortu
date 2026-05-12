@@ -1035,7 +1035,7 @@
             return;
         }
 
-        // Tampilkan modal (metode ini persis seperti tutupInfo milikmu)
+        // Tampilkan modal
         elModal.style.display = 'flex';
         
         // Ambil data siswa
@@ -1044,8 +1044,10 @@
         if (dataString) {
             const dataSiswa = JSON.parse(dataString);
             
-            if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.length > 0) {
-                const infoTerbaru = dataSiswa.info_sekolah[0];
+            // PERBAIKAN: Karena sekarang wujudnya Object (bukan Array), kita tidak pakai .length dan [0] lagi
+            // Cukup pastikan properti 'judul' ada isinya
+            if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.judul) {
+                const infoTerbaru = dataSiswa.info_sekolah; // Hilangkan [0]
                 
                 elKonten.innerHTML = `
                     <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
