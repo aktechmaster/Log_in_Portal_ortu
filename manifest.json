@@ -1,6 +1,6 @@
 {
   "name": "Dashboard Wali Murid - SMP IT AL-KAUTSAR",
-  "short_name": "SMPIT Al-Kautsar",
+  "short_name": "Portal Ortu",
   "description": "Aplikasi Dashboard Wali Murid SMP IT Al-Kautsar",
   "start_url": "dashboardortu.html",
   "display": "standalone",
