@@ -921,14 +921,14 @@ window.tutupModalGuru = function(e) {
     }
 };
     // --- UPDATE DAFTAR GURU ---
-if (Array.isArray(user.daftarGuru)) {
+if (user && Array.isArray(user.daftarGuru)) {
     window.semuaDataGuru = user.daftarGuru;
+    console.log("✅ Data guru berhasil dimuat: " + window.semuaDataGuru.length + " orang");
 } else {
-    // Jika belum ada data, buat array kosong
     window.semuaDataGuru = [];
-    console.log("Data daftar guru belum tersedia");
+    console.log("❌ Data daftar guru belum tersedia atau kosong");
 }
-        // --- BATAS AKHIR DAFTAR GURU ---
+// --- BATAS AKHIR DAFTAR GURU ---
         
 
     // --- MENU DROPDOWN ---
