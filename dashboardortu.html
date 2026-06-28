@@ -630,16 +630,6 @@
     </div>
 </div>
 
-<script>
-// Fungsi dasar untuk membuka dan menutup modal
-function bukaModalJadwal() {
-    document.getElementById('modalJadwal').classList.remove('hidden');
-}
-
-function tutupModalJadwal() {
-    document.getElementById('modalJadwal').classList.add('hidden');
-}
-</script>
 </body>
 
     <script>
@@ -1533,6 +1523,71 @@ if (user && Array.isArray(user.daftarGuru)) {
 
   // Jalankan fungsi saat halaman dimuat
   updateSemester();
+
+        function bukaModalJadwal() {
+    // 1. Mengambil nama kelas siswa secara otomatis
+    const kelasSiswaLogin = user && user.kelas ? user.kelas : "-";
+    
+    // 2. Menampilkan nama kelas di bagian atas pop-up
+    document.getElementById('infoKelasSiswa').innerText = "Kelas: " + kelasSiswaLogin;
+    
+    // 3. Membersihkan isi tabel sebelum diisi jadwal baru
+    const tbody = document.getElementById('tabelJadwalBody');
+    tbody.innerHTML = ""; 
+    
+    // 4. Membuka/menampilkan pop-up jadwal di layar
+    document.getElementById('modalJadwal').classList.remove('hidden');
+
+    // 5. Mengambil data jadwal yang dikirim oleh Apps Script
+    const dataJadwalSiswa = user && user.jadwal_belajar ? user.jadwal_belajar : null;
+
+    // Jika data jadwal kosong (biasanya karena Anda belum Log Out dan Log In ulang)
+    if (!dataJadwalSiswa || Object.keys(dataJadwalSiswa).length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="2" class="p-4 text-center text-slate-400">
+                    Jadwal belum muncul.<br>
+                    <span class="text-[10px] text-amber-500">Silakan klik Log Out (Keluar) lalu Log In (Masuk) kembali agar jadwal Anda terbarui.</span>
+                </td>
+            </tr>`;
+        return;
+    }
+
+    // 6. Menyusun mata pelajaran dari Senin sampai Sabtu ke dalam tabel
+    const urutanHari = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
+    let adaDataJadwal = false;
+
+    urutanHari.forEach(hari => {
+        if (dataJadwalSiswa[hari] && dataJadwalSiswa[hari].length > 0) {
+            adaDataJadwal = true;
+            
+            // Membuat daftar mata pelajaran ke bawah menggunakan titik/bullet
+            let mapelHtml = '<ul class="list-disc pl-4 space-y-1 font-medium">';
+            dataJadwalSiswa[hari].forEach(mapel => {
+                mapelHtml += `<li>${mapel}</li>`;
+            });
+            mapelHtml += '</ul>';
+
+            // Memasukkan hari dan mata pelajaran ke baris tabel
+            const rowHtml = `
+                <tr class="hover:bg-slate-50 transition duration-150">
+                    <td class="p-3 font-bold text-slate-800 bg-slate-50/50 align-top border-r border-slate-100">${hari}</td>
+                    <td class="p-3 text-slate-600">${mapelHtml}</td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+        }
+    });
+
+    // Jika kelas tersebut tidak punya jadwal sama sekali di spreadsheet
+    if (!adaDataJadwal) {
+        tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada jadwal belajar untuk kelas ini.</td></tr>`;
+    }
+}
+
+function tutupModalJadwal() {
+    document.getElementById('modalJadwal').classList.add('hidden');
+}
 </script>
 
 </body>
