@@ -920,6 +920,12 @@ window.tutupModalGuru = function(e) {
         if (modal) modal.style.display = 'none';
     }
 };
+
+    // TAMBAHKAN INI UNTUK CEK DATA YANG DITERIMA
+console.log("Isi lengkap objek user:", user);
+console.log("Apakah ada daftarGuru?", user.daftarGuru);
+console.log("Jumlah data guru:", user.daftarGuru ? user.daftarGuru.length : "Tidak ada");
+        
     // --- UPDATE DAFTAR GURU ---
 if (user && Array.isArray(user.daftarGuru)) {
     window.semuaDataGuru = user.daftarGuru;
