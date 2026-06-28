@@ -481,19 +481,19 @@
 
         <!-- Isi Tabel + Bisa digulir -->
         <div class="modal-body overflow-y-auto flex-1 my-4 pr-1">
-            <table class="w-full text-sm">
-                <thead class="sticky top-0 bg-white border-b border-slate-200 z-5">
-                    <tr>
-                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Nama Lengkap</th>
-                        <th class="px-3 py-2 text-center font-semibold text-slate-700">NIP/NIY</th>
-                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Jabatan Utama</th>
-                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Tugas Tambahan</th>
-                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Alamat Domisili</th>
-                    </tr>
-                </thead>
-                <tbody id="isi-tabel-guru"></tbody>
-            </table>
-        </div>
+    <table class="w-full text-sm">
+        <thead class="sticky top-0 bg-white border-b border-slate-200 z-5">
+            <tr>
+                <th class="px-3 py-2 text-left font-semibold text-slate-700">Nama Lengkap</th>
+                <th class="px-3 py-2 text-center font-semibold text-slate-700">NIP/NIY</th>
+                <th class="px-3 py-2 text-left font-semibold text-slate-700">Jabatan Utama</th>
+                <th class="px-3 py-2 text-left font-semibold text-slate-700">Tugas Tambahan</th>
+                <th class="px-3 py-2 text-left font-semibold text-slate-700">Alamat Domisili</th>
+                <th class="px-3 py-2 text-left font-semibold text-slate-700">No HP</th> </tr>
+        </thead>
+        <tbody id="isi-tabel-guru"></tbody>
+    </table>
+</div>
 
         <!-- Tombol Tutup -->
         <button class="btn-tutup w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-medium transition mt-2" onclick="tutupModalGuru(null)">
@@ -882,18 +882,17 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
         }
     }
 
-// --- MODAL DAFTAR GURU ---
 window.bukaModalGuru = function() {
     const daftar = window.semuaDataGuru || [];
     const elTabel = document.getElementById('isi-tabel-guru');
 
-    if (!elTabel) return; // Cegah error jika elemen tidak ditemukan
+    if (!elTabel) return; 
 
     if (daftar.length === 0) {
-        elTabel.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-8">Belum ada data guru</td></tr>`;
+        // Karena sekarang ada 6 kolom, ganti colspan menjadi 6
+        elTabel.innerHTML = `<tr><td colspan="6" class="text-center text-slate-400 py-8">Belum ada data guru</td></tr>`;
     } else {
         let html = '';
-        // Ambil data sesuai kolom di sheet: B=Nama, C=NIP, F=Jabatan, G=Tugas, L=Alamat
         daftar.forEach(guru => {
             html += `
             <tr class="border-b border-slate-100 hover:bg-emerald-50 transition-colors">
@@ -902,16 +901,16 @@ window.bukaModalGuru = function() {
                 <td class="px-3 py-3 text-left">${guru['Jabatan Utama'] || '-'}</td>
                 <td class="px-3 py-3 text-left">${guru['Tugas Tambahan'] || '-'}</td>
                 <td class="px-3 py-3 text-left">${guru['Alamat Domisili'] || '-'}</td>
-            </tr>`;
+                <td class="px-3 py-3 text-left">${guru['No HP'] || '-'}</td> </tr>`;
         });
         elTabel.innerHTML = html;
     }
 
-    // Tampilkan modal
     const modal = document.getElementById('modalGuru');
     if (modal) modal.style.display = 'flex';
 };
 
+        
 // ✅ Fungsi tutup yang benar
 window.tutupModalGuru = function(e) {
     // Tutup jika klik di luar kotak atau klik tombol tutup
