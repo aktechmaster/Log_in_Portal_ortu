@@ -472,28 +472,36 @@
 
         <!-- MODAL DAFTAR GURU (POP UP)-->
     <div id="modalGuru" class="modal-overlay" onclick="tutupModalGuru(event)">
-    <div class="modal-content max-w-4xl w-[95%] max-h-[90vh] flex flex-col">
-        <div class="modal-header">
-            <h3>Daftar Guru Pengampu</h3>
-            <span class="close-btn" onclick="tutupModalGuru(null)">&times;</span>
+    <div class="modal-content max-w-5xl w-[96%] max-h-[85vh] flex flex-col">
+        <!-- Header -->
+        <div class="modal-header flex justify-between items-center border-b border-slate-100 pb-3 sticky top-0 bg-white z-10">
+            <h3 class="text-lg font-semibold text-emerald-600">Daftar Guru Pengampu</h3>
+            <span class="close-btn text-xl cursor-pointer text-slate-400 hover:text-slate-600 transition" onclick="tutupModalGuru(null)">&times;</span>
         </div>
-        <div class="modal-body overflow-auto"> <!-- Bisa digulir -->
+
+        <!-- Isi Tabel + Bisa digulir -->
+        <div class="modal-body overflow-y-auto flex-1 my-4 pr-1">
             <table class="w-full text-sm">
-                <thead class="sticky top-0 bg-white border-b border-slate-200">
+                <thead class="sticky top-0 bg-white border-b border-slate-200 z-5">
                     <tr>
-                        <th class="px-3 py-2 text-left">Nama Lengkap</th>
-                        <th class="px-3 py-2 text-center">NIP/NIY</th>
-                        <th class="px-3 py-2 text-left">Jabatan</th>
-                        <th class="px-3 py-2 text-left">Tugas Tambahan</th>
-                        <th class="px-3 py-2 text-left">Alamat</th>
+                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Nama Lengkap</th>
+                        <th class="px-3 py-2 text-center font-semibold text-slate-700">NIP/NIY</th>
+                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Jabatan Utama</th>
+                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Tugas Tambahan</th>
+                        <th class="px-3 py-2 text-left font-semibold text-slate-700">Alamat Domisili</th>
                     </tr>
                 </thead>
                 <tbody id="isi-tabel-guru"></tbody>
             </table>
         </div>
-        <button class="btn-tutup" onclick="tutupModalGuru(null)">Tutup</button>
+
+        <!-- Tombol Tutup -->
+        <button class="btn-tutup w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-medium transition mt-2" onclick="tutupModalGuru(null)">
+            Tutup
+        </button>
     </div>
 </div>
+
 
         <!-- MODAL BINA PRIBADI (POP UP)-->
         <div id="modalBina" class="modal-overlay" onclick="tutupModalBina(event)">
@@ -879,33 +887,46 @@ window.bukaModalGuru = function() {
     const daftar = window.semuaDataGuru || [];
     const elTabel = document.getElementById('isi-tabel-guru');
 
+    if (!elTabel) return; // Cegah error jika elemen tidak ditemukan
+
     if (daftar.length === 0) {
-        elTabel.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-6">Belum ada data guru</td></tr>`;
+        elTabel.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-8">Belum ada data guru</td></tr>`;
     } else {
         let html = '';
-        // Ulangi setiap baris data
+        // Ambil data sesuai kolom di sheet: B=Nama, C=NIP, F=Jabatan, G=Tugas, L=Alamat
         daftar.forEach(guru => {
             html += `
-            <tr class="border-b border-slate-100 hover:bg-slate-50">
-                <td class="px-3 py-2 text-left">${guru.nama_lengkap || '-'}</td>
-                <td class="px-3 py-2 text-center">${guru.nip_niy || '-'}</td>
-                <td class="px-3 py-2 text-left">${guru.jabatan_utama || '-'}</td>
-                <td class="px-3 py-2 text-left">${guru.tugas_tambahan || '-'}</td>
-                <td class="px-3 py-2 text-left">${guru.alamat_domisili || '-'}</td>
+            <tr class="border-b border-slate-100 hover:bg-emerald-50 transition-colors">
+                <td class="px-3 py-3 text-left">${guru['Nama Lengkap'] || '-'}</td>
+                <td class="px-3 py-3 text-center">${guru['NIP/NIY'] || '-'}</td>
+                <td class="px-3 py-3 text-left">${guru['Jabatan Utama'] || '-'}</td>
+                <td class="px-3 py-3 text-left">${guru['Tugas Tambahan'] || '-'}</td>
+                <td class="px-3 py-3 text-left">${guru['Alamat Domisili'] || '-'}</td>
             </tr>`;
         });
         elTabel.innerHTML = html;
     }
 
-    document.getElementById('modalGuru').style.display = 'flex';
-}
+    // Tampilkan modal
+    const modal = document.getElementById('modalGuru');
+    if (modal) modal.style.display = 'flex';
+};
 
+// ✅ Fungsi tutup yang benar
+window.tutupModalGuru = function(e) {
+    // Tutup jika klik di luar kotak atau klik tombol tutup
+    if (!e || e.target.id === 'modalGuru') {
+        const modal = document.getElementById('modalGuru');
+        if (modal) modal.style.display = 'none';
+    }
+};
     // --- UPDATE DAFTAR GURU ---
-if (user.daftarGuru && Array.isArray(user.daftarGuru)) {
-    // Simpan SEMUA daftar guru
+if (Array.isArray(user.daftarGuru)) {
     window.semuaDataGuru = user.daftarGuru;
 } else {
+    // Jika belum ada data, buat array kosong
     window.semuaDataGuru = [];
+    console.log("Data daftar guru belum tersedia");
 }
         // --- BATAS AKHIR DAFTAR GURU ---
         
