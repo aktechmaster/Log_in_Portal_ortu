@@ -652,18 +652,35 @@
 </div>
 
     <!-- MODAL LAPORAN AKADEMIK (POP UP)-->
-    <div id="container-akademik" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-4 transition-all duration-300">
-    <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-50">
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-4 bg-red-500 rounded-full"></div>
-            <h3 class="font-bold text-slate-800 text-xs tracking-wide">Detail Laporan Perkembangan Akademik</h3>
-        </div>
-        <button onclick="tutupLaporanAkademik()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-500 px-2 py-1 rounded-md font-medium transition">
-            Tutup
-        </button>
-    </div>
+    <div id="modal-akademik" class="fixed inset-0 z-[100] hidden flex items-end sm:items-center justify-center">
+    <div onclick="tutupLaporanAkademik()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
     
-    <div id="list-mapel-akademik" class="space-y-2.5"></div>
+    <div id="wrapper-modal-akademik" class="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-2xl p-6 shadow-2xl transform transition-all duration-300 translate-y-full overflow-hidden">
+        
+        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 sm:hidden"></div>
+        
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">Kemajuan Akademik</h3>
+                    <p class="text-[10px] text-slate-400">Analisis Kriteria Kompetensi</p>
+                </div>
+            </div>
+            <button onclick="tutupLaporanAkademik()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-500 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="list-mapel-akademik" class="space-y-3 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
+            </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-50">
+            <p class="text-[9px] text-slate-400 italic text-center">*Kriteria ini berdasarkan rata-rata nilai harian dan ujian.</p>
+        </div>
+    </div>
 </div>
 
 </body>
