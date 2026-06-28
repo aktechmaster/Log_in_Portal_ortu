@@ -472,36 +472,24 @@
 
         <!-- MODAL DAFTAR GURU (POP UP)-->
     <div id="modalGuru" class="modal-overlay" onclick="tutupModalGuru(event)">
-    <div class="modal-content">
+    <div class="modal-content max-w-4xl w-[95%] max-h-[90vh] flex flex-col">
         <div class="modal-header">
-            <h3>Data Guru Pengampu</h3>
+            <h3>Daftar Guru Pengampu</h3>
             <span class="close-btn" onclick="tutupModalGuru(null)">&times;</span>
         </div>
-        <div class="modal-body">
-            <div class="info-row">
-                <span class="label">Nama Lengkap</span>
-                <span class="value" id="m-guru-nama">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">NIP/NIY</span>
-                <span class="value" id="m-guru-nip">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Jabatan Utama</span>
-                <span class="value" id="m-guru-jabatan">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Tugas Tambahan</span>
-                <span class="value" id="m-guru-tugas">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Alamat Domisili</span>
-                <span class="value" id="m-guru-alamat">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">No HP</span>
-                <span class="value" id="m-guru-hp">-</span>
-            </div>
+        <div class="modal-body overflow-auto"> <!-- Bisa digulir -->
+            <table class="w-full text-sm">
+                <thead class="sticky top-0 bg-white border-b border-slate-200">
+                    <tr>
+                        <th class="px-3 py-2 text-left">Nama Lengkap</th>
+                        <th class="px-3 py-2 text-center">NIP/NIY</th>
+                        <th class="px-3 py-2 text-left">Jabatan</th>
+                        <th class="px-3 py-2 text-left">Tugas Tambahan</th>
+                        <th class="px-3 py-2 text-left">Alamat</th>
+                    </tr>
+                </thead>
+                <tbody id="isi-tabel-guru"></tbody>
+            </table>
         </div>
         <button class="btn-tutup" onclick="tutupModalGuru(null)">Tutup</button>
     </div>
@@ -888,66 +876,36 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
 
 // --- MODAL DAFTAR GURU ---
 window.bukaModalGuru = function() {
-    var d = window.dataGuru;
-    if (!d) {
-        alert("Data guru belum dimuat. Silakan refresh halaman.");
-        return;
+    const daftar = window.semuaDataGuru || [];
+    const elTabel = document.getElementById('isi-tabel-guru');
+
+    if (daftar.length === 0) {
+        elTabel.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-6">Belum ada data guru</td></tr>`;
+    } else {
+        let html = '';
+        // Ulangi setiap baris data
+        daftar.forEach(guru => {
+            html += `
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+                <td class="px-3 py-2 text-left">${guru.nama_lengkap || '-'}</td>
+                <td class="px-3 py-2 text-center">${guru.nip_niy || '-'}</td>
+                <td class="px-3 py-2 text-left">${guru.jabatan_utama || '-'}</td>
+                <td class="px-3 py-2 text-left">${guru.tugas_tambahan || '-'}</td>
+                <td class="px-3 py-2 text-left">${guru.alamat_domisili || '-'}</td>
+            </tr>`;
+        });
+        elTabel.innerHTML = html;
     }
 
-    // Masukkan data ke masing-masing tempat di modal
-    setText('m-guru-nama', d.nama);
-    setText('m-guru-nip', d.nip);
-    setText('m-guru-jabatan', d.jabatan);
-    setText('m-guru-tugas', d.tugas);
-    setText('m-guru-alamat', d.alamat);
-    setText('m-guru-hp', d.hp);
-
-    // Tampilkan modal
     document.getElementById('modalGuru').style.display = 'flex';
 }
 
-window.tutupModalGuru = function(e) {
-    if (e === null || e.target.id === 'modalGuru') {
-        document.getElementById('modalGuru').style.display = 'none';
-    }
-}
-
     // --- UPDATE DAFTAR GURU ---
-if (user.daftarGuru) {
-    // Ambil data dari sheet "Daftar Guru"
-    var namaGuru = user.daftarGuru.nama_lengkap || "-";
-    var nipGuru = user.daftarGuru.nip_niy || "-";
-    var jabatanGuru = user.daftarGuru.jabatan_utama || "-";
-    var tugasGuru = user.daftarGuru.tugas_tambahan || "-";
-    var alamatGuru = user.daftarGuru.alamat_domisili || "-";
-    var hpGuru = user.daftarGuru.no_hp || "-";
-
-    // Simpan data agar bisa dipakai untuk modal
-    window.dataGuru = {
-        nama: namaGuru,
-        nip: nipGuru,
-        jabatan: jabatanGuru,
-        tugas: tugasGuru,
-        alamat: alamatGuru,
-        hp: hpGuru
-    };
-
-    // Tampilkan ringkasan kecil di kotak menu (opsional, bisa disesuaikan)
-    const elGuru = document.getElementById('guru-ringkasan');
-    if (elGuru) elGuru.innerHTML = `<span class="text-slate-600 text-[9px]">Lihat data lengkap</span>`;
-
+if (user.daftarGuru && Array.isArray(user.daftarGuru)) {
+    // Simpan SEMUA daftar guru
+    window.semuaDataGuru = user.daftarGuru;
 } else {
-    // Jika data belum ada
-    window.dataGuru = {
-        nama: "Belum ada data",
-        nip: "-",
-        jabatan: "-",
-        tugas: "-",
-        alamat: "-",
-        hp: "-"
-    };
-    const elGuru = document.getElementById('guru-ringkasan');
-    if (elGuru) elGuru.innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+    window.semuaDataGuru = [];
 }
         // --- BATAS AKHIR DAFTAR GURU ---
         
