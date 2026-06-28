@@ -651,6 +651,21 @@
     </div>
 </div>
 
+    <!-- MODAL LAPORAN AKADEMIK (POP UP)-->
+    <div id="container-akademik" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-4 transition-all duration-300">
+    <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-50">
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-4 bg-red-500 rounded-full"></div>
+            <h3 class="font-bold text-slate-800 text-xs tracking-wide">Detail Laporan Perkembangan Akademik</h3>
+        </div>
+        <button onclick="tutupLaporanAkademik()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-500 px-2 py-1 rounded-md font-medium transition">
+            Tutup
+        </button>
+    </div>
+    
+    <div id="list-mapel-akademik" class="space-y-2.5"></div>
+</div>
+
 </body>
 
     <script>
@@ -1532,6 +1547,9 @@ if (user && Array.isArray(user.daftarGuru)) {
     // Contoh pemanggilan:
     // cekNotifCatatanWali();
 
+    // ==========================================
+    // FUNGSI UPDATE SEMESTER
+    // ==========================================
         function updateSemester() {
     const date = new Date();
     const month = date.getMonth(); // 0 = Januari, 11 = Desember
@@ -1652,6 +1670,66 @@ if (user && Array.isArray(user.daftarGuru)) {
 function tutupModalJadwal() {
     document.getElementById('modalJadwal').classList.add('hidden');
 }
+
+    // ==========================================
+    // FUNGSI BUKA LAPORAN AKADEMIK
+    // ==========================================
+        function bukaLaporanAkademik() {
+    // Pastikan variabel objek user hasil login kamu tersimpan secara global (misal namanya 'user')
+    if (!user || !user.akademik || user.akademik.length === 0) {
+        alert("Data laporan akademik belum siap atau tidak ditemukan!");
+        return;
+    }
+    
+    const listContainer = document.getElementById('list-mapel-akademik');
+    const mainContainer = document.getElementById('container-akademik');
+    
+    if (!listContainer || !mainContainer) return;
+    
+    // Reset/Kosongkan isi list terlebih dahulu agar tidak menumpuk saat diklik ulang
+    listContainer.innerHTML = "";
+    
+    // Loop dan render ke-12 mata pelajaran
+    user.akademik.forEach(item => {
+        let kelasWarnaBadge = "bg-slate-100 text-slate-500 border-slate-200"; // Default untuk Belum Ada Nilai
+        
+        // Racikan penyesuaian kelas warna Tailwind berdasarkan respon warna dari backend
+        if (item.warna === "emerald") {
+            kelasWarnaBadge = "bg-emerald-50 text-emerald-700 border-emerald-200 font-extrabold";
+        } else if (item.warna === "green") {
+            kelasWarnaBadge = "bg-green-50 text-green-700 border-green-200";
+        } else if (item.warna === "blue") {
+            kelasWarnaBadge = "bg-blue-50 text-blue-700 border-blue-200";
+        } else if (item.warna === "orange") {
+            kelasWarnaBadge = "bg-orange-50 text-orange-700 border-orange-200 font-semibold";
+        } else if (item.warna === "red") {
+            kelasWarnaBadge = "bg-red-50 text-red-600 border-red-200 font-bold animate-pulse";
+        }
+        
+        // Template HTML item mapel memanjang ke bawah
+        const itemHtml = `
+            <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/80 transition duration-200">
+                <span class="font-bold text-slate-700 text-[11px] tracking-wide">${item.mapel}</span>
+                <span class="px-2.5 py-1 text-[9px] font-bold rounded-lg border uppercase tracking-wider text-center min-w-[130px] ${kelasWarnaBadge}">
+                    ${item.kriteria}
+                </span>
+            </div>
+        `;
+        listContainer.insertAdjacentHTML('beforeend', itemHtml);
+    });
+    
+    // Tampilkan container ke layar
+    mainContainer.classList.remove('hidden');
+    
+    // Efek smooth scroll otomatis mengarah ke container nilai agar ortu langsung melihat hasilnya
+    mainContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function tutupLaporanAkademik() {
+    const mainContainer = document.getElementById('container-akademik');
+    if (mainContainer) mainContainer.classList.add('hidden');
+}
+        
 </script>
 
 </body>
