@@ -597,6 +597,49 @@
 
         </div>
     </div>
+
+    <!-- MODAL JADWAL (POP UP)-->
+    <div id="modalJadwal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-slate-100 overflow-hidden transform transition-all flex flex-col max-h-[85vh]">
+        
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div>
+                <h3 class="font-bold text-slate-800 text-sm">Jadwal Belajar</h3>
+                <p id="infoKelasSiswa" class="text-[11px] text-emerald-600 font-medium mt-0.5">Kelas: -</p>
+            </div>
+            <button onclick="tutupModalJadwal()" class="w-7 h-7 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg flex items-center justify-center text-xs transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <div class="p-4 overflow-y-auto flex-1">
+            <div class="overflow-hidden border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-white text-[11px] font-semibold">
+                            <th class="p-3 w-1/4 uppercase tracking-wider border-b border-slate-800">Hari</th>
+                            <th class="p-3 w-3/4 uppercase tracking-wider border-b border-slate-800">Mata Pelajaran</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelJadwalBody" class="text-[11px] text-slate-700 divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+// Fungsi dasar untuk membuka dan menutup modal
+function bukaModalJadwal() {
+    document.getElementById('modalJadwal').classList.remove('hidden');
+}
+
+function tutupModalJadwal() {
+    document.getElementById('modalJadwal').classList.add('hidden');
+}
+</script>
 </body>
 
     <script>
