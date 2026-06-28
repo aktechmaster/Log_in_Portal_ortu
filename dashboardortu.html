@@ -845,6 +845,9 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
         else if (hour >= 15 && hour < 18) greet = "Selamat Sore,";
         else greet = "Selamat Malam,";
         
+        // Menambahkan kata "Wali dari" setelah sapaan waktu
+        greet += " Wali dari";
+        
         const elSapa = document.getElementById('sapaan-waktu');
         if(elSapa) elSapa.innerText = greet;
     }
