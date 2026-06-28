@@ -267,7 +267,7 @@
                 </div>
             </div>
 
-            <!-- LAPORAN T2Q -->
+            <!-- KOTAK LAPORAN T2Q -->
             <div class="grid grid-cols-2 gap-3 fade-in delay-200">
                 <div onclick="bukaModalT2Q()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-12 h-12 bg-slate-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
@@ -284,7 +284,7 @@
                 </div>
                 
 
-                <!-- BINA PRIBADI -->
+                <!-- KOTAK BINA PRIBADI -->
                 <div onclick="bukaModalBina()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-purple-300 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-12 h-12 bg-purple-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
                     <div class="relative z-10">
@@ -302,7 +302,7 @@
                     </div>
                 </div>
 
-                <!-- CATATAN WALI KELAS -->
+                <!-- KOTAK CATATAN WALI KELAS -->
     <div onclick="bukaCatatanWali()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-orange-300 relative overflow-hidden">
     <!-- Lengkungan warna pojok kanan atas -->
     <div class="absolute top-0 right-0 w-12 h-12 bg-orange-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
@@ -321,7 +321,7 @@
     </div>
 </div>
 
-        <!-- INFO SEKOLAH -->
+        <!-- KOTAK INFO SEKOLAH -->
         <div onclick="bukaPengumuman()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-blue-300 relative overflow-hidden">
         <!-- Lengkungan warna pojok kanan atas -->
         <div class="absolute top-0 right-0 w-12 h-12 bg-blue-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
@@ -338,7 +338,7 @@
         </div>
     </div>
                 
-    <!-- MUTABAAH YAUMIYAH -->
+    <!-- KOTAK MUTABAAH YAUMIYAH -->
     <div onclick="window.location.href='https://aktechmaster.github.io/Form-Ibadah-Mingguan-Siswa/'" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
     <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
     <div class="relative z-10">
@@ -350,7 +350,7 @@
     </div>
 </div>
 
-    <!-- MUTABAAH SHAUMIYAH -->
+    <!-- KOTAK MUTABAAH SHAUMIYAH -->
     <div onclick="bukaShaum()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-amber-300 relative overflow-hidden">
     <div class="absolute top-0 right-0 w-12 h-12 bg-amber-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
     <div class="relative z-10">
@@ -362,8 +362,8 @@
     </div>
 </div>
 
-<!-- DAFTAR GURU -->
-<div onclick="bukaDaftarGuru()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+<!-- KOTAK DAFTAR GURU -->
+<div onclick="bukaModalGuru()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
     <div class="absolute top-0 right-0 w-12 h-12 bg-sky-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
     <div class="relative z-10">
         <div class="w-9 h-9 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-sky-600 group-hover:text-white transition">
@@ -455,6 +455,7 @@
             </div>
         </div>
 
+        <!-- MODAL T2Q (POP UP)-->
         <div id="modalT2Q" class="modal-overlay" onclick="tutupModalT2Q(event)">
             <div class="modal-content">
                 <div class="modal-header"><h3>Detail T2Q</h3><span class="close-btn" onclick="tutupModalT2Q(null)">&times;</span></div>
@@ -469,6 +470,44 @@
             </div>
         </div>
 
+        <!-- MODAL DAFTAR GURU (POP UP)-->
+    <div id="modalGuru" class="modal-overlay" onclick="tutupModalGuru(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Data Guru Pengampu</h3>
+            <span class="close-btn" onclick="tutupModalGuru(null)">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="info-row">
+                <span class="label">Nama Lengkap</span>
+                <span class="value" id="m-guru-nama">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">NIP/NIY</span>
+                <span class="value" id="m-guru-nip">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Jabatan Utama</span>
+                <span class="value" id="m-guru-jabatan">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Tugas Tambahan</span>
+                <span class="value" id="m-guru-tugas">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Alamat Domisili</span>
+                <span class="value" id="m-guru-alamat">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">No HP</span>
+                <span class="value" id="m-guru-hp">-</span>
+            </div>
+        </div>
+        <button class="btn-tutup" onclick="tutupModalGuru(null)">Tutup</button>
+    </div>
+</div>
+
+        <!-- MODAL BINA PRIBADI (POP UP)-->
         <div id="modalBina" class="modal-overlay" onclick="tutupModalBina(event)">
             <div class="modal-content">
                 <div class="modal-header"><h3 class="text-purple-600"><i class="fa-solid fa-star mr-2"></i>Detail Bina Pribadi</h3><span class="close-btn" onclick="tutupModalBina(null)">&times;</span></div>
@@ -481,6 +520,7 @@
             </div>
         </div>
 
+        <!-- MODAL CATATAN WALI KELAS (POP UP)-->
         <div id="modalCatatan" class="modal-overlay" onclick="tutupCatatanWali(event)">
             <div class="modal-content">
                 <div class="text-center mb-2 pt-2"><div class="w-14 h-14 bg-orange-100 text-orange-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-comment-dots"></i></div><h3 class="font-bold text-slate-700 text-lg">Pesan Wali Kelas</h3></div>
@@ -489,6 +529,7 @@
             </div>
         </div>
 
+        <!-- MODAL INFO SEKOLAH (POP UP)-->
         <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)">
             <div class="modal-content">
                 <div class="text-center mb-2 pt-2"><div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-circle-info"></i></div><h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3></div>
@@ -500,6 +541,7 @@
             </div>
         </div>
 
+        <!-- MODAL GANTI PASSWORD (POP UP)-->
         <div id="modalGantiPass" class="fixed inset-0 z-[100] hidden">
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="tutupModalPassword()"></div>
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm p-6 bg-white rounded-2xl shadow-2xl">
@@ -517,6 +559,7 @@
 
     </div>
 
+   <!-- MODAL PENGUMUMAN (POP UP)-->
     <div id="modalPengumuman" class="fixed inset-0 z-[99] bg-slate-900/60 backdrop-blur-sm justify-center items-center p-4" style="display: none;" onclick="tutupPengumuman(event)">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden" onclick="event.stopPropagation()">
             
@@ -686,7 +729,7 @@
                     window.pesanWali = user.bina_pribadi.catatan_wali || "-"; 
                     window.riwayatPesanWali = user.catatan_wali_history || []; 
 
-                    // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
+// LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
 let sudahDibaca = false;
 const nisnAktif = user.nisn || "000";
 
@@ -842,6 +885,72 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
             document.getElementById('modalT2Q').style.display = 'none';
         }
     }
+
+// --- MODAL DAFTAR GURU ---
+window.bukaModalGuru = function() {
+    var d = window.dataGuru;
+    if (!d) {
+        alert("Data guru belum dimuat. Silakan refresh halaman.");
+        return;
+    }
+
+    // Masukkan data ke masing-masing tempat di modal
+    setText('m-guru-nama', d.nama);
+    setText('m-guru-nip', d.nip);
+    setText('m-guru-jabatan', d.jabatan);
+    setText('m-guru-tugas', d.tugas);
+    setText('m-guru-alamat', d.alamat);
+    setText('m-guru-hp', d.hp);
+
+    // Tampilkan modal
+    document.getElementById('modalGuru').style.display = 'flex';
+}
+
+window.tutupModalGuru = function(e) {
+    if (e === null || e.target.id === 'modalGuru') {
+        document.getElementById('modalGuru').style.display = 'none';
+    }
+}
+
+    // --- UPDATE DAFTAR GURU ---
+if (user.daftarGuru) {
+    // Ambil data dari sheet "Daftar Guru"
+    var namaGuru = user.daftarGuru.nama_lengkap || "-";
+    var nipGuru = user.daftarGuru.nip_niy || "-";
+    var jabatanGuru = user.daftarGuru.jabatan_utama || "-";
+    var tugasGuru = user.daftarGuru.tugas_tambahan || "-";
+    var alamatGuru = user.daftarGuru.alamat_domisili || "-";
+    var hpGuru = user.daftarGuru.no_hp || "-";
+
+    // Simpan data agar bisa dipakai untuk modal
+    window.dataGuru = {
+        nama: namaGuru,
+        nip: nipGuru,
+        jabatan: jabatanGuru,
+        tugas: tugasGuru,
+        alamat: alamatGuru,
+        hp: hpGuru
+    };
+
+    // Tampilkan ringkasan kecil di kotak menu (opsional, bisa disesuaikan)
+    const elGuru = document.getElementById('guru-ringkasan');
+    if (elGuru) elGuru.innerHTML = `<span class="text-slate-600 text-[9px]">Lihat data lengkap</span>`;
+
+} else {
+    // Jika data belum ada
+    window.dataGuru = {
+        nama: "Belum ada data",
+        nip: "-",
+        jabatan: "-",
+        tugas: "-",
+        alamat: "-",
+        hp: "-"
+    };
+    const elGuru = document.getElementById('guru-ringkasan');
+    if (elGuru) elGuru.innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
+}
+        // --- BATAS AKHIR DAFTAR GURU ---
+        
 
     // --- MENU DROPDOWN ---
     function toggleMenu() {
