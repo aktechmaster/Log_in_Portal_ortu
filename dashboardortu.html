@@ -1692,59 +1692,54 @@ function tutupModalJadwal() {
     // FUNGSI BUKA LAPORAN AKADEMIK
     // ==========================================
         function bukaLaporanAkademik() {
-    // Pastikan variabel objek user hasil login kamu tersimpan secara global (misal namanya 'user')
-    if (!user || !user.akademik || user.akademik.length === 0) {
-        alert("Data laporan akademik belum siap atau tidak ditemukan!");
+    // 1. Cek data (sesuaikan dengan nama variabel user kamu)
+    const dataAkademik = user.akademik; 
+    
+    if (!dataAkademik || dataAkademik.length === 0) {
+        alert("Data belum tersedia");
         return;
     }
-    
-    const listContainer = document.getElementById('list-mapel-akademik');
-    const mainContainer = document.getElementById('container-akademik');
-    
-    if (!listContainer || !mainContainer) return;
-    
-    // Reset/Kosongkan isi list terlebih dahulu agar tidak menumpuk saat diklik ulang
-    listContainer.innerHTML = "";
-    
-    // Loop dan render ke-12 mata pelajaran
-    user.akademik.forEach(item => {
-        let kelasWarnaBadge = "bg-slate-100 text-slate-500 border-slate-200"; // Default untuk Belum Ada Nilai
-        
-        // Racikan penyesuaian kelas warna Tailwind berdasarkan respon warna dari backend
-        if (item.warna === "emerald") {
-            kelasWarnaBadge = "bg-emerald-50 text-emerald-700 border-emerald-200 font-extrabold";
-        } else if (item.warna === "green") {
-            kelasWarnaBadge = "bg-green-50 text-green-700 border-green-200";
-        } else if (item.warna === "blue") {
-            kelasWarnaBadge = "bg-blue-50 text-blue-700 border-blue-200";
-        } else if (item.warna === "orange") {
-            kelasWarnaBadge = "bg-orange-50 text-orange-700 border-orange-200 font-semibold";
-        } else if (item.warna === "red") {
-            kelasWarnaBadge = "bg-red-50 text-red-600 border-red-200 font-bold animate-pulse";
-        }
-        
-        // Template HTML item mapel memanjang ke bawah
-        const itemHtml = `
-            <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/80 transition duration-200">
-                <span class="font-bold text-slate-700 text-[11px] tracking-wide">${item.mapel}</span>
-                <span class="px-2.5 py-1 text-[9px] font-bold rounded-lg border uppercase tracking-wider text-center min-w-[130px] ${kelasWarnaBadge}">
+
+    const modal = document.getElementById('modal-akademik');
+    const wrapper = document.getElementById('wrapper-modal-akademik');
+    const list = document.getElementById('list-mapel-akademik');
+
+    // 2. Isi data mapel
+    list.innerHTML = "";
+    dataAkademik.forEach(item => {
+        let colorClass = "bg-slate-100 text-slate-400 border-slate-200";
+        if (item.warna === "emerald") colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100";
+        if (item.warna === "green") colorClass = "bg-green-50 text-green-600 border-green-100";
+        if (item.warna === "blue") colorClass = "bg-blue-50 text-blue-600 border-blue-100";
+        if (item.warna === "orange") colorClass = "bg-orange-50 text-orange-600 border-orange-100";
+        if (item.warna === "red") colorClass = "bg-red-50 text-red-600 border-red-100 animate-pulse";
+
+        const html = `
+            <div class="flex justify-between items-center p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                <span class="font-bold text-slate-700 text-[11px]">${item.mapel}</span>
+                <span class="px-3 py-1 text-[9px] font-extrabold rounded-lg border shadow-sm ${colorClass}">
                     ${item.kriteria}
                 </span>
             </div>
         `;
-        listContainer.insertAdjacentHTML('beforeend', itemHtml);
+        list.insertAdjacentHTML('beforeend', html);
     });
-    
-    // Tampilkan container ke layar
-    mainContainer.classList.remove('hidden');
-    
-    // Efek smooth scroll otomatis mengarah ke container nilai agar ortu langsung melihat hasilnya
-    mainContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // 3. Tampilkan Modal dengan animasi
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        wrapper.classList.remove('translate-y-full');
+    }, 10);
 }
 
 function tutupLaporanAkademik() {
-    const mainContainer = document.getElementById('container-akademik');
-    if (mainContainer) mainContainer.classList.add('hidden');
+    const modal = document.getElementById('modal-akademik');
+    const wrapper = document.getElementById('wrapper-modal-akademik');
+
+    wrapper.classList.add('translate-y-full');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
 }
         
 </script>
