@@ -205,26 +205,31 @@
             </div>
 
             <div class="flex items-center gap-4 relative z-10 fade-in cursor-pointer active:scale-95 transition-transform" onclick="bukaProfil()">
-                <div class="relative group">
-                    <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
-                        <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
-                    </div>
-                </div>
+    <div class="relative group">
+        <div class="w-16 h-16 rounded-full border-[3px] border-emerald-300/50 p-0.5 bg-emerald-900 overflow-hidden shadow-lg">
+            <img id="foto-siswa" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Loading" class="w-full h-full rounded-full bg-slate-200 object-cover">
+        </div>
+    </div>
 
-                <div class="flex-1 min-w-0">
-                    <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
-                    <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
-                    
-                    <div class="flex items-center gap-2 mt-1.5">
-                        <div id="kelas-siswa" class="bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
-                            --
-                        </div>
-                        <p class="text-emerald-100/70 text-[10px] font-mono tracking-wider truncate">
-                            NISN: <span id="nisn-siswa">...</span>
-                        </p>
-                    </div>
-                </div>
+    <div class="flex-1 min-w-0">
+        <p class="text-emerald-200 text-xs mb-0.5" id="sapaan-waktu">Assalamualaikum,</p>
+        <h1 class="text-lg font-bold text-white leading-tight truncate pr-2" id="nama-siswa">Memuat...</h1>
+        
+        <div class="flex items-center gap-2 mt-1.5">
+            <div id="kelas-siswa" class="bg-yellow-400 text-emerald-900 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
+                --
             </div>
+            <p class="text-emerald-100/70 text-[10px] font-mono tracking-wider truncate">
+                NISN: <span id="nisn-siswa">...</span>
+            </p>
+        </div>
+
+        <div class="mt-1 text-[10px] text-emerald-100/80 leading-tight space-y-0.5">
+            <p class="truncate">Wali Kelas: <span id="wali-kelas-siswa" class="font-semibold text-white">-</span></p>
+            <p class="truncate">Wakil Wali: <span id="wakil-wali-siswa" class="font-semibold text-white">-</span></p>
+        </div>
+        </div>
+</div>
         </header>
 
         <main class="px-5 -mt-10 relative z-20 space-y-4 pb-32">
@@ -666,6 +671,12 @@
             setText('nama-siswa', user.nama);
             setText('nisn-siswa', user.nisn);
             setText('kelas-siswa', user.kelas);
+            
+            // ─── TAMBAHKAN DUA BARIS INI UNTUK WALI KELAS DI DASHBOARD DEPAN ───
+            setText('wali-kelas-siswa', user.wali_kelas || '-');
+            setText('wakil-wali-siswa', user.wakil_wali || '-');
+            // ──────────────────────────────────────────────────────────────────
+            
             setGreeting();
             
             // --- LOGIK FOTO (DIPERBAIKI FORMAT DRIVE-NYA) ---
@@ -1525,17 +1536,16 @@ if (user && Array.isArray(user.daftarGuru)) {
   updateSemester();
 
         async function bukaModalJadwal() {
-    // 1. Baca kelas siswa dari user yang login (Misal: "7 BILINGUAL")
-    const kelasSiswaLogin = user && user.kelas ? user.kelas.toString().trim().toUpperCase() : "-";
+    // 1. AMBIL KELAS LANGSUNG DARI TEKS UTAMA DASHBOARD
+    const elemenKelas = document.getElementById('kelas-siswa');
+    const kelasSiswaLogin = elemenKelas ? elemenKelas.innerText.toString().trim().toUpperCase() : "-";
     
-    // Tampilkan nama kelas di bagian atas pop-up
+    // Tampilkan nama kelas di bagian atas pop-up jadwal
     document.getElementById('infoKelasSiswa').innerText = "Kelas: " + kelasSiswaLogin;
     
     const tbody = document.getElementById('tabelJadwalBody');
-    // Tampilkan status memuat data
     tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Memuat jadwal secara real-time...</td></tr>`;
     
-    // Buka pop-up modal
     document.getElementById('modalJadwal').classList.remove('hidden');
 
     try {
