@@ -1524,64 +1524,99 @@ if (user && Array.isArray(user.daftarGuru)) {
   // Jalankan fungsi saat halaman dimuat
   updateSemester();
 
-        function bukaModalJadwal() {
-    // 1. Mengambil nama kelas siswa secara otomatis
-    const kelasSiswaLogin = user && user.kelas ? user.kelas : "-";
+        async function bukaModalJadwal() {
+    // 1. Baca kelas siswa dari user yang login (Misal: "7 BILINGUAL")
+    const kelasSiswaLogin = user && user.kelas ? user.kelas.toString().trim().toUpperCase() : "-";
     
-    // 2. Menampilkan nama kelas di bagian atas pop-up
+    // Tampilkan nama kelas di bagian atas pop-up
     document.getElementById('infoKelasSiswa').innerText = "Kelas: " + kelasSiswaLogin;
     
-    // 3. Membersihkan isi tabel sebelum diisi jadwal baru
     const tbody = document.getElementById('tabelJadwalBody');
-    tbody.innerHTML = ""; 
+    // Tampilkan status memuat data
+    tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Memuat jadwal secara real-time...</td></tr>`;
     
-    // 4. Membuka/menampilkan pop-up jadwal di layar
+    // Buka pop-up modal
     document.getElementById('modalJadwal').classList.remove('hidden');
 
-    // 5. Mengambil data jadwal yang dikirim oleh Apps Script
-    const dataJadwalSiswa = user && user.jadwal_belajar ? user.jadwal_belajar : null;
-
-    // Jika data jadwal kosong (biasanya karena Anda belum Log Out dan Log In ulang)
-    if (!dataJadwalSiswa || Object.keys(dataJadwalSiswa).length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="2" class="p-4 text-center text-slate-400">
-                    Jadwal belum muncul.<br>
-                    <span class="text-[10px] text-amber-500">Silakan klik Log Out (Keluar) lalu Log In (Masuk) kembali agar jadwal Anda terbarui.</span>
-                </td>
-            </tr>`;
-        return;
-    }
-
-    // 6. Menyusun mata pelajaran dari Senin sampai Sabtu ke dalam tabel
-    const urutanHari = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
-    let adaDataJadwal = false;
-
-    urutanHari.forEach(hari => {
-        if (dataJadwalSiswa[hari] && dataJadwalSiswa[hari].length > 0) {
-            adaDataJadwal = true;
-            
-            // Membuat daftar mata pelajaran ke bawah menggunakan titik/bullet
-            let mapelHtml = '<ul class="list-disc pl-4 space-y-1 font-medium">';
-            dataJadwalSiswa[hari].forEach(mapel => {
-                mapelHtml += `<li>${mapel}</li>`;
-            });
-            mapelHtml += '</ul>';
-
-            // Memasukkan hari dan mata pelajaran ke baris tabel
-            const rowHtml = `
-                <tr class="hover:bg-slate-50 transition duration-150">
-                    <td class="p-3 font-bold text-slate-800 bg-slate-50/50 align-top border-r border-slate-100">${hari}</td>
-                    <td class="p-3 text-slate-600">${mapelHtml}</td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', rowHtml);
+    try {
+        // Ambil URL script yang ada di bagian atas kode utama Anda
+        // Kita tambahkan parameter ?action=getJadwal untuk mengambil data langsung
+        const response = await fetch(SCRIPT_URL + "?action=getJadwal");
+        const dataJadwal = await response.json();
+        
+        if (!dataJadwal || dataJadwal.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Gagal mengambil data dari spreadsheet.</td></tr>`;
+            return;
         }
-    });
 
-    // Jika kelas tersebut tidak punya jadwal sama sekali di spreadsheet
-    if (!adaDataJadwal) {
-        tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada jadwal belajar untuk kelas ini.</td></tr>`;
+        // 2. Cari posisi kolom kelas siswa berdasarkan baris pertama (Header)
+        const headerKelas = dataJadwal[0];
+        let indeksKolomKelas = -1;
+        for (let c = 0; c < headerKelas.length; c++) {
+            if (headerKelas[c] && headerKelas[c].toString().trim().toUpperCase() === kelasSiswaLogin) {
+                indeksKolomKelas = c;
+                break;
+            }
+        }
+
+        if (indeksKolomKelas === -1) {
+            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-amber-500">Jadwal untuk kelas ${kelasSiswaLogin} belum terdaftar di spreadsheet.</td></tr>`;
+            return;
+        }
+
+        // 3. Olah data baris per baris
+        let jadwalPerHari = {};
+        let hariSaatIni = "";
+
+        for (let r = 1; r < dataJadwal.length; r++) {
+            let kolomHari  = dataJadwal[r][0] ? dataJadwal[r][0].toString().trim() : "";
+            let kolomMapel = dataJadwal[r][indeksKolomKelas] ? dataJadwal[r][indeksKolomKelas].toString().trim() : "";
+
+            if (kolomHari !== "" && kolomHari !== "-") {
+                hariSaatIni = kolomHari.toUpperCase();
+            }
+
+            if (hariSaatIni && kolomMapel !== "" && kolomMapel !== "-") {
+                if (!jadwalPerHari[hariSaatIni]) {
+                    jadwalPerHari[hariSaatIni] = [];
+                }
+                jadwalPerHari[hariSaatIni].push(kolomMapel);
+            }
+        }
+
+        // Bersihkan teks loading sebelum menampilkan jadwal asli
+        tbody.innerHTML = "";
+
+        const urutanHari = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
+        let adaDataJadwal = false;
+
+        urutanHari.forEach(hari => {
+            if (jadwalPerHari[hari] && jadwalPerHari[hari].length > 0) {
+                adaDataJadwal = true;
+                
+                let mapelHtml = '<ul class="list-disc pl-4 space-y-1 font-medium">';
+                jadwalPerHari[hari].forEach(mapel => {
+                    mapelHtml += `<li>${mapel}</li>`;
+                });
+                mapelHtml += '</ul>';
+
+                const rowHtml = `
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="p-3 font-bold text-slate-800 bg-slate-50/50 align-top border-r border-slate-100">${hari}</td>
+                        <td class="p-3 text-slate-600">${mapelHtml}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', rowHtml);
+            }
+        });
+
+        if (!adaDataJadwal) {
+            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada jadwal belajar untuk kelas ini.</td></tr>`;
+        }
+
+    } catch (error) {
+        console.error("Error load jadwal:", error);
+        tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Terjadi gangguan koneksi jaringan.</td></tr>`;
     }
 }
 
