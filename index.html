@@ -13,53 +13,64 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style> 
         body { 
-    font-family: 'Poppins', sans-serif; 
-}
+            font-family: 'Poppins', sans-serif; 
+        }
 
-/* Animasi gradasi hijau bergerak */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+        /* ✅ Animasi gradasi hijau bergerak - dipaksa aktif */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-.animate-gradient {
-  background-size: 300% 300%;
-  animation: gradientMove 6s ease-in-out infinite;
-}
+        .animate-gradient {
+            background-size: 300% 300%;
+            animation: gradientMove 6s ease-in-out infinite !important;
+            will-change: background-position;
+        }
 
-/* Animasi pola halus bergerak */
-@keyframes patternMove {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(12px, 12px); }
-}
+        /* ✅ Animasi pola titik bergerak - dipaksa aktif */
+        @keyframes patternMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(12px, 12px); }
+        }
 
-.animate-pattern {
-  animation: patternMove 15s linear infinite;
-}
+        .animate-pattern {
+            animation: patternMove 15s linear infinite !important;
+            will-change: transform;
+        }
+
+        /* ✅ Latar belakang pola sirkuit tanpa file eksternal */
+        .bg-circuit {
+            background-color: #8c92ac;
+            background-image: 
+                radial-gradient(#a1a7c5 1px, transparent 1px),
+                linear-gradient(to right, #a1a7c5 1px, transparent 1px),
+                linear-gradient(to bottom, #a1a7c5 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0;
+            background-blend-mode: soft-light;
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6" style="
-    background: #8c92ac url('circuitboard.svg') repeat;
-    background-size: 1440px 560px;
-    background-blend-mode: soft-light;
-">
+<body class="min-h-screen flex items-center justify-center p-6 bg-circuit">
 
     <div class="w-full max-w-sm text-center bg-white p-8 rounded-3xl shadow-xl">
+        <!-- ✅ Kotak hijau animasi - struktur sudah benar -->
         <div class="mb-6 flex justify-center">
-            <!-- Kotak hijau dengan animasi bergerak -->
-<div class="mb-6 flex justify-center">
-  <div class="w-20 h-20 rounded-2xl shadow-lg transform rotate-3 overflow-hidden relative">
-    <!-- Lapisan gradasi hijau bergerak -->
-    <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 via-emerald-600 to-emerald-800 animate-gradient"></div>
-    <!-- Lapisan pola titik transparan -->
-    <div class="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] bg-[size:10px_10px] animate-pattern"></div>
-    <!-- Logo tetap di atas -->
-    <img src="logosmpit.png" alt="Logo" class="w-14 h-14 object-contain -rotate-3 relative z-10">
-  </div>
-</div>
+            <div class="w-20 h-20 rounded-2xl shadow-lg transform rotate-3 overflow-hidden relative">
+                <!-- Lapisan gradasi hijau bergerak -->
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 via-emerald-600 to-emerald-800 animate-gradient"></div>
+                <!-- Lapisan pola titik transparan -->
+                <div class="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] bg-[size:10px_10px] animate-pattern"></div>
+                <!-- Logo tetap di atas -->
+                <img src="logosmpit.png" alt="Logo" class="w-14 h-14 object-contain -rotate-3 relative z-10">
+            </div>
+        </div>
+
         <h1 class="text-2xl font-bold text-gray-800 mb-1">My Al-Kautsar</h1>
         <p class="text-sm text-gray-500 mb-8">Buku Penghubung DIGITAL</p>
 
@@ -76,8 +87,11 @@
                 Masuk Portal
             </button>
         </form>
+
         <p class="mt-8 text-xs text-gray-400">&copy; 2026 <span>SMP IT Al-Kautsar | Islamic Brilliant Talented</span> <br> Designed & Developed by aktechmaster</p>
     </div>
+
+</body>
 
     <script>
     // URL GOOGLE SCRIPT ANDA
