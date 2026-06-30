@@ -1689,79 +1689,44 @@ function tutupModalJadwal() {
 }
 
     // ==========================================
-// FUNGSI BUKA LAPORAN AKADEMIK
+// FUNGSI BUKA LAPORAN AKADEMIK (KODE ASLI ANDA)
 // ==========================================
-async function bukaLaporanAkademik() {
+function bukaLaporanAkademik() {
+    const dataAkademik = user.akademik; 
+    
+    if (!dataAkademik || dataAkademik.length === 0) {
+        alert("Data belum tersedia");
+        return;
+    }
+
     const modal = document.getElementById('modal-akademik');
     const wrapper = document.getElementById('wrapper-modal-akademik');
     const list = document.getElementById('list-mapel-akademik');
 
-    // 1. Buka modal duluan dengan status "Loading..." agar UI terasa responsif
-    list.innerHTML = `<div class="text-center p-4 text-slate-500 text-sm animate-pulse">Mengambil data terbaru...</div>`;
+    list.innerHTML = "";
+    dataAkademik.forEach(item => {
+        let colorClass = "bg-slate-100 text-slate-400 border-slate-200";
+        if (item.warna === "emerald") colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100";
+        if (item.warna === "green") colorClass = "bg-green-50 text-green-600 border-green-100";
+        if (item.warna === "blue") colorClass = "bg-blue-50 text-blue-600 border-blue-100";
+        if (item.warna === "orange") colorClass = "bg-orange-50 text-orange-600 border-orange-100";
+        if (item.warna === "red") colorClass = "bg-red-50 text-red-600 border-red-100 animate-pulse";
+
+        const html = `
+            <div class="flex justify-between items-center p-3.5 bg-slate-50 rounded-2xl border border-slate-100 mb-2">
+                <span class="font-bold text-slate-700 text-[11px]">${item.mapel}</span>
+                <span class="px-3 py-1 text-[9px] font-extrabold rounded-lg border shadow-sm ${colorClass}">
+                    ${item.kriteria}
+                </span>
+            </div>
+        `;
+        list.insertAdjacentHTML('beforeend', html);
+    });
+
     modal.classList.remove('hidden');
     setTimeout(() => {
         wrapper.classList.remove('translate-y-full');
     }, 10);
-
-    try {
-        // 2. FETCH DATA TERBARU DARI GOOGLE APPS SCRIPT
-        // Tambahkan timestamp agar terhindar dari cache browser
-        const timeStamp = new Date().getTime();
-        
-        // GANTI URL DI BAWAH dengan URL Web App Apps Script milikmu
-        // Pastikan parameter yang dikirim (misal: nisn) sesuai dengan yang dibutuhkan skrip GAS kamu
-        const urlAPI = `https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec?nisn=${user.nisn}&_=${timeStamp}`; 
-        
-        const response = await fetch(urlAPI);
-        const result = await response.json();
-
-        // Asumsi result mengembalikan struktur 'userFound' seperti di GAS yang kamu tunjukkan sebelumnya
-        const dataAkademik = result.akademik; 
-
-        // Opsional: Update variabel global 'user' agar tersinkronisasi
-        user.akademik = dataAkademik; 
-
-        // 3. Validasi Data
-        if (!dataAkademik || dataAkademik.length === 0) {
-            list.innerHTML = `<div class="text-center p-4 text-slate-500 text-sm">Data belum tersedia</div>`;
-            return;
-        }
-
-        // 4. Render Data ke HTML
-        list.innerHTML = "";
-        dataAkademik.forEach(item => {
-            let colorClass = "bg-slate-100 text-slate-400 border-slate-200";
-            if (item.warna === "emerald") colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100";
-            if (item.warna === "green") colorClass = "bg-green-50 text-green-600 border-green-100";
-            if (item.warna === "blue") colorClass = "bg-blue-50 text-blue-600 border-blue-100";
-            if (item.warna === "orange") colorClass = "bg-orange-50 text-orange-600 border-orange-100";
-            if (item.warna === "red") colorClass = "bg-red-50 text-red-600 border-red-100 animate-pulse";
-
-            const html = `
-                <div class="flex justify-between items-center p-3.5 bg-slate-50 rounded-2xl border border-slate-100 mb-2">
-                    <span class="font-bold text-slate-700 text-[11px]">${item.mapel}</span>
-                    <span class="px-3 py-1 text-[9px] font-extrabold rounded-lg border shadow-sm ${colorClass}">
-                        ${item.kriteria}
-                    </span>
-                </div>
-            `;
-            list.insertAdjacentHTML('beforeend', html);
-        });
-
-    } catch (error) {
-        console.error("Gagal mengambil data akademik:", error);
-        list.innerHTML = `<div class="text-center p-4 text-red-500 text-sm">Gagal memuat data. Periksa koneksi internet.</div>`;
-    }
-}
-
-function tutupLaporanAkademik() {
-    const modal = document.getElementById('modal-akademik');
-    const wrapper = document.getElementById('wrapper-modal-akademik');
-
-    wrapper.classList.add('translate-y-full');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
 }
         
 </script>
