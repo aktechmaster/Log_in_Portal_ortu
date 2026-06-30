@@ -1688,17 +1688,16 @@ function tutupModalJadwal() {
     document.getElementById('modalJadwal').classList.add('hidden');
 }
 // ==========================================
-// FUNGSI BUKA LAPORAN AKADEMIK
-// ==========================================
-function bukaLaporanAkademik() {
+    // FUNGSI BUKA LAPORAN AKADEMIK
+    // ==========================================
+        function bukaLaporanAkademik() {
     // 1. Cek data (sesuaikan dengan nama variabel user kamu)
     const dataAkademik = user.akademik; 
-    
+   
     if (!dataAkademik || dataAkademik.length === 0) {
         alert("Data belum tersedia");
         return;
     }
-
     const modal = document.getElementById('modal-akademik');
     const wrapper = document.getElementById('wrapper-modal-akademik');
     const list = document.getElementById('list-mapel-akademik');
@@ -1740,6 +1739,7 @@ function tutupLaporanAkademik() {
         modal.classList.add('hidden');
     }, 300);
 }
+
         
 </script>
 
