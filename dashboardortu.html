@@ -1687,22 +1687,61 @@ if (user && Array.isArray(user.daftarGuru)) {
 function tutupModalJadwal() {
     document.getElementById('modalJadwal').classList.add('hidden');
 }
-
-    // ==========================================
-// FUNGSI BUKA LAPORAN AKADEMIK (KODE ASLI ANDA)
 // ==========================================
-function bukaLaporanAkademik() {
-    const dataAkademik = user.akademik; 
-    
-    if (!dataAkademik || dataAkademik.length === 0) {
-        alert("Data belum tersedia");
-        return;
-    }
-
+// FUNGSI BUKA LAPORAN AKADEMIK (PERBAIKAN AMAN)
+// ==========================================
+async function bukaLaporanAkademik() {
     const modal = document.getElementById('modal-akademik');
     const wrapper = document.getElementById('wrapper-modal-akademik');
     const list = document.getElementById('list-mapel-akademik');
 
+    // 1. Tampilkan modal terlebih dahulu dengan animasi
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        wrapper.classList.remove('translate-y-full');
+    }, 10);
+
+    // 2. Ambil kredensial dari localStorage untuk fetch data terupdate
+    const savedUsername = localStorage.getItem('nisn');
+    const savedPassword = localStorage.getItem('user_pass');
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec';
+
+    if (savedUsername && savedPassword) {
+        // Tampilkan indikator kecil atau text kalau data sedang disinkronkan (opsional)
+        console.log("Menyingkronkan data terbaru dari Google Sheets...");
+        
+        try {
+            const timeStamp = new Date().getTime();
+            // Tembak URL dengan parameter lengkap yang sah (username & password) + anti-cache
+            const urlAPI = `${SCRIPT_URL}?username=${encodeURIComponent(savedUsername)}&password=${encodeURIComponent(savedPassword)}&_=${timeStamp}`;
+            
+            const response = await fetch(urlAPI);
+            const freshData = await response.json();
+            
+            if (freshData && freshData.result === 'success') {
+                // Perbarui localStorage dengan data nilai yang paling baru dari Spreadsheet
+                localStorage.setItem('user_data', JSON.stringify(freshData));
+                
+                // Perbarui variabel global 'user' di dashboard Anda agar sinkron
+                if (typeof user !== 'undefined') {
+                    user = freshData;
+                }
+            }
+        } catch (error) {
+            console.error("Gagal mengambil data live, menggunakan data cache terakhir:", error);
+        }
+    }
+
+    // 3. Ambil data akademik (paling baru jika fetch sukses, atau data terakhir jika offline)
+    const currentData = JSON.parse(localStorage.getItem('user_data'));
+    const dataAkademik = currentData ? currentData.akademik : [];	
+    
+    if (!dataAkademik || dataAkademik.length === 0) {
+        list.innerHTML = `<div class="text-center p-4 text-slate-500 text-sm">Data belum tersedia</div>`;
+        return;
+    }
+
+    // 4. Render data ke HTML (Menggunakan Logika Pewarnaan Asli Anda)
     list.innerHTML = "";
     dataAkademik.forEach(item => {
         let colorClass = "bg-slate-100 text-slate-400 border-slate-200";
@@ -1722,11 +1761,6 @@ function bukaLaporanAkademik() {
         `;
         list.insertAdjacentHTML('beforeend', html);
     });
-
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        wrapper.classList.remove('translate-y-full');
-    }, 10);
 }
         
 </script>
