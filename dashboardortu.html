@@ -1710,7 +1710,7 @@ async function bukaLaporanAkademik() {
         
         // GANTI URL DI BAWAH dengan URL Web App Apps Script milikmu
         // Pastikan parameter yang dikirim (misal: nisn) sesuai dengan yang dibutuhkan skrip GAS kamu
-        const urlAPI = `URL_WEB_APP_KAMU_DISINI?nisn=${user.nisn}&_=${timeStamp}`; 
+        const urlAPI = `https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec?nisn=${user.nisn}&_=${timeStamp}`; 
         
         const response = await fetch(urlAPI);
         const result = await response.json();
