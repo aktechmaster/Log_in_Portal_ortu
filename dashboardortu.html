@@ -1588,10 +1588,10 @@ function tutupPengumuman(e) {
         reader.readAsDataURL(file);
     }
 
-        //============================================
-        // FUNGSI BUKA LAPORAN YAUMIYAH (PASTIKAN pakai window.bukaYaumiyah)
-        //============================================
-window.bukaYaumiyah = function() {
+//============================================
+// FUNGSI BUKA LAPORAN YAUMIYAH (REALTIME VIA GAS)
+//============================================
+window.bukaYaumiyah = async function() {
     const elModal = document.getElementById('modalPengumuman'); 
     const elKonten = document.getElementById('kontenPengumuman');
     
@@ -1600,13 +1600,49 @@ window.bukaYaumiyah = function() {
         return;
     }
 
+    // 1. Langsung munculkan modal
     elModal.style.display = 'flex';
-    const dataString = localStorage.getItem('user_data'); 
-    
-    if (dataString) {
-        const dataSiswa = JSON.parse(dataString);
-        const dataY = dataSiswa.yaumiyah;
 
+    // 2. Tampilkan animasi loading titik ombak yang cantik
+    elKonten.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-8">
+            <div class="flex space-x-1.5 mb-3">
+                <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.3s"></div>
+                <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.15s"></div>
+                <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce"></div>
+            </div>
+            <p class="text-xs text-slate-500 animate-pulse font-medium">Memuat data yaumiyah terbaru...</p>
+        </div>
+    `;
+
+    // 3. Ambil data user dari localStorage untuk mendapatkan NISN/ID
+    const dataString = localStorage.getItem('user_data'); 
+    if (!dataString) {
+        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Sesi habis. Silakan logout dan login kembali.</p>`;
+        return;
+    }
+
+    const user = JSON.parse(dataString);
+    // Mengambil NISN atau Username sebagai identifier (sesuaikan dengan preferensi GAS Anda)
+    const identifier = user.nisn || user.username || user.id; 
+
+    try {
+        // 4. Ambil data terbaru langsung dari Google Sheets via GAS
+        // Catatan: Saya sesuaikan dengan standar pemanggilan GAS (?action=...&nisn=...)
+        const response = await fetch(`${SCRIPT_URL}?action=getYaumiyah&nisn=${identifier}`);
+        
+        if (!response.ok) throw new Error("Gagal mengambil data dari server");
+        
+        const result = await response.json();
+        
+        // PENGAMAN: Antisipasi jika GAS mengembalikan objek utuh siswa atau hanya objek yaumiyah-nya saja
+        const dataY = result.yaumiyah || result;
+
+        // 5. UPDATE MEMORI LOKAL (Agar data di HP ortu otomatis terbaru tanpa perlu logout-login!)
+        user.yaumiyah = dataY;
+        localStorage.setItem('user_data', JSON.stringify(user));
+
+        // 6. Validasi jika data kosong / belum pernah input
         if (!dataY || dataY.input === 0) {
             elKonten.innerHTML = `
                 <div class="text-center py-6">
@@ -1617,7 +1653,7 @@ window.bukaYaumiyah = function() {
             return;
         }
 
-        // PERBAIKAN: Tambahkan ?.length agar aman jika data kosong/undefined
+        // 7. Menyusun List Apresiasi (Hijau)
         let htmlApresiasi = '';
         if (dataY.apresiasi?.length > 0) {
             htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
@@ -1628,7 +1664,7 @@ window.bukaYaumiyah = function() {
             </div>`;
         }
 
-        // PERBAIKAN: Tambahkan ?.length
+        // 8. Menyusun List Perhatian (Oranye)
         let htmlPerhatian = '';
         if (dataY.perhatian?.length > 0) {
             htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
@@ -1639,7 +1675,7 @@ window.bukaYaumiyah = function() {
             </div>`;
         }
 
-        // Menyusun Kesimpulan Cerdas (Biru) dengan keamanan ?.length
+        // 9. Menyusun Kesimpulan Cerdas (Biru)
         let teksKesimpulan = "";
         const jumlahPerhatian = dataY.perhatian?.length || 0;
         const jumlahApresiasi = dataY.apresiasi?.length || 0;
@@ -1657,7 +1693,7 @@ window.bukaYaumiyah = function() {
                 <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
             </div>`;
 
-        // Gabungkan semua ke dalam konten modal
+        // 10. Tampilkan data ke dalam konten modal (Menimpa loading)
         elKonten.innerHTML = `
             <div class="mb-4 text-center border-b pb-3">
                 <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
@@ -1667,11 +1703,18 @@ window.bukaYaumiyah = function() {
             ${htmlPerhatian}
             ${htmlKesimpulan}
         `;
-    } else {
-        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+
+    } catch (error) {
+        console.error("Error Yaumiyah:", error);
+        elKonten.innerHTML = `
+            <div class="text-center py-6">
+                <i class="fa-solid fa-circle-exclamation text-red-400 text-4xl mb-2"></i>
+                <p class="text-sm text-slate-600 font-medium">Gagal memuat data terbaru</p>
+                <p class="text-xs text-slate-400 mt-1">Pastikan koneksi internet stabil dan coba beberapa saat lagi.</p>
+            </div>
+        `;
     }
 };
-
         // ==========================================
     // TAMBAHAN BARU: CEK STATUS BACA SAAT HALAMAN DIMUAT
     // ==========================================
