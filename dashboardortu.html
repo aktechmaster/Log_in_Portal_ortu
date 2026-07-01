@@ -1183,11 +1183,27 @@ if (user && Array.isArray(user.daftarGuru)) {
 window.bukaModalBina = async function() {
     const modal = document.getElementById('modalBina');
 
-    // 1. Munculkan modal & tampilkan status loading sementara
-    setText('val-disiplin', "Memuat...");
-    setText('val-ibadah', "Memuat...");
-    setText('val-sosial', "Memuat...");
+    // 1. Munculkan modal terlebih dahulu
     if(modal) modal.style.display = 'flex';
+
+    // 1.1. Siapkan kode HTML untuk animasi mini yang pas untuk kotak nilai
+    const miniLoadingHTML = `
+        <div class="flex items-center justify-start space-x-1 py-0.5">
+            <span class="text-xs text-slate-400 font-medium animate-pulse mr-1">Memuat</span>
+            <div class="w-1 h-1 bg-emerald-400 rounded-full animate-bounce" style="animation-delay: -0.3s"></div>
+            <div class="w-1 h-1 bg-emerald-400 rounded-full animate-bounce" style="animation-delay: -0.15s"></div>
+            <div class="w-1 h-1 bg-emerald-400 rounded-full animate-bounce"></div>
+        </div>
+    `;
+
+    // 1.2. Suntikkan animasi ke masing-masing elemen nilai (menggantikan fungsi setText)
+    const elDisiplin = document.getElementById('val-disiplin');
+    const elIbadah = document.getElementById('val-ibadah');
+    const elSosial = document.getElementById('val-sosial');
+
+    if (elDisiplin) elDisiplin.innerHTML = miniLoadingHTML;
+    if (elIbadah) elIbadah.innerHTML = miniLoadingHTML;
+    if (elSosial) elSosial.innerHTML = miniLoadingHTML;
 
     try {
         // 2. Ambil "kunci" dari brankas lokal
