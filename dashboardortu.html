@@ -1688,22 +1688,56 @@ function tutupModalJadwal() {
     document.getElementById('modalJadwal').classList.add('hidden');
 }
 // ==========================================
-    // FUNGSI BUKA LAPORAN AKADEMIK
-    // ==========================================
-        function bukaLaporanAkademik() {
-    // 1. Cek data (sesuaikan dengan nama variabel user kamu)
-    const dataAkademik = user.akademik; 
-   
-    if (!dataAkademik || dataAkademik.length === 0) {
-        alert("Data belum tersedia");
-        return;
-    }
+// FUNGSI BUKA LAPORAN AKADEMIK (VERSI AUTO-REFRESH)
+// ==========================================
+async function bukaLaporanAkademik() {
     const modal = document.getElementById('modal-akademik');
     const wrapper = document.getElementById('wrapper-modal-akademik');
     const list = document.getElementById('list-mapel-akademik');
 
-    // 2. Isi data mapel
-    list.innerHTML = "";
+    // 1. Tampilkan animasi loading agar ortu tahu sistem sedang bekerja
+    list.innerHTML = "<p class='text-center text-xs text-slate-400 py-4 animate-pulse'>Memuat nilai terbaru...</p>";
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        wrapper.classList.remove('translate-y-full');
+    }, 10);
+
+    try {
+        // 2. Ambil "kunci" untuk menembak API dari brankas
+        const savedNisn = localStorage.getItem('nisn');
+        const savedPass = localStorage.getItem('user_pass');
+
+        // Jika kunci lengkap, diam-diam kita tembak GAS di latar belakang
+        if (savedNisn && savedPass && typeof SCRIPT_URL !== 'undefined') {
+            const url = `${SCRIPT_URL}?username=${encodeURIComponent(savedNisn)}&password=${encodeURIComponent(savedPass)}`;
+            
+            const response = await fetch(url, { cache: 'no-store' });
+            const freshData = await response.json();
+
+            if (freshData.result === 'success') {
+                // Update brankas lokal dengan data yang baru
+                localStorage.setItem('user_data', JSON.stringify(freshData));
+                
+                // Update variabel global 'user' agar sinkron
+                user = freshData; 
+            }
+        }
+    } catch (error) {
+        console.error("Gagal refresh data di latar belakang:", error);
+        // Jika gagal (misal sinyal jelek), kita lanjut pakai data lama yang sudah ada di memori
+    }
+
+    // 3. Render ulang list menggunakan data (yang sudah pasti terbaru jika proses di atas berhasil)
+    const dataAkademik = user.akademik; 
+   
+    if (!dataAkademik || dataAkademik.length === 0) {
+        list.innerHTML = "<p class='text-center text-xs text-slate-400 py-4'>Data belum tersedia</p>";
+        return;
+    }
+
+    list.innerHTML = ""; // Bersihkan teks loading
+    
+    // Logika pewarnaan kamu tidak saya ubah sama sekali, tetap aman
     dataAkademik.forEach(item => {
         let colorClass = "bg-slate-100 text-slate-400 border-slate-200";
         if (item.warna === "emerald") colorClass = "bg-emerald-50 text-emerald-600 border-emerald-100";
@@ -1722,22 +1756,6 @@ function tutupModalJadwal() {
         `;
         list.insertAdjacentHTML('beforeend', html);
     });
-
-    // 3. Tampilkan Modal dengan animasi
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        wrapper.classList.remove('translate-y-full');
-    }, 10);
-}
-
-function tutupLaporanAkademik() {
-    const modal = document.getElementById('modal-akademik');
-    const wrapper = document.getElementById('wrapper-modal-akademik');
-
-    wrapper.classList.add('translate-y-full');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
 }
 
         
