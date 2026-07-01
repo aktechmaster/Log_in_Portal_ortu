@@ -263,7 +263,7 @@
                     <div>
                         <h4 class="text-sm font-bold text-blue-900">Status Hari Ini</h4>
                         <p class="text-xs text-blue-700 mt-0.5 leading-relaxed">
-                            <span id="text-deskripsi">Sedang memuat data...</span>
+                            <span id="text-deskripsi">Sedang ata...</span>
                             <span id="badge-status" class="hidden ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
                                 --
                             </span>
@@ -955,16 +955,30 @@ window.bukaModalT2Q = async function() {
     const modal = document.getElementById('modalT2Q');
     const elBatas = document.getElementById('m-t2q-batas');
 
-    // 1. Munculkan modal & tampilkan status loading sementara
-    setText('m-t2q-nama', "Memuat data terbaru...");
-    setText('m-t2q-kelas', "...");
-    setText('m-t2q-pengampu', "...");
-    setText('m-t2q-alpa', "...");
-    if(elBatas) {
-        elBatas.innerText = "Memuat...";
-        elBatas.style.color = "#94a3b8"; // Warna abu-abu saat loading
-    }
+    // 1. Munculkan modal terlebih dahulu
     modal.style.display = 'flex';
+
+    // 1.1. Kosongkan teks di baris lain agar terlihat bersih saat loading
+    setText('m-t2q-kelas', "");
+    setText('m-t2q-pengampu', "");
+    setText('m-t2q-alpa', "");
+    if(elBatas) {
+        elBatas.innerText = "";
+    }
+
+    // 1.2. Masukkan animasi ombak (versi sebaris) ke dalam tempat Nama
+    // Kita gunakan innerHTML langsung agar elemen <div> terbaca sebagai animasi
+    const elNama = document.getElementById('m-t2q-nama');
+    if (elNama) {
+        elNama.innerHTML = `
+            <div class="flex items-center space-x-1.5 py-1">
+                <span class="text-sm font-medium text-slate-500 mr-1 animate-pulse">Memuat</span>
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.3s"></div>
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.15s"></div>
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce"></div>
+            </div>
+        `;
+    }
 
     try {
         // 2. Ambil "kunci" dari brankas lokal
