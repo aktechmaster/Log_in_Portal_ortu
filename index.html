@@ -93,9 +93,14 @@
             .then(data => {
                 if (data.result === 'success') {
     localStorage.setItem('user_data', JSON.stringify(data));
-    localStorage.setItem('nisn', username); 
+    localStorage.setItem('nisn', username);
+    
+    // --- TAMBAHKAN BARIS INI ---
+    localStorage.setItem('user_pass', password); 
+    // ---------------------------
+    
     window.location.href = 'dashboardortu.html';
-} else {
+}
                     alert("Gagal: " + (data.message || "NISN/Password Salah"));
                     resetButton(originalText);
                 }
