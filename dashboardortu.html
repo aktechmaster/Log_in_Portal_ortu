@@ -1589,9 +1589,9 @@ function tutupPengumuman(e) {
     }
 
 //============================================
-// FUNGSI BUKA LAPORAN YAUMIYAH (REALTIME 100%)
+// FUNGSI BUKA LAPORAN YAUMIYAH (Versi Stabil & Seragam)
 //============================================
-window.bukaYaumiyah = async function() {
+window.bukaYaumiyah = function() {
     const elModal = document.getElementById('modalPengumuman'); 
     const elKonten = document.getElementById('kontenPengumuman');
     
@@ -1600,8 +1600,10 @@ window.bukaYaumiyah = async function() {
         return;
     }
 
-    // 1. Munculkan modal & tampilkan loading ombak
+    // 1. Munculkan modal
     elModal.style.display = 'flex';
+
+    // 2. Tampilkan animasi loading titik ombak agar seragam dengan menu lain
     elKonten.innerHTML = `
         <div class="flex flex-col items-center justify-center py-8">
             <div class="flex space-x-1.5 mb-3">
@@ -1609,102 +1611,79 @@ window.bukaYaumiyah = async function() {
                 <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.15s"></div>
                 <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce"></div>
             </div>
-            <p class="text-xs text-slate-500 animate-pulse font-medium">Menghubungkan ke server...</p>
+            <p class="text-xs text-slate-500 animate-pulse font-medium">Memuat data yaumiyah...</p>
         </div>
     `;
 
-    // 2. Ambil NISN dari localStorage untuk kunci pencarian di Google Sheets
-    const dataString = localStorage.getItem('user_data'); 
-    if (!dataString) {
-        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Sesi habis. Silakan logout dan login kembali.</p>`;
-        return;
-    }
-    const user = JSON.parse(dataString);
-    const identifier = user.nisn || user.username || user.id; 
-
-    try {
-        // 3. PANGGIL GAS SECARA REALTIME
-        // Kita kirim perintah 'action=getYaumiyah' dan 'nisn' siswa
-        const response = await fetch(`${SCRIPT_URL}?action=getYaumiyah&nisn=${identifier}`);
+    // 3. Gunakan setTimeout untuk memberi jeda animasi loading selama 0.6 detik
+    // Lalu jalankan logika ASLI Anda yang sudah terbukti berhasil
+    setTimeout(() => {
+        const dataString = localStorage.getItem('user_data'); 
         
-        if (!response.ok) throw new Error("Koneksi server gagal");
-        
-        const dataY = await response.json(); // GAS harus mengembalikan objek yaumiyah
+        if (dataString) {
+            const dataSiswa = JSON.parse(dataString);
+            const dataY = dataSiswa.yaumiyah;
 
-        // 4. UPDATE MEMORI LOKAL (Agar data di HP ikut sinkron)
-        user.yaumiyah = dataY;
-        localStorage.setItem('user_data', JSON.stringify(user));
+            if (!dataY || dataY.input === 0) {
+                elKonten.innerHTML = `
+                    <div class="text-center py-6">
+                        <i class="fa-solid fa-clipboard-list text-slate-300 text-5xl mb-3"></i>
+                        <h3 class="text-lg font-bold text-slate-800">Belum Ada Data</h3>
+                        <p class="text-sm text-slate-500 mt-2">Ananda belum mengisi form mutaba'ah yaumiyah sama sekali pada periode ini.</p>
+                    </div>`;
+                return;
+            }
 
-        // 5. TAMPILKAN DATA (Jika data kosong / input masih 0)
-        if (!dataY || dataY.input === 0) {
-            elKonten.innerHTML = `
-                <div class="text-center py-6">
-                    <i class="fa-solid fa-clipboard-list text-slate-300 text-5xl mb-3"></i>
-                    <h3 class="text-lg font-bold text-slate-800">Belum Ada Data</h3>
-                    <p class="text-sm text-slate-500 mt-2">Ananda belum mengisi form mutaba'ah yaumiyah pada periode ini.</p>
+            let htmlApresiasi = '';
+            if (dataY.apresiasi?.length > 0) {
+                htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
+                    <h4 class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Apresiasi (Sangat Baik/Baik)</h4>
+                    <ul class="text-xs text-emerald-800 list-disc pl-5 space-y-1">
+                        ${dataY.apresiasi.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
                 </div>`;
-            return;
-        }
+            }
 
-        // 6. Susun Tampilan Laporan (Apresiasi, Perhatian, Kesimpulan)
-        let htmlApresiasi = '';
-        if (dataY.apresiasi?.length > 0) {
-            htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
-                <h4 class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Apresiasi (Sangat Baik/Baik)</h4>
-                <ul class="text-xs text-emerald-800 list-disc pl-5 space-y-1">
-                    ${dataY.apresiasi.map(item => `<li>${item}</li>`).join('')}
-                </ul>
-            </div>`;
-        }
+            let htmlPerhatian = '';
+            if (dataY.perhatian?.length > 0) {
+                htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                    <h4 class="text-sm font-bold text-orange-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Perlu Perhatian (Kurang/Jarang)</h4>
+                    <ul class="text-xs text-orange-800 list-disc pl-5 space-y-1">
+                        ${dataY.perhatian.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
 
-        let htmlPerhatian = '';
-        if (dataY.perhatian?.length > 0) {
-            htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
-                <h4 class="text-sm font-bold text-orange-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Perlu Perhatian (Kurang/Jarang)</h4>
-                <ul class="text-xs text-orange-800 list-disc pl-5 space-y-1">
-                    ${dataY.perhatian.map(item => `<li>${item}</li>`).join('')}
-                </ul>
-            </div>`;
-        }
+            let teksKesimpulan = "";
+            const jumlahPerhatian = dataY.perhatian?.length || 0;
+            const jumlahApresiasi = dataY.apresiasi?.length || 0;
 
-        let teksKesimpulan = "";
-        const jumlahPerhatian = dataY.perhatian?.length || 0;
-        const jumlahApresiasi = dataY.apresiasi?.length || 0;
+            if (jumlahPerhatian === 0) {
+                teksKesimpulan = "Alhamdulillah! Ananda menunjukkan performa ibadah dan kemandirian yang luar biasa. Mohon Ayah/Bunda terus berikan pujian agar ananda tetap istiqomah.";
+            } else if (jumlahApresiasi > jumlahPerhatian) {
+                teksKesimpulan = "Ananda sudah cukup baik di banyak aspek. Namun, mari bersama-sama kita motivasi dan berikan pendampingan lebih pada aspek yang masih butuh perhatian.";
+            } else {
+                teksKesimpulan = "Ayah/Bunda, saat ini ananda sangat membutuhkan dukungan dan pendampingan ekstra di rumah. Mari kita rutinkan kembali memantau ibadah dan aktivitas hariannya.";
+            }
 
-        if (jumlahPerhatian === 0) {
-            teksKesimpulan = "Alhamdulillah! Ananda menunjukkan performa ibadah yang luar biasa. Mohon Ayah/Bunda terus berikan pujian.";
-        } else if (jumlahApresiasi > jumlahPerhatian) {
-            teksKesimpulan = "Ananda sudah cukup baik di banyak aspek. Namun, mari bersama kita motivasi pada aspek yang masih kurang.";
+            let htmlKesimpulan = `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                    <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
+                </div>`;
+
+            elKonten.innerHTML = `
+                <div class="mb-4 text-center border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
+                    <p class="text-xs text-slate-500 mt-1">Total Setoran Form: <span class="font-bold text-blue-600">${dataY.input} kali</span></p>
+                </div>
+                ${htmlApresiasi}
+                ${htmlPerhatian}
+                ${htmlKesimpulan}
+            `;
         } else {
-            teksKesimpulan = "Ayah/Bunda, saat ini ananda sangat membutuhkan dukungan dan pendampingan ekstra ibadah di rumah.";
+            elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
         }
-
-        let htmlKesimpulan = `
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
-            </div>`;
-
-        // Masukkan semua data ke modal (Menimpa loading)
-        elKonten.innerHTML = `
-            <div class="mb-4 text-center border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
-                <p class="text-xs text-slate-500 mt-1">Total Setoran Form: <span class="font-bold text-blue-600">${dataY.input} kali</span></p>
-            </div>
-            ${htmlApresiasi}
-            ${htmlPerhatian}
-            ${htmlKesimpulan}
-        `;
-
-    } catch (error) {
-        console.error("Error Realtime Yaumiyah:", error);
-        elKonten.innerHTML = `
-            <div class="text-center py-6">
-                <i class="fa-solid fa-circle-exclamation text-red-400 text-4xl mb-2"></i>
-                <p class="text-sm text-slate-600 font-medium">Gagal memuat data terbaru</p>
-                <p class="text-xs text-slate-400 mt-1">Pastikan koneksi internet stabil atau server sedang diperbarui.</p>
-            </div>
-        `;
-    }
+    }, 600); // <-- Jeda waktu loading 0.6 detik
 };
         // ==========================================
     // TAMBAHAN BARU: CEK STATUS BACA SAAT HALAMAN DIMUAT
