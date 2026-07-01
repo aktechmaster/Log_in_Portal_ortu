@@ -959,39 +959,86 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
             modal.classList.add('hidden');
         }, 500);
     }
+        
+    //================================================
+    // --- MODAL T2Q (Tahfidz) DENGAN AUTO-REFRESH ---
+    //================================================
+window.bukaModalT2Q = async function() {
+    const modal = document.getElementById('modalT2Q');
+    const elBatas = document.getElementById('m-t2q-batas');
 
-    // --- MODAL T2Q (Tahfidz) ---
-    window.bukaModalT2Q = function() {
-        var d = window.dataT2QUser;
-        if(!d) {
-            if(user && user.t2q) d = user.t2q;
-            else {
-                alert("Data T2Q belum dimuat. Silakan refresh.");
-                return;
+    // 1. Munculkan modal & tampilkan status loading sementara
+    setText('m-t2q-nama', "Memuat data terbaru...");
+    setText('m-t2q-kelas', "...");
+    setText('m-t2q-pengampu', "...");
+    setText('m-t2q-alpa', "...");
+    if(elBatas) {
+        elBatas.innerText = "Memuat...";
+        elBatas.style.color = "#94a3b8"; // Warna abu-abu saat loading
+    }
+    modal.style.display = 'flex';
+
+    try {
+        // 2. Ambil "kunci" dari brankas lokal
+        const savedNisn = localStorage.getItem('nisn');
+        const savedPass = localStorage.getItem('user_pass');
+
+        // Tembak GAS di latar belakang jika kunci tersedia
+        if (savedNisn && savedPass && typeof SCRIPT_URL !== 'undefined') {
+            const url = `${SCRIPT_URL}?username=${encodeURIComponent(savedNisn)}&password=${encodeURIComponent(savedPass)}`;
+            const response = await fetch(url, { cache: 'no-store' });
+            const freshData = await response.json();
+
+            if (freshData.result === 'success') {
+                // Update brankas & variabel global agar sinkron
+                localStorage.setItem('user_data', JSON.stringify(freshData));
+                user = freshData;
+                window.dataT2QUser = freshData.t2q;
+                
+                // --- SINKRONISASI TAMPILAN DASHBOARD LUAR ---
+                // Agar label di luar popup ikut berubah tanpa perlu refresh web
+               const elT2QLuar = document.getElementById('t2q-batas');
+                if (elT2QLuar && user.t2q) {
+                    var batasBaru = user.t2q.batas || "Belum ada data";
+                    var juzBaru = user.t2q.juz || "";
+                    var htmlLuar = `<span class="font-bold text-emerald-600 text-[11px]">${batasBaru}</span>`;
+                    if (juzBaru && juzBaru !== "-") {
+                        htmlLuar += `<span class="text-slate-800 text-[9px] bg-slate-100 px-1.5 py-0.5 rounded ml-1.5 border border-slate-200">${juzBaru}</span>`;
+                    }
+                    elT2QLuar.innerHTML = htmlLuar;
+                }
             }
         }
-
-        setText('m-t2q-nama', d.nama || user.nama || "-");
-        setText('m-t2q-kelas', d.kelas || user.kelas || "-");
-        
-        const elBatas = document.getElementById('m-t2q-batas');
-        if(elBatas) {
-            elBatas.innerText = d.batas || "Belum ada data";
-            elBatas.style.color = "#00b894";
-            elBatas.style.fontWeight = "bold";
-        }
-
-        setText('m-t2q-pengampu', d.pengampu || "-");
-        setText('m-t2q-alpa', (d.tidak_setor || "0") + " kali");
-
-        document.getElementById('modalT2Q').style.display = 'flex';
+    } catch (error) {
+        console.error("Gagal refresh data T2Q di latar belakang:", error);
     }
 
-    window.tutupModalT2Q = function(e) {
-        if (e === null || e.target.id === 'modalT2Q') {
-            document.getElementById('modalT2Q').style.display = 'none';
-        }
+    // 3. Render isi Modal menggunakan data terbaru 
+    // (Atau pakai data memori lama jika server sedang gangguan)
+    var d = window.dataT2QUser;
+    if(!d) {
+        if(user && user.t2q) d = user.t2q;
+        else d = { nama: user.nama, kelas: user.kelas, batas: "Belum ada data", pengampu: "-", tidak_setor: "0" };
     }
+
+    setText('m-t2q-nama', d.nama || user.nama || "-");
+    setText('m-t2q-kelas', d.kelas || user.kelas || "-");
+    
+    if(elBatas) {
+        elBatas.innerText = d.batas || "Belum ada data";
+        elBatas.style.color = "#00b894"; // Kembalikan ke warna hijau
+        elBatas.style.fontWeight = "bold";
+    }
+
+    setText('m-t2q-pengampu', d.pengampu || "-");
+    setText('m-t2q-alpa', (d.tidak_setor || "0") + " kali");
+}
+
+window.tutupModalT2Q = function(e) {
+    if (e === null || e.target.id === 'modalT2Q') {
+        document.getElementById('modalT2Q').style.display = 'none';
+    }
+}
 
 window.bukaModalGuru = function() {
     const daftar = window.semuaDataGuru || [];
