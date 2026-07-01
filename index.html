@@ -89,34 +89,34 @@
         btnLogin.classList.add('opacity-75', 'cursor-not-allowed');
 
         fetch(`${SCRIPT_URL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-    localStorage.setItem('user_data', JSON.stringify(data));
-    localStorage.setItem('nisn', username);
-    
-    // --- TAMBAHKAN BARIS INI ---
-    localStorage.setItem('user_pass', password); 
-    // ---------------------------
-    
-    window.location.href = 'dashboardortu.html';
-}
-                    alert("Gagal: " + (data.message || "NISN/Password Salah"));
-                    resetButton(originalText);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                alert("Gangguan koneksi internet atau Script URL salah.");
-                resetButton(originalText);
-            });
+    .then(response => response.json())
+    .then(data => {
+        if (data.result === 'success') {
+            localStorage.setItem('user_data', JSON.stringify(data));
+            localStorage.setItem('nisn', username);
+            
+            // --- TAMBAHKAN BARIS INI ---
+            localStorage.setItem('user_pass', password); 
+            // ---------------------------
+            
+            window.location.href = 'dashboardortu.html';
+        } else {
+            alert("Gagal: " + (data.message || "NISN/Password Salah"));
+            resetButton(originalText);
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Gangguan koneksi internet atau Script URL salah.");
+        resetButton(originalText);
     });
+});
 
-    function resetButton(text) {
-        btnLogin.innerText = text;
-        btnLogin.disabled = false;
-        btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
-    }
+function resetButton(text) {
+    btnLogin.innerText = text;
+    btnLogin.disabled = false;
+    btnLogin.classList.remove('opacity-75', 'cursor-not-allowed');
+}
     </script>
 </body>
 </html>
