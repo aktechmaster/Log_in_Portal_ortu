@@ -1820,6 +1820,63 @@ function tutupLaporanAkademik() {
     }, 300); // Menunggu 0.3 detik sampai animasi selesai
 }
 
+        //===========================================
+        // --- SISTEM AUTO-REFRESH LATAR BELAKANG ---
+        //===========================================
+async function segarkanDashboardDiamDiam() {
+    const savedNisn = localStorage.getItem('nisn');
+    const savedPass = localStorage.getItem('user_pass');
+
+    // Pastikan user punya kunci
+    if (savedNisn && savedPass && typeof SCRIPT_URL !== 'undefined') {
+        try {
+            // Tembak GAS di latar belakang
+            const url = `${SCRIPT_URL}?username=${encodeURIComponent(savedNisn)}&password=${encodeURIComponent(savedPass)}`;
+            const response = await fetch(url, { cache: 'no-store' });
+            const freshData = await response.json();
+
+            if (freshData.result === 'success') {
+                // 1. Simpan data baru ke brankas
+                localStorage.setItem('user_data', JSON.stringify(freshData));
+                user = freshData; 
+
+                // 2. RENDER ULANG ABSENSI SAJA TANPA REFRESH HALAMAN
+                if (user.absensi) {
+                    const persenTeks = user.absensi.persen || "0%";
+                    setText('absen-persen', persenTeks);
+
+                    let persenAngka = parseFloat(persenTeks.replace(',', '.').replace('%', '')) || 0;
+                    let derajat = (persenAngka / 100) * 360;
+                    const ring = document.getElementById('absen-ring');
+                    if(ring) ring.style.setProperty('--percent', derajat + 'deg');
+
+                    setText('val-h', (user.absensi.h || 0) + " H");
+                    setText('val-s', (user.absensi.s || 0) + " S");
+                    setText('val-i', (user.absensi.i || 0) + " I");
+                    setText('val-a', (user.absensi.a || 0) + " A");
+
+                    updateStatusHarian(user.absensi.statusToday);
+                } else {
+                    updateStatusHarian("");
+                }
+            }
+        } catch (error) {
+            console.log("Sistem gagal menyegarkan data di latar belakang. Tetap pakai data lama.");
+        }
+    }
+}
+
+// PEMICU 1: Saat halaman di-refresh manual (Tarik ke bawah / F5)
+window.addEventListener('load', segarkanDashboardDiamDiam);
+
+// PEMICU 2: Saat Ortu pindah tab / buka layar HP kembali (Visibility API)
+document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === 'visible') {
+        // Beri jeda 500ms agar browser stabil dulu setelah "bangun"
+        setTimeout(segarkanDashboardDiamDiam, 500);
+    }
+});
+
         
 </script>
 
