@@ -805,7 +805,9 @@
                 if (elT2Q) elT2Q.innerHTML = `<span class="text-slate-400 italic">Belum ada data</span>`;
             }
 
-            // --- UPDATE BINA PRIBADI (LOGIC BARU DISINI) ---
+            //=================================================
+            // --- FUNGSI LOGIKA RENDER BINTANG BINA PRIBADI
+            //================================================
             if (user.bina_pribadi) {
                 try {
                     // 1. Render Bintang (Max 4)
@@ -833,7 +835,11 @@
                     window.pesanWali = user.bina_pribadi.catatan_wali || "-"; 
                     window.riwayatPesanWali = user.catatan_wali_history || []; 
 
+                    //===============================================
+                    
+//=================================================
 // LOGIKA TITIK MERAH BACA DARI LOCALSTORAGE
+//================================================
 let sudahDibaca = false;
 const nisnAktif = user.nisn || "000";
 
@@ -869,7 +875,7 @@ if (window.riwayatPesanWali && window.riwayatPesanWali.length > 0) {
                         }
                     }
                 } catch (errBina) {
-                    console.error("Gagal memproses Bina Pribadi / Catatan Wali:", errBina);
+                    console.error("Gagal memproses  / Catatan Wali:", errBina);
                 }
             }
             // --- BATAS UPDATE BINA PRIBADI ---
@@ -1174,26 +1180,86 @@ if (user && Array.isArray(user.daftarGuru)) {
         iconBgEl.className = `w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-0.5 transition-colors duration-300 ${warnaIcon}`;
     }
 
-    // --- BINA PRIBADI & CATATAN WALI (DIPERBAIKI) ---
-    function bukaModalBina() {
-        const d = window.dataBina;
-        if (!d) {
-            alert("Data Bina Pribadi belum tersedia.");
-            return;
+    //=================================================
+    // --- MODAL BINA PRIBADI DENGAN AUTO-REFRESH ---
+    //=================================================
+    
+window.bukaModalBina = async function() {
+    const modal = document.getElementById('modalBina');
+
+    // 1. Munculkan modal & tampilkan status loading sementara
+    setText('val-disiplin', "Memuat...");
+    setText('val-ibadah', "Memuat...");
+    setText('val-sosial', "Memuat...");
+    if(modal) modal.style.display = 'flex';
+
+    try {
+        // 2. Ambil "kunci" dari brankas lokal
+        const savedNisn = localStorage.getItem('nisn');
+        const savedPass = localStorage.getItem('user_pass');
+
+        // Tembak GAS di latar belakang jika kunci tersedia
+        if (savedNisn && savedPass && typeof SCRIPT_URL !== 'undefined') {
+            const url = `${SCRIPT_URL}?username=${encodeURIComponent(savedNisn)}&password=${encodeURIComponent(savedPass)}`;
+            const response = await fetch(url, { cache: 'no-store' });
+            const freshData = await response.json();
+
+            if (freshData.result === 'success') {
+                // Update brankas & variabel global agar sinkron
+                localStorage.setItem('user_data', JSON.stringify(freshData));
+                user = freshData;
+                window.dataBina = freshData.bina_pribadi ? freshData.bina_pribadi.detail : null;
+                window.dataUserAktif = freshData;
+                window.pesanWali = freshData.bina_pribadi ? freshData.bina_pribadi.catatan_wali : "-";
+                window.riwayatPesanWali = freshData.catatan_wali_history || [];
+
+                // --- SINKRONISASI TAMPILAN DASHBOARD LUAR (RATING BINTANG) ---
+                // Agar jumlah bintang di luar ikut berubah saat data di-update
+                if (user.bina_pribadi) {
+                    const rating = user.bina_pribadi.avg_bintang || 0;
+                    let htmlBintang = '';
+                    for (let i = 1; i <= 4; i++) {
+                        if (i <= rating) {
+                            htmlBintang += `<i class="fa-solid fa-star text-yellow-500"></i>`;
+                        } else {
+                            htmlBintang += `<i class="fa-regular fa-star text-slate-300"></i>`;
+                        }
+                    }
+                    const elBintang = document.getElementById('container-bintang');
+                    if(elBintang) elBintang.innerHTML = htmlBintang;
+                }
+            }
         }
-        setText('val-disiplin', (d.d || 0) + " / 4");
-        setText('val-ibadah', (d.i || 0) + " / 4");
-        setText('val-sosial', (d.s || 0) + " / 4");
-        const el = document.getElementById('modalBina');
-        if(el) el.style.display = 'flex';
+    } catch (error) {
+        console.error("Gagal refresh data Bina Pribadi di latar belakang:", error);
     }
 
-    function tutupModalBina(e) {
-        const el = document.getElementById('modalBina');
-        if (el && (e === null || e.target.id === 'modalBina')) {
-            el.style.display = 'none';
-        }
+    // 3. Render rincian nilai di dalam Modal menggunakan data terbaru
+    var d = window.dataBina;
+    if (!d) {
+        if (user && user.bina_pribadi) d = user.bina_pribadi.detail;
     }
+
+    if (!d) {
+        setText('val-disiplin', "-");
+        setText('val-ibadah', "-");
+        setText('val-sosial', "-");
+        alert("Data Bina Pribadi belum tersedia.");
+        return;
+    }
+
+    setText('val-disiplin', (d.d || 0) + " / 4");
+    setText('val-ibadah', (d.i || 0) + " / 4");
+    setText('val-sosial', (d.s || 0) + " / 4");
+}
+
+window.tutupModalBina = function(e) {
+    const el = document.getElementById('modalBina');
+    if (el && (e === null || e.target.id === 'modalBina')) {
+        el.style.display = 'none';
+    }
+}
+    //=============================================
 
     // PERBAIKAN 1: Tambahkan window. agar fungsi bisa dipanggil dari HTML onclick
     window.bukaCatatanWali = function() {
