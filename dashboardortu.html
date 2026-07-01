@@ -1816,12 +1816,17 @@ async function bukaLaporanAkademik() {
     const wrapper = document.getElementById('wrapper-modal-akademik');
     const list = document.getElementById('list-mapel-akademik');
 
-    // 1. Tampilkan animasi loading agar ortu tahu sistem sedang bekerja
-    list.innerHTML = "<p class='text-center text-xs text-slate-400 py-4 animate-pulse'>Memuat nilai terbaru...</p>";
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        if (wrapper) wrapper.classList.remove('translate-y-full');
-    }, 10);
+    // 1. Tampilkan animasi titik ombak
+list.innerHTML = `
+    <div class="flex flex-col items-center justify-center py-8">
+        <div class="flex space-x-1.5 mb-3">
+            <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.3s"></div>
+            <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: -0.15s"></div>
+            <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce"></div>
+        </div>
+        <p class="text-xs text-slate-500 animate-pulse font-medium">Memuat nilai terbaru...</p>
+    </div>
+`;
 
     try {
         // 2. Ambil "kunci" untuk menembak API dari brankas
