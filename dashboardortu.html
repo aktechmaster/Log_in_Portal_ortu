@@ -360,14 +360,18 @@
     </div>
                 
     <!-- KOTAK MUTABAAH YAUMIYAH -->
-    <div onclick="window.location.href='https://aktechmaster.github.io/Form-Ibadah-Mingguan-Siswa/'" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden">
+    <div onclick="window.location.href='https://aktechmaster.github.io/Form-Ibadah-Mingguan-Siswa/'" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition cursor-pointer group hover:border-emerald-300 relative overflow-hidden flex flex-col justify-between">
     <div class="absolute top-0 right-0 w-12 h-12 bg-emerald-50 rounded-bl-3xl -mr-2 -mt-2 z-0 group-hover:scale-150 transition duration-500"></div>
     <div class="relative z-10">
         <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-sm mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
             <i class="fa-solid fa-list-check"></i>
         </div>
         <h4 class="font-bold text-slate-700 text-[11px]">Mutabaah Yaumiyah</h4>
-        <p class="text-[9px] text-slate-400 mt-1 leading-tight">Ibadah & Aktivitas Harian</p>
+        <p class="text-[9px] text-slate-400 mt-1 leading-tight mb-2">Ibadah & Aktivitas Harian</p>
+        
+        <span onclick="event.stopPropagation(); bukaYaumiyah();" class="inline-block text-[10px] text-emerald-600 font-bold hover:text-emerald-800 transition active:scale-90">
+            Lihat Laporan <i class="fa-solid fa-arrow-right ml-1"></i>
+        </span>
     </div>
 </div>
 
@@ -407,31 +411,9 @@
         <p class="text-[9px] text-slate-400 mt-1 leading-tight">Data jadwal pelajaran</p>
     </div>
 </div>
-
-    
                 
     </main>
 
-        <nav class="fixed-nav text-slate-400 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
-            <button onclick="bukaYaumiyah()" class="flex flex-col items-center gap-1 text-emerald-600 p-2">
-                <i class="fa-solid fa-clipboard-list text-xl mb-1"></i>
-                <span class="text-[9px] font-medium">Lap. Yaumiyah</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-                <i class="fa-solid fa-moon text-xl mb-1"></i>
-                <span class="text-[9px] font-medium">Lap. Shaumiyah</span>
-            </button>
-            
-            <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition p-2">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span class="text-[9px] font-medium">Profil</span>
-            </button>
-            
-            <button class="flex flex-col items-center gap-1 hover:text-red-500 transition p-2" onclick="logout()">
-                <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                <span class="text-[9px] font-medium">Keluar</span>
-            </button>
-        </nav>
 
         <div id="modal-profil" class="fixed inset-0 z-50 hidden">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="tutupProfil()"></div>
@@ -1576,84 +1558,89 @@ function tutupPengumuman(e) {
         reader.readAsDataURL(file);
     }
 
-        // PASTIKAN pakai window.bukaYaumiyah
-    window.bukaYaumiyah = function() {
-        const elModal = document.getElementById('modalPengumuman'); 
-        const elKonten = document.getElementById('kontenPengumuman');
-        
-        if (!elModal || !elKonten) {
-            alert("Modal tidak ditemukan di HTML!");
+        //============================================
+        // FUNGSI BUKA LAPORAN YAUMIYAH (PASTIKAN pakai window.bukaYaumiyah)
+        //============================================
+window.bukaYaumiyah = function() {
+    const elModal = document.getElementById('modalPengumuman'); 
+    const elKonten = document.getElementById('kontenPengumuman');
+    
+    if (!elModal || !elKonten) {
+        alert("Modal tidak ditemukan di HTML!");
+        return;
+    }
+
+    elModal.style.display = 'flex';
+    const dataString = localStorage.getItem('user_data'); 
+    
+    if (dataString) {
+        const dataSiswa = JSON.parse(dataString);
+        const dataY = dataSiswa.yaumiyah;
+
+        if (!dataY || dataY.input === 0) {
+            elKonten.innerHTML = `
+                <div class="text-center py-6">
+                    <i class="fa-solid fa-clipboard-list text-slate-300 text-5xl mb-3"></i>
+                    <h3 class="text-lg font-bold text-slate-800">Belum Ada Data</h3>
+                    <p class="text-sm text-slate-500 mt-2">Ananda belum mengisi form mutaba'ah yaumiyah sama sekali pada periode ini.</p>
+                </div>`;
             return;
         }
 
-        elModal.style.display = 'flex';
-        const dataString = localStorage.getItem('user_data'); 
-        
-        if (dataString) {
-            const dataSiswa = JSON.parse(dataString);
-            const dataY = dataSiswa.yaumiyah;
-
-            if (!dataY || dataY.input === 0) {
-                elKonten.innerHTML = `
-                    <div class="text-center py-6">
-                        <i class="fa-solid fa-clipboard-list text-slate-300 text-5xl mb-3"></i>
-                        <h3 class="text-lg font-bold text-slate-800">Belum Ada Data</h3>
-                        <p class="text-sm text-slate-500 mt-2">Ananda belum mengisi form mutaba'ah yaumiyah sama sekali pada periode ini.</p>
-                    </div>`;
-                return;
-            }
-
-            // Menyusun List Apresiasi (Hijau)
-            let htmlApresiasi = '';
-            if (dataY.apresiasi.length > 0) {
-                htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
-                    <h4 class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Apresiasi (Sangat Baik/Baik)</h4>
-                    <ul class="text-xs text-emerald-800 list-disc pl-5 space-y-1">
-                        ${dataY.apresiasi.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>`;
-            }
-
-            // Menyusun List Perhatian (Oranye/Merah)
-            let htmlPerhatian = '';
-            if (dataY.perhatian.length > 0) {
-                htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
-                    <h4 class="text-sm font-bold text-orange-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Perlu Perhatian (Kurang/Jarang)</h4>
-                    <ul class="text-xs text-orange-800 list-disc pl-5 space-y-1">
-                        ${dataY.perhatian.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>`;
-            }
-
-            // Menyusun Kesimpulan Cerdas (Biru)
-            let teksKesimpulan = "";
-            if (dataY.perhatian.length === 0) {
-                teksKesimpulan = "Alhamdulillah! Ananda menunjukkan performa ibadah dan kemandirian yang luar biasa. Mohon Ayah/Bunda terus berikan pujian agar ananda tetap istiqomah.";
-            } else if (dataY.apresiasi.length > dataY.perhatian.length) {
-                teksKesimpulan = "Ananda sudah cukup baik di banyak aspek. Namun, mari bersama-sama kita motivasi dan berikan pendampingan lebih pada aspek yang masih butuh perhatian.";
-            } else {
-                teksKesimpulan = "Ayah/Bunda, saat ini ananda sangat membutuhkan dukungan dan pendampingan ekstra di rumah. Mari kita rutinkan kembali memantau ibadah dan aktivitas hariannya.";
-            }
-
-            let htmlKesimpulan = `
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                    <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
-                </div>`;
-
-            // Gabungkan semua ke dalam konten modal
-            elKonten.innerHTML = `
-                <div class="mb-4 text-center border-b pb-3">
-                    <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
-                    <p class="text-xs text-slate-500 mt-1">Total Setoran Form: <span class="font-bold text-blue-600">${dataY.input} kali</span></p>
-                </div>
-                ${htmlApresiasi}
-                ${htmlPerhatian}
-                ${htmlKesimpulan}
-            `;
-        } else {
-            elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+        // PERBAIKAN: Tambahkan ?.length agar aman jika data kosong/undefined
+        let htmlApresiasi = '';
+        if (dataY.apresiasi?.length > 0) {
+            htmlApresiasi = `<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
+                <h4 class="text-sm font-bold text-emerald-700 mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Apresiasi (Sangat Baik/Baik)</h4>
+                <ul class="text-xs text-emerald-800 list-disc pl-5 space-y-1">
+                    ${dataY.apresiasi.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            </div>`;
         }
-    };
+
+        // PERBAIKAN: Tambahkan ?.length
+        let htmlPerhatian = '';
+        if (dataY.perhatian?.length > 0) {
+            htmlPerhatian = `<div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                <h4 class="text-sm font-bold text-orange-700 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Perlu Perhatian (Kurang/Jarang)</h4>
+                <ul class="text-xs text-orange-800 list-disc pl-5 space-y-1">
+                    ${dataY.perhatian.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            </div>`;
+        }
+
+        // Menyusun Kesimpulan Cerdas (Biru) dengan keamanan ?.length
+        let teksKesimpulan = "";
+        const jumlahPerhatian = dataY.perhatian?.length || 0;
+        const jumlahApresiasi = dataY.apresiasi?.length || 0;
+
+        if (jumlahPerhatian === 0) {
+            teksKesimpulan = "Alhamdulillah! Ananda menunjukkan performa ibadah dan kemandirian yang luar biasa. Mohon Ayah/Bunda terus berikan pujian agar ananda tetap istiqomah.";
+        } else if (jumlahApresiasi > jumlahPerhatian) {
+            teksKesimpulan = "Ananda sudah cukup baik di banyak aspek. Namun, mari bersama-sama kita motivasi dan berikan pendampingan lebih pada aspek yang masih butuh perhatian.";
+        } else {
+            teksKesimpulan = "Ayah/Bunda, saat ini ananda sangat membutuhkan dukungan dan pendampingan ekstra di rumah. Mari kita rutinkan kembali memantau ibadah dan aktivitas hariannya.";
+        }
+
+        let htmlKesimpulan = `
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                <p class="text-xs text-blue-800 font-medium leading-relaxed"><strong>Kesimpulan Wali Kelas:</strong><br>${teksKesimpulan}</p>
+            </div>`;
+
+        // Gabungkan semua ke dalam konten modal
+        elKonten.innerHTML = `
+            <div class="mb-4 text-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Ringkasan Yaumiyah</h3>
+                <p class="text-xs text-slate-500 mt-1">Total Setoran Form: <span class="font-bold text-blue-600">${dataY.input} kali</span></p>
+            </div>
+            ${htmlApresiasi}
+            ${htmlPerhatian}
+            ${htmlKesimpulan}
+        `;
+    } else {
+        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+    }
+};
 
         // ==========================================
     // TAMBAHAN BARU: CEK STATUS BACA SAAT HALAMAN DIMUAT
