@@ -562,7 +562,7 @@
             </div>
         </div>
 
-        <!-- MODAL INFO SEKOLAH (POP UP)-->
+        <!-- MODAL TENTANG APLIKASI (POP UP)-->
         <div id="modalInfo" class="modal-overlay" onclick="tutupInfo(event)">
             <div class="modal-content">
                 <div class="text-center mb-2 pt-2"><div class="w-14 h-14 bg-blue-100 text-blue-500 rounded-full mx-auto flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-circle-info"></i></div><h3 class="font-bold text-slate-700 text-lg">Tentang Aplikasi</h3></div>
@@ -1376,50 +1376,71 @@ window.tutupModalBina = function(e) {
             el.style.display = 'none';
         }
     }
+    //===============================================
+    // --- FUNGSI BUKA PENGUMUMAN DENGAN FORMAT TANGGAL INDONESIA ---
+    //===============================================
+function formatTanggalIndo(tanggalRaw) {
+    if (!tanggalRaw) return "";
+    let teksTanggal = tanggalRaw.toString().split(' ')[0]; 
+    let bagian = teksTanggal.split('/'); 
+    if (bagian.length === 3) {
+        let hari = parseInt(bagian[0], 10); 
+        let angkaBulan = parseInt(bagian[1], 10) - 1; 
+        let tahun = bagian[2];
+        const namaBulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+        return `${hari} ${namaBulan[angkaBulan]} ${tahun}`;
+    }
+    return tanggalRaw; 
+}
 
-    function bukaPengumuman() {
-        const elModal = document.getElementById('modalPengumuman');
-        const elKonten = document.getElementById('kontenPengumuman');
-        
-        // Cek apakah HTML modal sudah dipasang
-        if (!elModal || !elKonten) {
-            alert("Waduh, HTML Modal Pengumuman belum terbaca! Pastikan kodenya sudah dipaste di dalam <body>");
-            return;
-        }
+function bukaPengumuman() {
+    const elModal = document.getElementById('modalPengumuman');
+    const elKonten = document.getElementById('kontenPengumuman');
+    
+    // Cek apakah HTML modal sudah dipasang
+    if (!elModal || !elKonten) {
+        alert("Waduh, HTML Modal Pengumuman belum terbaca! Pastikan kodenya sudah dipaste di dalam <body>");
+        return;
+    }
 
-        // Tampilkan modal
-        elModal.style.display = 'flex';
+    // Tampilkan modal
+    elModal.style.display = 'flex';
+    
+    // Ambil data siswa
+    const dataString = localStorage.getItem('user_data'); 
+    
+    if (dataString) {
+        const dataSiswa = JSON.parse(dataString);
         
-        // Ambil data siswa
-        const dataString = localStorage.getItem('user_data'); 
-        
-        if (dataString) {
-            const dataSiswa = JSON.parse(dataString);
+        // Cukup pastikan properti 'judul' ada isinya
+        if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.judul) {
+            const infoTerbaru = dataSiswa.info_sekolah; 
             
-            // PERBAIKAN: Karena sekarang wujudnya Object (bukan Array), kita tidak pakai .length dan [0] lagi
-            // Cukup pastikan properti 'judul' ada isinya
-            if (dataSiswa.info_sekolah && dataSiswa.info_sekolah.judul) {
-                const infoTerbaru = dataSiswa.info_sekolah; // Hilangkan [0]
-                
-                elKonten.innerHTML = `
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
-                    <p class="text-xs text-blue-600 font-medium mb-4"><i class="fa-regular fa-calendar"></i> ${infoTerbaru.tanggal}</p>
-                    <div class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
-                `;
-            } else {
-                elKonten.innerHTML = `<p class="text-center text-slate-500 py-6">Belum ada pengumuman terbaru.</p>`;
-            }
+            // --- TERAPKAN FORMAT TANGGAL DI SINI ---
+            let tanggalCantik = formatTanggalIndo(infoTerbaru.tanggal);
+            
+            elKonten.innerHTML = `
+                <h3 class="text-lg font-bold text-slate-800 mb-1">${infoTerbaru.judul}</h3>
+                <p class="text-xs text-blue-600 font-medium mb-4"><i class="fa-regular fa-calendar"></i> ${tanggalCantik}</p>
+                <div class="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">${infoTerbaru.isi}</div>
+            `;
         } else {
-            elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
+            elKonten.innerHTML = `<p class="text-center text-slate-500 py-6">Belum ada pengumuman terbaru.</p>`;
         }
+    } else {
+        elKonten.innerHTML = `<p class="text-center text-red-500 py-6">Data tidak ditemukan. Silakan logout dan login kembali.</p>`;
     }
+}
 
-    function tutupPengumuman(e) {
-        const el = document.getElementById('modalPengumuman');
-        if (el && (e === null || e.target.id === 'modalPengumuman')) {
-            el.style.display = 'none';
-        }
+function tutupPengumuman(e) {
+    const el = document.getElementById('modalPengumuman');
+    if (el && (e === null || e.target.id === 'modalPengumuman')) {
+        el.style.display = 'none';
     }
+}
 
     // --- GANTI PASSWORD ---
     function bukaModalPassword() {
