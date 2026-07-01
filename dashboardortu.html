@@ -1699,7 +1699,7 @@ async function bukaLaporanAkademik() {
     list.innerHTML = "<p class='text-center text-xs text-slate-400 py-4 animate-pulse'>Memuat nilai terbaru...</p>";
     modal.classList.remove('hidden');
     setTimeout(() => {
-        wrapper.classList.remove('translate-y-full');
+        if (wrapper) wrapper.classList.remove('translate-y-full');
     }, 10);
 
     try {
@@ -1756,6 +1756,21 @@ async function bukaLaporanAkademik() {
         `;
         list.insertAdjacentHTML('beforeend', html);
     });
+}
+
+// ==========================================
+// FUNGSI TUTUP LAPORAN AKADEMIK (IKUT DISERTAKAN)
+// ==========================================
+function tutupLaporanAkademik() {
+    const modal = document.getElementById('modal-akademik');
+    const wrapper = document.getElementById('wrapper-modal-akademik');
+    
+    // Beri animasi turun/keluar sebelum ditutup
+    if (wrapper) wrapper.classList.add('translate-y-full');
+    
+    setTimeout(() => {
+        if (modal) modal.classList.add('hidden');
+    }, 300); // Menunggu 0.3 detik sampai animasi selesai
 }
 
         
