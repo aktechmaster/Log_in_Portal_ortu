@@ -1991,6 +1991,62 @@ document.addEventListener("visibilitychange", function() {
     }
 });
 
+        // Fungsi untuk merender/memasukkan data guru ke dalam tabel HTML
+function renderTabelGuru(dataGuru) {
+    const tbody = document.getElementById('isi-tabel-guru');
+    
+    if (!dataGuru || dataGuru.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">📭 Data guru belum tersedia atau gagal dimuat.</td></tr>`;
+        return;
+    }
+    
+    let htmlContent = '';
+    dataGuru.forEach(guru => {
+        htmlContent += `
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                <td class="px-3 py-3 text-left font-medium text-slate-800">${guru["Nama Lengkap"]}</td>
+                <td class="px-3 py-3 text-center text-slate-600">${guru["NIP/NIY"]}</td>
+                <td class="px-3 py-3 text-left text-slate-600">${guru["Jabatan Utama"]}</td>
+                <td class="px-3 py-3 text-left text-slate-600">${guru["Tugas Tambahan"]}</td>
+                <td class="px-3 py-3 text-left text-slate-600">${guru["Alamat Domisili"]}</td>
+                <td class="px-3 py-3 text-left text-slate-600">${guru["No HP"]}</td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = htmlContent;
+}
+
+// Fungsi utama yang dijalankan saat KOTAK/TOMBOL "Daftar Guru" diklik
+function bukaModalGuru() {
+    // 1. Tampilkan modalnya
+    const modal = document.getElementById('modalGuru');
+    if (modal) modal.style.display = 'flex';
+    
+    // 2. Beri teks loading animasi agar user tahu data sedang diperbarui
+    const tbody = document.getElementById('isi-tabel-guru');
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium"><div class="animate-pulse">⏳ Memperbarui data dari Google Sheets...</div></td></tr>`;
+    
+    // 3. Panggil fungsi GAS secara real-time
+    google.script.run
+        .withSuccessHandler(function(dataTerbaru) {
+            window.semuaDataGuru = dataTerbaru; // Simpan di variabel global
+            renderTabelGuru(window.semuaDataGuru); // Tampilkan ke tabel
+        })
+        .withFailureHandler(function(error) {
+            console.error("Gagal ambil data:", error);
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data terbaru.</td></tr>`;
+        })
+        .ambilDataGuruTerbaru(); // Panggil fungsi di backend GAS
+}
+
+// Fungsi untuk menutup modal
+function tutupModalGuru(event) {
+    if (!event || event.target.id === 'modalGuru' || event.target.classList.contains('close-btn') || event.target.classList.contains('btn-tutup')) {
+        const modal = document.getElementById('modalGuru');
+        if (modal) modal.style.display = 'none';
+    }
+}
+
         
 </script>
 
