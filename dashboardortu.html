@@ -1040,61 +1040,7 @@ window.tutupModalT2Q = function(e) {
     if (e === null || e.target.id === 'modalT2Q') {
         document.getElementById('modalT2Q').style.display = 'none';
     }
-}
-
-window.bukaModalGuru = function() {
-    const daftar = window.semuaDataGuru || [];
-    const elTabel = document.getElementById('isi-tabel-guru');
-
-    if (!elTabel) return; 
-
-    if (daftar.length === 0) {
-        // Karena sekarang ada 6 kolom, ganti colspan menjadi 6
-        elTabel.innerHTML = `<tr><td colspan="6" class="text-center text-slate-400 py-8">Belum ada data guru</td></tr>`;
-    } else {
-        let html = '';
-        daftar.forEach(guru => {
-            html += `
-            <tr class="border-b border-slate-100 hover:bg-emerald-50 transition-colors">
-                <td class="px-3 py-3 text-left">${guru['Nama Lengkap'] || '-'}</td>
-                <td class="px-3 py-3 text-center">${guru['NIP/NIY'] || '-'}</td>
-                <td class="px-3 py-3 text-left">${guru['Jabatan Utama'] || '-'}</td>
-                <td class="px-3 py-3 text-left">${guru['Tugas Tambahan'] || '-'}</td>
-                <td class="px-3 py-3 text-left">${guru['Alamat Domisili'] || '-'}</td>
-                <td class="px-3 py-3 text-left">${guru['No HP'] || '-'}</td> </tr>`;
-        });
-        elTabel.innerHTML = html;
-    }
-
-    const modal = document.getElementById('modalGuru');
-    if (modal) modal.style.display = 'flex';
-};
-
-        
-// ✅ Fungsi tutup yang benar
-window.tutupModalGuru = function(e) {
-    // Tutup jika klik di luar kotak atau klik tombol tutup
-    if (!e || e.target.id === 'modalGuru') {
-        const modal = document.getElementById('modalGuru');
-        if (modal) modal.style.display = 'none';
-    }
-};
-
-    // TAMBAHKAN INI UNTUK CEK DATA YANG DITERIMA
-console.log("Isi lengkap objek user:", user);
-console.log("Apakah ada daftarGuru?", user.daftarGuru);
-console.log("Jumlah data guru:", user.daftarGuru ? user.daftarGuru.length : "Tidak ada");
-        
-    // --- UPDATE DAFTAR GURU ---
-if (user && Array.isArray(user.daftarGuru)) {
-    window.semuaDataGuru = user.daftarGuru;
-    console.log("✅ Data guru berhasil dimuat: " + window.semuaDataGuru.length + " orang");
-} else {
-    window.semuaDataGuru = [];
-    console.log("❌ Data daftar guru belum tersedia atau kosong");
-}
-// --- BATAS AKHIR DAFTAR GURU ---
-        
+}      
 
     // --- MENU DROPDOWN ---
     function toggleMenu() {
@@ -2016,49 +1962,82 @@ function renderTabelGuru(dataGuru) {
     tbody.innerHTML = htmlContent;
 }
 
+        // ==========================================
+// PENGGANTI BAGIAN 4: Mengambil Data Baru
+// ==========================================
 function bukaModalGuru() {
     console.log("Mencoba mengambil data guru terbaru..."); 
     
+    // 1. Munculkan Modal
     const modal = document.getElementById('modalGuru');
     if (modal) {
         modal.style.display = 'flex'; 
         modal.classList.remove('hidden'); 
     }
     
+    // 2. Munculkan teks loading
     const tbody = document.getElementById('isi-tabel-guru');
     if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium">⏳ Menghubungkan ke Google Sheets...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium animate-pulse">⏳ Memperbarui data dari Google Sheets...</td></tr>`;
     }
     
-    // GANTI ID INI DENGAN ID DEPLOYMENT GAS ANDA!
-    const idDeploymentGAS = "https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec"; 
-    
-    // ANTI-CACHE: Tambahkan angka acak/waktu agar browser selalu merasa ini URL baru
+    // 3. URL yang sudah diperbaiki (TIDAK DOUBLE)
+    const urlApp = "https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec"; 
     const timestamp = new Date().getTime();
-    const urlGAS = `https://script.google.com/macros/s/${idDeploymentGAS}/exec?action=getDaftarGuru&nocache=${timestamp}`;
+    const urlGAS = `${urlApp}?action=getDaftarGuru&nocache=${timestamp}`;
     
+    // 4. Proses Fetch (Ambil Data)
     fetch(urlGAS)
         .then(response => {
-            if (!response.ok) throw new Error("Jaringan bermasalah atau URL salah");
+            if (!response.ok) throw new Error("Jaringan bermasalah");
             return response.json();
         })
         .then(dataTerbaru => {
-            console.log("Data berhasil diterima dari server:", dataTerbaru);
+            console.log("✅ Data guru terbaru berhasil diterima:", dataTerbaru);
             
-            // Panggil fungsi render Anda
-            if(typeof renderTabelGuru === "function") {
-                renderTabelGuru(dataTerbaru);
-            } else {
-                console.error("Fungsi renderTabelGuru tidak ditemukan di HTML Anda!");
-                if(tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500">Error: Fungsi renderTabelGuru hilang.</td></tr>`;
-            }
+            // Simpan data terbaru jika diperlukan di fitur lain
+            window.semuaDataGuru = dataTerbaru;
+            
+            // Panggil fungsi pencetak tabel di bawah
+            renderTabelGuru(dataTerbaru);
         })
         .catch(error => {
-            console.error("Gagal total mengambil data:", error);
+            console.error("❌ Gagal memuat data:", error);
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data dari server.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data dari server. Silakan coba lagi.</td></tr>`;
             }
         });
+}
+
+// ==========================================
+// PENGGANTI BAGIAN 5: Mencetak Data ke Tabel
+// ==========================================
+function renderTabelGuru(daftar) {
+    const elTabel = document.getElementById('isi-tabel-guru');
+    if (!elTabel) return; 
+
+    // Jika data kosong
+    if (!daftar || daftar.length === 0) {
+        elTabel.innerHTML = `<tr><td colspan="6" class="text-center text-slate-400 py-8">Belum ada data guru</td></tr>`;
+        return;
+    } 
+    
+    // Jika data ada, susun baris HTML
+    let html = '';
+    daftar.forEach(guru => {
+        html += `
+        <tr class="border-b border-slate-100 hover:bg-emerald-50 transition-colors">
+            <td class="px-3 py-3 text-left">${guru['Nama Lengkap'] || '-'}</td>
+            <td class="px-3 py-3 text-center">${guru['NIP/NIY'] || '-'}</td>
+            <td class="px-3 py-3 text-left">${guru['Jabatan Utama'] || '-'}</td>
+            <td class="px-3 py-3 text-left">${guru['Tugas Tambahan'] || '-'}</td>
+            <td class="px-3 py-3 text-left">${guru['Alamat Domisili'] || '-'}</td>
+            <td class="px-3 py-3 text-left">${guru['No HP'] || '-'}</td> 
+        </tr>`;
+    });
+    
+    // Suntikkan ke dalam tabel
+    elTabel.innerHTML = html;
 }
         
 </script>
