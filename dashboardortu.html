@@ -2017,36 +2017,41 @@ function renderTabelGuru(dataGuru) {
 }
 
 function bukaModalGuru() {
-    console.log("Tombol diklik!"); // Untuk testing di console
+    console.log("Tombol diklik!"); // Untuk memastikan tombol merespons di console
     
+    // 1. Tampilkan modal
     const modal = document.getElementById('modalGuru');
     if (modal) {
-        // Cara 1: Mengubah display menjadi flex (jika menggunakan CSS manual)
         modal.style.display = 'flex'; 
-        
-        // Cara 2: Menghapus class tersembunyi (jika menggunakan Tailwind seperti 'hidden')
         modal.classList.remove('hidden'); 
-        
-        // Cara 3: Menambahkan class aktif (jika modal Anda pakai class untuk muncul)
-        modal.classList.add('active'); 
     }
     
-    // Tampilkan loading di tabel
+    // 2. Tampilkan teks loading di dalam tabel
     const tbody = document.getElementById('isi-tabel-guru');
     if (tbody) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium"><div class="animate-pulse">⏳ Memperbarui data dari Google Sheets...</div></td></tr>`;
     }
     
-    // Panggil backend GAS
-    google.script.run
-        .withSuccessHandler(function(dataTerbaru) {
+    // 3. Masukkan URL Web App GAS baru Anda di sini (Hasil New Deployment dari Langkah 1)
+    // Pastikan di ujungnya ada parameter '?action=getDaftarGuru'
+    const urlGAS = "https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec?action=getDaftarGuru";
+    
+    // 4. Panggil backend GAS menggunakan fetch API (Bukan google.script.run)
+    fetch(urlGAS)
+        .then(response => response.json())
+        .then(dataTerbaru => {
             window.semuaDataGuru = dataTerbaru;
+            console.log("✅ Data guru terbaru berhasil diambil!");
+            
+            // Panggil fungsi render untuk memasukkan data ke tabel
             renderTabelGuru(window.semuaDataGuru);
         })
-        .withFailureHandler(function(error) {
-            console.error(error);
-        })
-        .ambilDataGuruTerbaru();
+        .catch(error => {
+            console.error("❌ Gagal mengambil data:", error);
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data terbaru.</td></tr>`;
+            }
+        });
 }
 
         
