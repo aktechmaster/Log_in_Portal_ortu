@@ -2039,6 +2039,26 @@ function renderTabelGuru(daftar) {
     // Suntikkan ke dalam tabel
     elTabel.innerHTML = html;
 }
+
+// ==========================================
+// FUNGSI UNTUK MENUTUP MODAL GURU
+// ==========================================
+function tutupModalGuru(event) {
+    // 1. Cek jika diklik dari area luar (overlay gelap)
+    if (event) {
+        // Pastikan yang diklik benar-benar id 'modalGuru' (area gelap), bukan isi putihnya
+        if (event.target.id !== 'modalGuru') {
+            return; // Hentikan fungsi agar modal tidak tertutup saat tabel diklik
+        }
+    }
+    
+    // 2. Proses menutup modal
+    const modal = document.getElementById('modalGuru');
+    if (modal) {
+        modal.style.display = 'none';      // Sembunyikan modal
+        modal.classList.add('hidden');     // Tambahkan class hidden kembali (jika pakai Tailwind)
+    }
+}
         
 </script>
 
