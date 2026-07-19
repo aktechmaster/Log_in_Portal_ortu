@@ -2017,43 +2017,49 @@ function renderTabelGuru(dataGuru) {
 }
 
 function bukaModalGuru() {
-    console.log("Tombol diklik!"); // Untuk memastikan tombol merespons di console
+    console.log("Mencoba mengambil data guru terbaru..."); 
     
-    // 1. Tampilkan modal
     const modal = document.getElementById('modalGuru');
     if (modal) {
         modal.style.display = 'flex'; 
         modal.classList.remove('hidden'); 
     }
     
-    // 2. Tampilkan teks loading di dalam tabel
     const tbody = document.getElementById('isi-tabel-guru');
     if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium"><div class="animate-pulse">⏳ Memperbarui data dari Google Sheets...</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-emerald-600 font-medium">⏳ Menghubungkan ke Google Sheets...</td></tr>`;
     }
     
-    // 3. Masukkan URL Web App GAS baru Anda di sini (Hasil New Deployment dari Langkah 1)
-    // Pastikan di ujungnya ada parameter '?action=getDaftarGuru'
-    const urlGAS = "https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec?action=getDaftarGuru";
+    // GANTI ID INI DENGAN ID DEPLOYMENT GAS ANDA!
+    const idDeploymentGAS = "https://script.google.com/macros/s/AKfycbzGoR9k9K-eyW18NDm_U04wzRWDkkS5r5yZiVV2NWAtyx2cp2NVCZrcgU2pOXYODSDq/exec"; 
     
-    // 4. Panggil backend GAS menggunakan fetch API (Bukan google.script.run)
+    // ANTI-CACHE: Tambahkan angka acak/waktu agar browser selalu merasa ini URL baru
+    const timestamp = new Date().getTime();
+    const urlGAS = `https://script.google.com/macros/s/${idDeploymentGAS}/exec?action=getDaftarGuru&nocache=${timestamp}`;
+    
     fetch(urlGAS)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Jaringan bermasalah atau URL salah");
+            return response.json();
+        })
         .then(dataTerbaru => {
-            window.semuaDataGuru = dataTerbaru;
-            console.log("✅ Data guru terbaru berhasil diambil!");
+            console.log("Data berhasil diterima dari server:", dataTerbaru);
             
-            // Panggil fungsi render untuk memasukkan data ke tabel
-            renderTabelGuru(window.semuaDataGuru);
+            // Panggil fungsi render Anda
+            if(typeof renderTabelGuru === "function") {
+                renderTabelGuru(dataTerbaru);
+            } else {
+                console.error("Fungsi renderTabelGuru tidak ditemukan di HTML Anda!");
+                if(tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500">Error: Fungsi renderTabelGuru hilang.</td></tr>`;
+            }
         })
         .catch(error => {
-            console.error("❌ Gagal mengambil data:", error);
+            console.error("Gagal total mengambil data:", error);
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data terbaru.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-medium">❌ Gagal memuat data dari server.</td></tr>`;
             }
         });
 }
-
         
 </script>
 
